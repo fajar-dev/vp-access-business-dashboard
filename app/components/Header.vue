@@ -20,7 +20,7 @@ defineProps<Props>()
     </div>
 
     <!-- Middle Row: Tab links -->
-    <div v-if="$slots.tabs" class="border-b border-neutral-200">
+    <div v-if="$slots.tabs" class="border-b border-neutral-200 mt-7">
       <nav class="flex gap-6 -mb-px">
         <slot name="tabs" />
       </nav>

@@ -106,7 +106,7 @@ const isItemActive = (item: NavItem) => {
           <h2 class="text-sm font-medium truncate">
             Ali Putera
           </h2>
-          <p class="text-sm text-neutral-600 truncate">
+          <p class="text-xs text-neutral-600 truncate">
             aliputera@nusa.net.id
           </p>
         </div>
@@ -204,7 +204,7 @@ const isItemActive = (item: NavItem) => {
         <UButton
           color="neutral"
           variant="ghost"
-          icon="i-lucide-file-down"
+          icon="i-lucide-download"
           class="w-full text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 flex justify-center p-2.5 rounded-lg"
           aria-label="Download as PDF"
         />
@@ -215,7 +215,7 @@ const isItemActive = (item: NavItem) => {
         v-else
         color="neutral"
         variant="ghost"
-        icon="i-lucide-file-down"
+        icon="i-lucide-download"
         class="w-full justify-start text-sm px-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
       >
         <span>Download as PDF</span>
