@@ -187,10 +187,17 @@ const resetAction = () => {
 
 // Action log / toast trigger mockup
 const isLocked = ref(false)
+const isLockModalOpen = ref(false)
+
 const saveDraft = () => {
   alert('Draf berhasil disimpan!')
 }
+
 const lockTarget = () => {
+  isLockModalOpen.value = true
+}
+
+const confirmLock = () => {
   isLocked.value = true
   alert('Target Revenue berhasil dikunci!')
 }
@@ -527,31 +534,44 @@ const lockTarget = () => {
 
       <!-- Primary Action triggers -->
       <div class="flex items-center gap-3 w-full sm:w-auto">
+        <!-- Ubah Target (Only visible when locked) -->
         <UButton
+          v-if="isLocked"
           color="neutral"
           variant="outline"
           size="md"
           label="Ubah Target"
-          icon="i-lucide-lock"
-          @click="saveDraft"
+          icon="i-lucide-lock-keyhole-open"
+          @click="isLocked = false"
+          class="cursor-pointer"
         />
-        <UButton
-          color="neutral"
-          variant="outline"
-          size="md"
-          label="Simpan Draf"
-          :disabled="isLocked"
-          @click="saveDraft"
-        />
-        <UButton
-          color="success"
-          size="md"
-          label="Kunci Target"
-          icon="i-lucide-lock"
-          :disabled="isLocked"
-          @click="lockTarget"
-        />
+
+        <!-- Simpan Draf and Kunci Target (Only visible when NOT locked) -->
+        <template v-else>
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="md"
+            label="Simpan Draf"
+            @click="saveDraft"
+            class="cursor-pointer bg-white hover:bg-neutral-50"
+          />
+          <UButton
+            color="success"
+            size="md"
+            label="Kunci Target"
+            icon="i-lucide-lock"
+            @click="lockTarget"
+            class="cursor-pointer"
+          />
+        </template>
       </div>
     </div>
+
+    <!-- Lock Target Confirmation Modal -->
+    <LockTargetModal
+      v-model="isLockModalOpen"
+      @confirm="confirmLock"
+    />
   </div>
 </template>
