@@ -531,6 +531,14 @@ const lockTarget = () => {
           color="neutral"
           variant="outline"
           size="md"
+          label="Ubah Target"
+          icon="i-lucide-lock"
+          @click="saveDraft"
+        />
+        <UButton
+          color="neutral"
+          variant="outline"
+          size="md"
           label="Simpan Draf"
           :disabled="isLocked"
           @click="saveDraft"

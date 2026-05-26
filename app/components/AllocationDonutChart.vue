@@ -89,7 +89,7 @@ const chartOptions = computed(() => {
     </div>
 
     <!-- Dynamic Metrics Listing -->
-    <div class="space-y-4 w-full select-none">
+    <div class="space-y-4 w-full select-none text-center sm:text-left">
       <div>
         <span class="text-xs text-neutral-400 font-medium block">Total Teralokasikan</span>
         <span class="text-lg font-bold text-neutral-800">Rp. {{ formatIDR(totalAllocated) }}</span>
