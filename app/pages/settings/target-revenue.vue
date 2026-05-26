@@ -188,6 +188,7 @@ const resetAction = () => {
 // Action log / toast trigger mockup
 const isLocked = ref(false)
 const isLockModalOpen = ref(false)
+const isEditModalOpen = ref(false)
 
 const saveDraft = () => {
   alert('Draf berhasil disimpan!')
@@ -200,6 +201,11 @@ const lockTarget = () => {
 const confirmLock = () => {
   isLocked.value = true
   alert('Target Revenue berhasil dikunci!')
+}
+
+const confirmUnlock = (reason: string) => {
+  isLocked.value = false
+  alert(`Target Revenue dibuka kunci untuk diedit. Alasan: ${reason}`)
 }
 </script>
 
@@ -542,7 +548,7 @@ const confirmLock = () => {
           size="md"
           label="Ubah Target"
           icon="i-lucide-lock-keyhole-open"
-          @click="isLocked = false"
+          @click="isEditModalOpen = true"
           class="cursor-pointer"
         />
 
@@ -572,6 +578,11 @@ const confirmLock = () => {
     <LockTargetModal
       v-model="isLockModalOpen"
       @confirm="confirmLock"
+    />
+    <!-- Edit Target (Unlock) Confirmation Modal -->
+    <EditTargetModal
+      v-model="isEditModalOpen"
+      @confirm="confirmUnlock"
     />
   </div>
 </template>
