@@ -60,6 +60,9 @@ const isItemActive = (item: NavItem) => {
   if (item.label === 'Retention') {
     return route.path.startsWith('/retention')
   }
+  if (item.label === 'Service Quality') {
+    return route.path.startsWith('/service-quality')
+  }
   return route.path === item.to
 }
 </script>
