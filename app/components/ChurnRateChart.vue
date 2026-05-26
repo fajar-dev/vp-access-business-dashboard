@@ -119,7 +119,7 @@ const chartOptions = computed(() => ({
       const change = y2025 ? (((y2026 - y2025) / y2025) * 100).toFixed(1) : null
 
       let html = `
-        <div class="p-3 bg-white border border-neutral-100 rounded-xl shadow-lg text-sm select-none min-w-[160px]">
+        <div class="p-3 bg-white border border-neutral-100 rounded-lg shadow-lg text-sm select-none min-w-[160px]">
           <div class="font-semibold text-neutral-900 mb-2 pb-1 border-b border-neutral-100">
             ${month} 2026
           </div>

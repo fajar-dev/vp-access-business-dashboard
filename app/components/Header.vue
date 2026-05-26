@@ -11,7 +11,7 @@ defineProps<Props>()
   <div class="space-y-4 shrink-0 select-none">
     <!-- Top Row: Page Title & Description -->
     <div class="flex flex-col gap-1">
-      <h2 class="text-sml md:text-2xl font-bold text-neutral-900 tracking-tight">
+      <h2 class="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight">
         {{ title }}
       </h2>
       <p v-if="description" class="text-sm md:text-sm text-neutral-500">

@@ -72,7 +72,7 @@ withDefaults(defineProps<Props>(), {
       </div>
 
       <!-- Slots for breakdowns / lists (optional) -->
-      <div v-if="$slots.details" class="pt-3 border-t border-neutral-100 shrink-0">
+      <div v-if="$slots.details" class="pt-3">
         <slot name="details" />
       </div>
     </div>

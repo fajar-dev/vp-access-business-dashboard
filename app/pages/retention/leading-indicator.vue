@@ -30,7 +30,7 @@ definePageMeta({
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
             
             <!-- 30 Hari -->
-            <div class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
+            <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-neutral-600">30 Hari</span>
                 <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
@@ -47,7 +47,7 @@ definePageMeta({
             </div>
 
             <!-- 60 Hari -->
-            <div class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
+            <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-neutral-600">60 Hari</span>
                 <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
@@ -64,7 +64,7 @@ definePageMeta({
             </div>
 
             <!-- 90 Hari -->
-            <div class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
+            <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-neutral-600">90 Hari</span>
                 <UBadge color="primary" variant="subtle" size="sm" class="rounded-full font-medium">

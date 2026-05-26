@@ -23,7 +23,7 @@ definePageMeta({
         value="63%"
         trend="3.2%"
         trend-direction="down"
-        trend-color="primary"
+        trend-color="error"
         subtext="Bulan ini"
         icon="i-lucide-percent"
         icon-color="text-info"

@@ -173,7 +173,7 @@ const radarChartOptions = {
             <span class="text-sm font-medium text-neutral-700">Solved Customers</span>
             <span class="text-base font-bold text-primary">69%</span>
             <div class="flex items-center gap-3 bg-primary/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
-              <UIcon name="i-lucide-thumbs-up text-primary" class="w-8 h-8" />
+              <UIcon name="i-lucide-thumbs-up" class="w-8 h-8 text-primary" />
               <span>Semakin tinggi, semakin baik</span>
             </div>
           </div>
@@ -183,7 +183,7 @@ const radarChartOptions = {
             <span class="text-sm font-medium text-neutral-700">Total Solved</span>
             <span class="text-base font-bold text-neutral-900">33</span>
             <div class="flex items-center gap-3 bg-primary/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
-              <UIcon name="i-lucide-circle-check-big text-primary" class="w-8 h-8" />
+              <UIcon name="i-lucide-circle-check-big" class="w-8 h-8 text-primary" />
               <span>Semakin tinggi, semakin baik</span>
             </div>
           </div>
@@ -191,7 +191,7 @@ const radarChartOptions = {
           <!-- 4. Bottom Label (Total Komplain Customer: 48) -->
           <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center  text-center gap-1 z-10 max-w-[150px]">
             <div class="flex items-center text-start gap-3 bg-error/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
-              <UIcon name="i-lucide-arrow-down text-error" class="w-8 h-8" />
+              <UIcon name="i-lucide-arrow-down" class="w-8 h-8 text-error" />
               <span>Semakin rendah, semakin baik</span>
             </div>
             <span class="text-sm font-medium text-neutral-700 mt-1">Total Komplain Customer</span>
@@ -203,7 +203,7 @@ const radarChartOptions = {
             <span class="text-sm font-medium text-neutral-700">Total Tiket</span>
             <span class="text-base font-bold text-red-600">54</span>
             <div class="flex items-center gap-3 bg-error/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
-              <UIcon name="i-lucide-arrow-down text-error" class="w-8 h-8" />
+              <UIcon name="i-lucide-arrow-down" class="w-8 h-8 text-error" />
               <span>Semakin rendah, semakin baik</span>
             </div>
           </div>
@@ -223,7 +223,7 @@ const radarChartOptions = {
           </h4>
           <div class="flex gap-4 items-start">
             <!-- Miniature Radar SVG Indicator -->
-            <div class="w-16 h-16 rounded-xl border border-neutral-100 bg-neutral-50/50 flex items-center justify-center shrink-0">
+            <div class="w-16 h-16 rounded-lg border border-neutral-100 bg-neutral-50/50 flex items-center justify-center shrink-0">
               <svg viewBox="0 0 100 100" class="w-12 h-12">
                 <polygon points="50,15 85,50 50,85 15,50" fill="none" stroke="#e5e7eb" stroke-width="1.5" />
                 <polygon points="50,25 75,50 50,75 25,50" fill="#10b981" fill-opacity="0.25" stroke="#10b981" stroke-width="2" />
