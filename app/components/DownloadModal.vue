@@ -26,7 +26,7 @@ const handleDownload = () => {
 </script>
 
 <template>
-  <UModal v-model:open="open" :ui="{ width: 'sm:max-w-md' }">
+  <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md' }">
     <UCard :ui="{ body: 'p-6 flex flex-col gap-6 relative' }">
       
       <!-- Modal Header -->
