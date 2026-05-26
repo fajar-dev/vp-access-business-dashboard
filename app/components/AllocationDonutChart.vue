@@ -9,10 +9,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Formatting Helper
-const formatIDR = (val: number) => {
-  return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(val)
-}
+
 
 // Compute series representation: [Allocated Segment, Unallocated Segment]
 const chartSeries = computed(() => {

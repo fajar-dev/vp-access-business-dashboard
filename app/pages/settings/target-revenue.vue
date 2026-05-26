@@ -6,14 +6,7 @@ definePageMeta({
   layout: 'default'
 })
 
-// Formatting Helpers
-const formatIDR = (val: number) => {
-  return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(val)
-}
 
-const parseIDR = (val: string) => {
-  return parseInt(val.replace(/\D/g, '')) || 0
-}
 
 // Year preset mockups to show a realistic, complete UX
 interface PresetData {
@@ -256,7 +249,7 @@ const lockTarget = () => {
       >
         <div class="space-y-5">
           <div>
-            <h3 class="text-base font-semibold text-neutral-900">Target Revenue Tahunan</h3>
+            <h3 class="text-base font-semibold text-neutral-900 mb-2">Target Revenue Tahunan</h3>
             <p class="text-sm text-neutral-500 mt-1">Total Target Revenue (Rupiah)</p>
             
             <!-- Large Formatted IDR Input -->
