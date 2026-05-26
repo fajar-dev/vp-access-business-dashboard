@@ -27,7 +27,7 @@ definePageMeta({
               trend="8.2%"
               trend-direction="up"
               icon="i-lucide-trending-up"
-              icon-color="text-indigo-500"
+              icon-color="text-purple-500"
             />
 
             <MetricCard
@@ -37,7 +37,7 @@ definePageMeta({
               trend="12.5%"
               trend-direction="up"
               icon="i-lucide-users"
-              icon-color="text-primary"
+              icon-color="text-info"
             />
 
             <MetricCard
@@ -47,7 +47,7 @@ definePageMeta({
               trend="12.5%"
               trend-direction="up"
               icon="i-lucide-dollar-sign"
-              icon-color="text-amber-500"
+              icon-color="text-warning"
             />
           </div>
 
@@ -59,8 +59,8 @@ definePageMeta({
               subtext="Mei 2026 (Negotiation 90%)"
               trend="8.2%"
               trend-direction="up"
-              icon="i-lucide-users"
-              icon-color="text-primary"
+              icon="i-lucide-trending-up"
+              icon-color="text-purple-500"
             />
 
             <MetricCard
@@ -70,7 +70,7 @@ definePageMeta({
               trend="12.5%"
               trend-direction="up"
               icon="i-lucide-users"
-              icon-color="text-sky-500"
+              icon-color="text-info"
             />
 
             <MetricCard
@@ -80,7 +80,7 @@ definePageMeta({
               trend="8.2%"
               trend-direction="up"
               icon="i-lucide-trending-up"
-              icon-color="text-indigo-500"
+              icon-color="text-purple-500"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@ definePageMeta({
           trend="2.3%"
           trend-direction="up"
           icon="i-lucide-activity"
-          icon-color="text-primary"
+          icon-color="text-info"
         />
 
         <MetricCard
@@ -103,8 +103,8 @@ definePageMeta({
           value="68.5%"
           trend="12.5%"
           trend-direction="up"
-          icon="i-lucide-award"
-          icon-color="text-amber-500"
+          icon="i-lucide-percent"
+          icon-color="text-primary"
         >
           <template #details>
             <div class="space-y-2 mt-1">
@@ -144,11 +144,11 @@ definePageMeta({
             <div class="space-y-2 mt-1">
               <div class="flex items-center justify-between text-xs font-medium">
                 <span class="text-neutral-600">Dedicated</span>
-                <span class="text-red-500 font-semibold">Rp. 30 Jt</span>
+                <span class="text-red-danger font-semibold">Rp. 30 Jt</span>
               </div>
               <div class="flex items-center justify-between text-xs font-medium">
                 <span class="text-neutral-600">Broadband</span>
-                <span class="text-red-500 font-semibold">Rp. 2 Jt</span>
+                <span class="text-red-danger font-semibold">Rp. 2 Jt</span>
               </div>
             </div>
           </template>

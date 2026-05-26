@@ -30,7 +30,7 @@ definePageMeta({
           trend="12.5%"
           trend-direction="up"
           icon="i-lucide-dollar-sign"
-          icon-color="text-emerald-500"
+          icon-color="text-warning"
         />
         
         <MetricCard
@@ -40,7 +40,7 @@ definePageMeta({
           trend="8.2%"
           trend-direction="up"
           icon="i-lucide-trending-up"
-          icon-color="text-indigo-500"
+          icon-color="text-purple-500"
         />
       </div>
 
@@ -62,7 +62,7 @@ definePageMeta({
         trend="15.2%"
         trend-direction="up"
         icon="i-lucide-dollar-sign"
-        icon-color="text-emerald-500"
+        icon-color="text-primary"
       >
         <template #details>
           <div class="space-y-2 mt-1">
@@ -102,7 +102,7 @@ definePageMeta({
         subtext="per pelanggan/ bulan"
         trend="2.8%"
         trend-direction="up"
-        icon="i-lucide-trending-up"
+        icon="i-lucide-activity"
         icon-color="text-violet-500"
       >
         <template #details>

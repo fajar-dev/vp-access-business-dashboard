@@ -5,8 +5,8 @@ import { ref, computed } from 'vue'
 const showNames = ref(false)
 const compare = ref(true)
 
-const data2026 = [125, 90, 96, 140] // 2026 YTD Values
-const data2025 = [75, 58, 32, 82]  // 2025 YTD Values (Comparison)
+const data2026 = [1.5, 1.1, 1.2, 1.8] // 2026 YTD Churn Rate (%)
+const data2025 = [0.9, 0.65, 0.45, 1.0] // 2025 YTD Churn Rate (%)
 
 // Series configuration
 const series = computed(() => {
@@ -33,7 +33,7 @@ const chartOptions = computed(() => ({
     zoom: { enabled: false },
     fontFamily: 'Geist, sans-serif'
   },
-  colors: ['#009838', '#d4d4d4'],
+  colors: ['#f43f5e', '#d4d4d4'], // Rose for 2026, Light Gray for 2025
   stroke: {
     curve: 'smooth',
     width: compare.value ? [3, 2] : [3],
@@ -50,7 +50,7 @@ const chartOptions = computed(() => ({
   },
   markers: {
     size: compare.value ? [5, 4] : [5],
-    colors: ['#009838', '#e5e5e5'],
+    colors: ['#f43f5e', '#e5e5e5'],
     strokeColors: '#ffffff',
     strokeWidth: 2,
     hover: {
@@ -64,18 +64,18 @@ const chartOptions = computed(() => ({
     style: {
       fontSize: '9px',
       fontWeight: 700,
-      colors: ['#009838'] // Beautiful green primary branding color matching the line
+      colors: ['#f43f5e'] // Rose text matching the line
     },
     background: {
       enabled: true,
-      foreColor: '#D1FAE0', // matching text color
+      foreColor: '#FFE4E6', // Light rose text color
       padding: 4,
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: '#009838', // subtle light green border for premium badge look
-      opacity: 0.95,
+      borderColor: '#f43f5e', // Rose border for premium badge look
+      opacity: 0.95
     },
-    formatter: (val: number) => `Rp ${val}M` // Match the Y-axis & tooltip M (Miliar) unit
+    formatter: (val: number) => `${val}%` // Show as percentage
   },
   grid: {
     borderColor: '#f5f5f5',
@@ -97,7 +97,8 @@ const chartOptions = computed(() => ({
     }
   },
   yaxis: {
-    max: 200,
+    min: 0,
+    max: 2.5,
     tickAmount: 5,
     labels: {
       style: {
@@ -105,7 +106,7 @@ const chartOptions = computed(() => ({
         fontWeight: 600,
         fontSize: '10px'
       },
-      formatter: (val: number) => `${val}M`
+      formatter: (val: number) => `${val.toFixed(1)}%`
     }
   },
   tooltip: {
@@ -125,10 +126,10 @@ const chartOptions = computed(() => ({
           <div class="space-y-1.5">
             <div class="flex items-center gap-4 justify-between">
               <div class="flex items-center gap-1.5 text-neutral-600">
-                <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
                 <span>2026 YTD:</span>
               </div>
-              <span class="font-semibold text-neutral-950">Rp ${y2026}M</span>
+              <span class="font-semibold text-neutral-950">${y2026.toFixed(2)}%</span>
             </div>
       `
 
@@ -139,12 +140,12 @@ const chartOptions = computed(() => ({
                 <span class="w-2.5 h-2.5 rounded-full bg-neutral-300 inline-block"></span>
                 <span>2025 YTD:</span>
               </div>
-              <span class="font-semibold text-neutral-950">Rp ${y2025}M</span>
+              <span class="font-semibold text-neutral-950">${y2025.toFixed(2)}%</span>
             </div>
             <div class="pt-1.5 flex items-center justify-between border-t border-neutral-100">
               <span class="text-neutral-600">Pertumbuhan:</span>
-              <span class="font-semibold rounded px-1 ${Number(change) >= 0 ? 'text-primary' : 'text-red-danger'}">
-                ${Number(change) >= 0 ? '↑' : '↓'} ${change}%
+              <span class="font-semibold rounded px-1 ${Number(change) >= 0 ? 'text-red-500' : 'text-primary'}">
+                ${Number(change) >= 0 ? '↑' : '↓'} ${Math.abs(Number(change)).toFixed(1)}%
               </span>
             </div>
         `
@@ -169,7 +170,7 @@ const chartOptions = computed(() => ({
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
       <div>
         <h3 class="text-base font-semibold text-neutral-900">
-          Revenue (YTD)
+          Churn Rate (YTD)
         </h3>
         <p class="text-xs text-neutral-500">
           Year to Date sampai 24 April 2026
@@ -213,7 +214,7 @@ const chartOptions = computed(() => ({
     <div class="flex items-center justify-center gap-6 text-xs font-medium text-neutral-600 pt-4 mt-2 border-t border-neutral-100 select-none">
       <div class="flex items-center gap-2">
         <UIcon
-          name="i-lucide-line-dot-right-horizontal bg-neutral-300"
+          name="i-lucide-line-dot-right-horizontal"
           class="w-5 h-5 text-neutral-300"
         />
         <span>2025 YTD</span>
@@ -221,11 +222,10 @@ const chartOptions = computed(() => ({
       <div class="flex items-center gap-2">
         <UIcon
           name="i-lucide-line-dot-right-horizontal"
-          class="w-5 h-5 text-primary"
+          class="w-5 h-5 text-rose-500"
         />
         <span>2026 YTD</span>
       </div>
     </div>
   </UCard>
 </template>
-

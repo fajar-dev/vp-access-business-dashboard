@@ -5,6 +5,7 @@ interface Props {
   subtext?: string
   trend?: string
   trendDirection?: 'up' | 'down' | 'neutral'
+  trendColor?: 'primary' | 'error' | 'neutral'
   icon?: string
   iconColor?: string
 }
@@ -38,7 +39,7 @@ withDefaults(defineProps<Props>(), {
         <!-- Trend Badge -->
         <UBadge
           v-if="trend"
-          color="primary"
+          :color="trendColor || (trendDirection === 'down' ? 'error' : 'primary')"
           variant="subtle"
           size="sm"
           class="rounded-full font-medium"
@@ -47,12 +48,13 @@ withDefaults(defineProps<Props>(), {
             <UIcon
               v-if="trendDirection === 'up'"
               name="i-lucide-arrow-up"
-              class="w-3 h-3 text-primary"
+              class="w-3 h-3"
+              :class="(trendColor === 'error') ? 'text-red-danger' : 'text-primary'"
             />
             <UIcon
               v-else-if="trendDirection === 'down'"
               name="i-lucide-arrow-down"
-              class="w-3 h-3 text-red-500"
+              class="w-3 h-3 text-red-danger"
             />
           </template>
           {{ trend }}
