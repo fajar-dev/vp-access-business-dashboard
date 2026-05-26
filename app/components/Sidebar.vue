@@ -52,10 +52,13 @@ const navGroups: NavGroup[] = [
 ]
 
 // Helper to determine if a route is active
-// Specifically for 'Growth', it should remain active on both indicator pages
+// Active highlighting remains for both indicator sub-pages
 const isItemActive = (item: NavItem) => {
   if (item.label === 'Growth') {
     return route.path.startsWith('/growth')
+  }
+  if (item.label === 'Retention') {
+    return route.path.startsWith('/retention')
   }
   return route.path === item.to
 }
