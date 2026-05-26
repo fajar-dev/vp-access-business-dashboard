@@ -60,12 +60,6 @@ const radarChartOptions = {
 
 <template>
   <div class="space-y-6">
-    <!-- Subtitle Heading -->
-    <div class="select-none">
-      <h3 class="text-base font-semibold text-neutral-900">
-        Lagging Indicator
-      </h3>
-    </div>
 
     <!-- Top Row: Grid of 4 lagging indicator KPI cards (1 row, 4 columns) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -78,8 +72,8 @@ const radarChartOptions = {
         trend-direction="up"
         trend-color="error"
         subtext="Bulan ini"
-        icon="i-lucide-message-square"
-        icon-color="text-rose-500"
+        icon="i-lucide-message-circle-more"
+        icon-color="text-danger"
       />
 
       <!-- Total Komplain Customer -->
@@ -90,8 +84,8 @@ const radarChartOptions = {
         trend-direction="up"
         trend-color="error"
         subtext="Bulan ini"
-        icon="i-lucide-frown"
-        icon-color="text-red-500"
+        icon="i-lucide-message-square-warning"
+        icon-color="text-info"
       />
 
       <!-- Solved Customers -->
@@ -103,7 +97,7 @@ const radarChartOptions = {
         trend-color="primary"
         subtext="Bulan ini"
         icon="i-lucide-thumbs-up"
-        icon-color="text-emerald-500"
+        icon-color="text-info"
       />
 
       <!-- Total Solved -->
@@ -114,8 +108,8 @@ const radarChartOptions = {
         trend-direction="up"
         trend-color="primary"
         subtext="Bulan ini"
-        icon="i-lucide-check-circle"
-        icon-color="text-primary"
+        icon="i-lucide-square-check-big"
+        icon-color="text-info"
       />
     </div>
 
@@ -283,12 +277,12 @@ const radarChartOptions = {
     </div>
 
     <!-- Bottom Full Width Info Bar -->
-    <div class="flex items-center gap-3 bg-blue-50/40 border border-blue-100 rounded-xl p-4 select-none">
-      <UIcon name="i-lucide-info" class="w-5 h-5 text-blue-500 shrink-0" />
-      <p class="text-xs font-medium text-neutral-700 leading-normal">
-        Nilai pada grafik merupakan skor performa (0-100) yang telah dinormalisasi berdasarkan target dan benchmark.
-      </p>
-    </div>
+    <UAlert
+      icon="i-lucide-info"
+      color="blue"
+      variant="subtle"
+      title="Nilai pada grafik merupakan skor performa (0-100) yang telah dinormalisasi berdasarkan target dan benchmark."
+    />
 
   </div>
 </template>
