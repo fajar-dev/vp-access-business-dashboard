@@ -42,7 +42,7 @@ definePageMeta({
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
                   <span class="text-neutral-900">Rp 125 Jt</span>
-                  <span class="text-red-danger font-semibold text-[10px]">↑ 8.3%</span>
+                  <span class="text-red-500 font-semibold text-[10px]">↑ 8.3%</span>
                 </div>
               </div>
             </div>
@@ -80,7 +80,7 @@ definePageMeta({
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
                   <span class="text-neutral-900">8</span>
-                  <span class="text-red-danger font-semibold text-[10px]">↑ 14.3%</span>
+                  <span class="text-red-500 font-semibold text-[10px]">↑ 14.3%</span>
                 </div>
               </div>
               <div class="flex items-center justify-between text-xs font-medium">
