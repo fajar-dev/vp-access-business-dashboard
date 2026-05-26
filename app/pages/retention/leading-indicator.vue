@@ -32,7 +32,7 @@ definePageMeta({
             <!-- 30 Hari -->
             <div class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-neutral-600">30 Hari</span>
+                <span class="text-sm font-medium text-neutral-600">30 Hari</span>
                 <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
                   <template #leading>
                     <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-red-500" />
@@ -42,14 +42,14 @@ definePageMeta({
               </div>
               <div class="flex flex-col gap-1 select-none">
                 <span class="text-3xl font-semibold text-neutral-900">15</span>
-                <span class="text-xs text-neutral-500">Kontrak segera berakhir</span>
+                <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
               </div>
             </div>
 
             <!-- 60 Hari -->
             <div class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-neutral-600">60 Hari</span>
+                <span class="text-sm font-medium text-neutral-600">60 Hari</span>
                 <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
                   <template #leading>
                     <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-red-500" />
@@ -59,14 +59,14 @@ definePageMeta({
               </div>
               <div class="flex flex-col gap-1 select-none">
                 <span class="text-3xl font-semibold text-neutral-900">28</span>
-                <span class="text-xs text-neutral-500">Kontrak segera berakhir</span>
+                <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
               </div>
             </div>
 
             <!-- 90 Hari -->
             <div class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-neutral-600">90 Hari</span>
+                <span class="text-sm font-medium text-neutral-600">90 Hari</span>
                 <UBadge color="primary" variant="subtle" size="sm" class="rounded-full font-medium">
                   <template #leading>
                     <UIcon name="i-lucide-arrow-down" class="w-3 h-3 text-primary" />
@@ -76,7 +76,7 @@ definePageMeta({
               </div>
               <div class="flex flex-col gap-1 select-none">
                 <span class="text-3xl font-semibold text-neutral-900">42</span>
-                <span class="text-xs text-neutral-500">Kontrak segera berakhir</span>
+                <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
               </div>
             </div>
 

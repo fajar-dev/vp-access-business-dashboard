@@ -18,7 +18,7 @@ withDefaults(
       <h1 class="text-sm font-medium text-neutral-900 truncate">
         PT Media Antar Nusa
       </h1>
-      <p class="text-xs text-neutral-600">
+      <p class="text-sm text-neutral-600">
         Executive Dashboard
       </p>
     </div>

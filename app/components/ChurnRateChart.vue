@@ -119,7 +119,7 @@ const chartOptions = computed(() => ({
       const change = y2025 ? (((y2026 - y2025) / y2025) * 100).toFixed(1) : null
 
       let html = `
-        <div class="p-3 bg-white border border-neutral-100 rounded-xl shadow-lg text-xs select-none min-w-[160px]">
+        <div class="p-3 bg-white border border-neutral-100 rounded-xl shadow-lg text-sm select-none min-w-[160px]">
           <div class="font-semibold text-neutral-900 mb-2 pb-1 border-b border-neutral-100">
             ${month} 2026
           </div>
@@ -172,13 +172,13 @@ const chartOptions = computed(() => ({
         <h3 class="text-base font-semibold text-neutral-900">
           Churn Rate (YTD)
         </h3>
-        <p class="text-xs text-neutral-500">
+        <p class="text-sm text-neutral-500">
           Year to Date sampai 24 April 2026
         </p>
       </div>
 
       <!-- Controls Switches -->
-      <div class="flex items-center gap-6 text-xs font-medium text-neutral-700 select-none shrink-0">
+      <div class="flex items-center gap-6 text-sm font-medium text-neutral-700 select-none shrink-0">
         <div class="flex items-center gap-2">
           <span>Tampilkan Nama</span>
           <USwitch
@@ -211,7 +211,7 @@ const chartOptions = computed(() => ({
     </div>
 
     <!-- Chart Legend/Key -->
-    <div class="flex items-center justify-center gap-6 text-xs font-medium text-neutral-600 pt-4 mt-2 border-t border-neutral-100 select-none">
+    <div class="flex items-center justify-center gap-6 text-sm font-medium text-neutral-600 pt-4 mt-2 border-t border-neutral-100 select-none">
       <div class="flex items-center gap-2">
         <UIcon
           name="i-lucide-line-dot-right-horizontal"

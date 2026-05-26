@@ -40,7 +40,7 @@ definePageMeta({
           trend="8.2%"
           trend-direction="up"
           icon="i-lucide-trending-up"
-          icon-color="text-purple-500"
+          icon-color="text-smurple-500"
         />
       </div>
 
@@ -66,14 +66,14 @@ definePageMeta({
       >
         <template #details>
           <div class="space-y-2 mt-1">
-            <div class="flex items-center justify-between text-xs font-medium">
+            <div class="flex items-center justify-between text-sm font-medium">
               <div class="flex items-center gap-2 text-neutral-600">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                 <span>Paid</span>
               </div>
               <span class="text-neutral-900">Rp. 87.5 Jt</span>
             </div>
-            <div class="flex items-center justify-between text-xs font-medium">
+            <div class="flex items-center justify-between text-sm font-medium">
               <div class="flex items-center gap-2 text-neutral-600">
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
                 <span>Unpaid</span>
@@ -107,14 +107,14 @@ definePageMeta({
       >
         <template #details>
           <div class="space-y-2 mt-1">
-            <div class="flex items-center justify-between text-xs font-medium">
+            <div class="flex items-center justify-between text-sm font-medium">
               <div class="flex items-center gap-2 text-neutral-600">
                 <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
                 <span>Dedicated</span>
               </div>
               <span class="text-neutral-900">Rp. 8.4 Jt</span>
             </div>
-            <div class="flex items-center justify-between text-xs font-medium">
+            <div class="flex items-center justify-between text-sm font-medium">
               <div class="flex items-center gap-2 text-neutral-600">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                 <span>Broadband</span>

@@ -27,7 +27,7 @@ definePageMeta({
               trend="8.2%"
               trend-direction="up"
               icon="i-lucide-trending-up"
-              icon-color="text-purple-500"
+              icon-color="text-smurple-500"
             />
 
             <MetricCard
@@ -60,7 +60,7 @@ definePageMeta({
               trend="8.2%"
               trend-direction="up"
               icon="i-lucide-trending-up"
-              icon-color="text-purple-500"
+              icon-color="text-smurple-500"
             />
 
             <MetricCard
@@ -80,7 +80,7 @@ definePageMeta({
               trend="8.2%"
               trend-direction="up"
               icon="i-lucide-trending-up"
-              icon-color="text-purple-500"
+              icon-color="text-smurple-500"
             />
           </div>
         </div>
@@ -108,7 +108,7 @@ definePageMeta({
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                   <span>Opportunity Win</span>
@@ -118,7 +118,7 @@ definePageMeta({
                   <span class="text-primary font-semibold text-[10px]">↑ 9%</span>
                 </div>
               </div>
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                   <span>Opportunity Lose</span>
@@ -142,13 +142,13 @@ definePageMeta({
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <span class="text-neutral-600">Dedicated</span>
-                <span class="text-red-danger font-semibold">Rp. 30 Jt</span>
+                <span class="text-red-500 font-semibold">Rp. 30 Jt</span>
               </div>
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <span class="text-neutral-600">Broadband</span>
-                <span class="text-red-danger font-semibold">Rp. 2 Jt</span>
+                <span class="text-red-500 font-semibold">Rp. 2 Jt</span>
               </div>
             </div>
           </template>

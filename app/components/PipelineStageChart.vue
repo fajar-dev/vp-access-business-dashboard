@@ -194,7 +194,7 @@ const wavePaths = computed(() => {
         >
           <!-- Text at the top, left-aligned -->
           <div class="flex flex-col select-none">
-            <span class="text-xs md:text-sm font-medium text-neutral-500 tracking-wide">
+            <span class="text-sm md:text-sm font-medium text-neutral-500 tracking-wide">
               {{ stage.name }}
             </span>
             <span class="text-lg md:text-4xl font-semibold text-neutral-900 tracking-tight mt-1 md:mt-2.5">

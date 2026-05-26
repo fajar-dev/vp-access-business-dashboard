@@ -6,7 +6,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-4">
     <!-- Subtitle Heading -->
     <div class="select-none">
       <h3 class="text-base font-semibold text-neutral-900">
@@ -26,7 +26,7 @@ definePageMeta({
         trend-color="primary"
         subtext="Bulan ini"
         icon="i-lucide-percent"
-        icon-color="text-primary"
+        icon-color="text-info"
       />
 
       <!-- Network Incident -->

@@ -101,7 +101,7 @@ watch(() => route.path, () => {
                   <h2 class="text-sm font-medium truncate">
                     Ali Putera
                   </h2>
-                  <p class="text-xs text-neutral-600 truncate">
+                  <p class="text-sm text-neutral-600 truncate">
                     aliputera@nusa.net.id
                   </p>
                 </div>

@@ -25,7 +25,7 @@ definePageMeta({
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                   <span>Net MRC</span>
@@ -35,7 +35,7 @@ definePageMeta({
                   <span class="text-primary font-semibold text-[10px]">↑ 10%</span>
                 </div>
               </div>
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                   <span>Churn MRC</span>
@@ -69,11 +69,11 @@ definePageMeta({
           trend-direction="up"
           trend-color="error"
           icon="i-lucide-user-round-minus"
-          icon-color="text-purple-500"
+          icon-color="text-smurple-500"
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
                   <span>Dedicated</span>
@@ -83,7 +83,7 @@ definePageMeta({
                   <span class="text-red-500 font-semibold text-[10px]">↑ 14.3%</span>
                 </div>
               </div>
-              <div class="flex items-center justify-between text-xs font-medium">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                   <span>Broadband</span>
@@ -152,7 +152,7 @@ definePageMeta({
             trend-color="primary"
             subtext="Bulan ini"
             icon="i-lucide-repeat"
-            icon-color="text-purple-500"
+            icon-color="text-smurple-500"
           />
 
           <!-- Migrasi -->

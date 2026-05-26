@@ -73,7 +73,7 @@ const radarChartOptions = {
         trend-color="error"
         subtext="Bulan ini"
         icon="i-lucide-message-circle-more"
-        icon-color="text-danger"
+        icon-color="text-error"
       />
 
       <!-- Total Komplain Customer -->
@@ -130,7 +130,7 @@ const radarChartOptions = {
               </h3>
               <UIcon name="i-lucide-info" class="w-4 h-4 text-neutral-400 cursor-help" />
             </div>
-            <p class="text-xs text-neutral-500 mt-0.5">
+            <p class="text-sm text-neutral-500 mt-0.5">
               Performa kualitas layanan secara keseluruhan berdasarkan 4 metric utama
             </p>
           </div>
@@ -159,48 +159,51 @@ const radarChartOptions = {
           </div>
 
           <!-- 1. Center circular score badge -->
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xs w-26 h-26 rounded-full border border-neutral-100 shadow-md flex flex-col items-center justify-center text-center p-2 z-20">
-            <span class="text-[9px] uppercase font-semibold text-neutral-500 tracking-wider">Overall Score</span>
-            <span class="text-xl font-bold text-neutral-900 tracking-tight my-0.5">72 <span class="text-xs text-neutral-400 font-medium">/ 100</span></span>
-            <UBadge color="primary" variant="subtle" size="sm" class="rounded-full font-bold px-2 py-0">Baik</UBadge>
+          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-xs w-26 h-26 rounded-full border border-neutral-100 shadow-md flex flex-col items-center justify-center text-center  z-20">
+            <span class="text-xs text-neutral-500">Overall Score</span>
+            <div class="flex flex-col">
+              <span class="text-xl font-bold text-primary">72</span>
+              <span class="text-xs text-neutral-400">/ 100</span>
+            </div>
+            <UBadge color="primary" variant="soft" size="xs" class="rounded-full mt-2">Baik</UBadge>
           </div>
 
           <!-- 2. Top Label (Solved Customers: 69%) -->
-          <div class="absolute top-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-center gap-1 z-10">
-            <span class="text-xs font-semibold text-neutral-700">Solved Customers</span>
-            <span class="text-base font-bold text-neutral-900 mt-[-2px]">69%</span>
-            <div class="flex items-center gap-1 bg-emerald-50 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-100">
-              <UIcon name="i-lucide-check" class="w-2.5 h-2.5" />
+          <div class="absolute top-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 z-10 max-w-[150px]">
+            <span class="text-sm font-medium text-neutral-700">Solved Customers</span>
+            <span class="text-base font-bold text-primary">69%</span>
+            <div class="flex items-center gap-3 bg-primary/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
+              <UIcon name="i-lucide-thumbs-up text-primary" class="w-8 h-8" />
               <span>Semakin tinggi, semakin baik</span>
             </div>
           </div>
 
           <!-- 3. Right Label (Total Solved: 33) -->
-          <div class="absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col items-end text-right gap-1 z-10 max-w-[150px]">
-            <span class="text-xs font-semibold text-neutral-700">Total Solved</span>
-            <span class="text-base font-bold text-neutral-900 mt-[-2px]">33</span>
-            <div class="flex items-center gap-1 bg-emerald-50 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-100">
-              <UIcon name="i-lucide-check" class="w-2.5 h-2.5" />
+          <div class="absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col items-end gap-1 z-10 max-w-[150px]">
+            <span class="text-sm font-medium text-neutral-700">Total Solved</span>
+            <span class="text-base font-bold text-neutral-900">33</span>
+            <div class="flex items-center gap-3 bg-primary/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
+              <UIcon name="i-lucide-circle-check-big text-primary" class="w-8 h-8" />
               <span>Semakin tinggi, semakin baik</span>
             </div>
           </div>
 
           <!-- 4. Bottom Label (Total Komplain Customer: 48) -->
-          <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-center gap-1 z-10">
-            <div class="flex items-center gap-1 bg-rose-50 text-red-800 text-[9px] font-bold px-2 py-0.5 rounded-full border border-rose-100">
-              <UIcon name="i-lucide-arrow-down" class="w-2.5 h-2.5" />
+          <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center  text-center gap-1 z-10 max-w-[150px]">
+            <div class="flex items-center text-start gap-3 bg-error/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
+              <UIcon name="i-lucide-arrow-down text-error" class="w-8 h-8" />
               <span>Semakin rendah, semakin baik</span>
             </div>
-            <span class="text-xs font-semibold text-neutral-700 mt-1">Total Komplain Customer</span>
-            <span class="text-base font-bold text-red-600 mt-[-2px]">48</span>
+            <span class="text-sm font-medium text-neutral-700 mt-1">Total Komplain Customer</span>
+            <span class="text-base font-bold text-red-600">48</span>
           </div>
 
           <!-- 5. Left Label (Total Tiket: 54) -->
-          <div class="absolute left-0 top-1/2 transform -translate-y-1/2 flex flex-col items-start text-left gap-1 z-10 max-w-[150px]">
-            <span class="text-xs font-semibold text-neutral-700">Total Tiket</span>
-            <span class="text-base font-bold text-red-600 mt-[-2px]">54</span>
-            <div class="flex items-center gap-1 bg-rose-50 text-red-800 text-[9px] font-bold px-2 py-0.5 rounded-full border border-rose-100">
-              <UIcon name="i-lucide-arrow-down" class="w-2.5 h-2.5" />
+          <div class="absolute left-0 top-1/2 transform -translate-y-1/2 flex flex-col items-start gap-1 z-10 max-w-[150px]">
+            <span class="text-sm font-medium text-neutral-700">Total Tiket</span>
+            <span class="text-base font-bold text-red-600">54</span>
+            <div class="flex items-center gap-3 bg-error/10 text-neutral-700 text-xs px-2 py-0.5 rounded">
+              <UIcon name="i-lucide-arrow-down text-error" class="w-8 h-8" />
               <span>Semakin rendah, semakin baik</span>
             </div>
           </div>
@@ -215,7 +218,7 @@ const radarChartOptions = {
       >
         <!-- Section 1: Cara Membaca -->
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-neutral-900 uppercase tracking-wider">
+          <h4 class="text-sm font-bold text-neutral-900">
             Cara membaca
           </h4>
           <div class="flex gap-4 items-start">
@@ -227,7 +230,7 @@ const radarChartOptions = {
                 <circle cx="50" cy="50" r="2" fill="#10b981" />
               </svg>
             </div>
-            <p class="text-xs font-medium text-neutral-600 leading-relaxed pt-1">
+            <p class="text-sm text-neutral-600">
               Semakin luas area hijau, semakin baik kualitas layanan secara keseluruhan.
             </p>
           </div>
@@ -235,40 +238,40 @@ const radarChartOptions = {
 
         <!-- Section 2: Skala Penilaian -->
         <div class="space-y-3 pt-4 border-t border-neutral-100">
-          <h4 class="text-xs font-bold text-neutral-900 uppercase tracking-wider">
+          <h4 class="text-sm font-bold text-neutral-900">
             Skala Penilaian
           </h4>
           <div class="space-y-2">
-            <div class="flex items-center justify-between text-xs font-semibold">
+            <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                 <span class="text-neutral-700">75 - 100</span>
               </div>
-              <span class="text-neutral-900 font-bold">Baik</span>
+              <span class="text-neutral-700">Baik</span>
             </div>
-            <div class="flex items-center justify-between text-xs font-semibold">
+            <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
                 <span class="text-neutral-700">50 - 74</span>
               </div>
-              <span class="text-neutral-900 font-bold">Cukup</span>
+              <span class="text-neutral-700">Cukup</span>
             </div>
-            <div class="flex items-center justify-between text-xs font-semibold">
+            <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                 <span class="text-neutral-700">0 - 49</span>
               </div>
-              <span class="text-neutral-900 font-bold">Perlu Perbaikan</span>
+              <span class="text-neutral-700">Perlu Perbaikan</span>
             </div>
           </div>
         </div>
 
         <!-- Section 3: Insight -->
         <div class="space-y-2 pt-4 border-t border-neutral-100">
-          <h4 class="text-xs font-bold text-neutral-900 uppercase tracking-wider">
+          <h4 class="text-sm font-bold text-neutral-900">
             Insight
           </h4>
-          <p class="text-xs text-neutral-600 leading-relaxed font-medium">
+          <p class="text-sm text-neutral-600">
             Performa cukup baik pada solved customers dan total solved. Perlu perhatian pada total komplain customer dan total tiket untuk meningkatkan kualitas layanan.
           </p>
         </div>
@@ -278,9 +281,10 @@ const radarChartOptions = {
 
     <!-- Bottom Full Width Info Bar -->
     <UAlert
+      class="text-neutral-600 border-none"
       icon="i-lucide-info"
-      color="blue"
-      variant="subtle"
+      color="info"
+      variant="soft"
       title="Nilai pada grafik merupakan skor performa (0-100) yang telah dinormalisasi berdasarkan target dan benchmark."
     />
 

@@ -44,7 +44,7 @@ const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year
       <template #tabs>
         <NuxtLink
           to="/growth/lagging-indicator"
-          class="pb-3 text-xs md:text-sm font-medium border-b-2 transition-colors relative"
+          class="pb-3 text-sm md:text-sm font-medium border-b-2 transition-colors relative"
           :class="[
             route.path === '/growth/lagging-indicator'
               ? 'border-primary text-primary'
@@ -55,7 +55,7 @@ const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year
         </NuxtLink>
         <NuxtLink
           to="/growth/leading-indicator"
-          class="pb-3 text-xs md:text-sm font-medium border-b-2 transition-colors relative"
+          class="pb-3 text-sm md:text-sm font-medium border-b-2 transition-colors relative"
           :class="[
             route.path === '/growth/leading-indicator'
               ? 'border-primary text-primary'

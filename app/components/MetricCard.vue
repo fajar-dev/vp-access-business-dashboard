@@ -28,7 +28,7 @@ withDefaults(defineProps<Props>(), {
           <UIcon
             v-if="icon"
             :name="icon"
-            class="w-5 h-5"
+            class="w-4 h-4"
             :class="iconColor"
           />
           <span class="text-sm text-neutral-600">
@@ -49,12 +49,12 @@ withDefaults(defineProps<Props>(), {
               v-if="trendDirection === 'up'"
               name="i-lucide-arrow-up"
               class="w-3 h-3"
-              :class="(trendColor === 'error') ? 'text-red-danger' : 'text-primary'"
+              :class="(trendColor === 'error') ? 'text-red-500' : 'text-primary'"
             />
             <UIcon
               v-else-if="trendDirection === 'down'"
               name="i-lucide-arrow-down"
-              class="w-3 h-3 text-red-danger"
+              class="w-3 h-3 text-red-500"
             />
           </template>
           {{ trend }}
