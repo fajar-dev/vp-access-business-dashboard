@@ -188,8 +188,39 @@ const isItemActive = (item: NavItem) => {
       </nav>
     </div>
 
-    <!-- Bottom Section (Logout) -->
-    <div class="pt-4 border-t border-neutral-200">
+    <!-- Bottom Section (Actions & Logout) -->
+    <div class="pt-4 border-t border-neutral-200 space-y-1">
+      <!-- Collapsed Download: Wrapped in UTooltip -->
+      <UTooltip
+        v-if="isCollapsed"
+        :delay-duration="0"
+        text="Download as PDF"
+        :content="{
+          align: 'center',
+          side: 'right',
+          sideOffset: 8
+        }"
+      >
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-file-down"
+          class="w-full text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 flex justify-center p-2.5 rounded-lg"
+          aria-label="Download as PDF"
+        />
+      </UTooltip>
+
+      <!-- Expanded Download: Standard Button -->
+      <UButton
+        v-else
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-file-down"
+        class="w-full justify-start text-sm px-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+      >
+        <span>Download as PDF</span>
+      </UButton>
+
       <!-- Collapsed Logout: Wrapped in UTooltip -->
       <UTooltip
         v-if="isCollapsed"
