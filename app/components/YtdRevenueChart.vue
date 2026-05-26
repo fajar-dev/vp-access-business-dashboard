@@ -115,7 +115,7 @@ const chartOptions = computed(() => ({
       const month = ['Januari', 'Februari', 'Maret', 'April'][dataPointIndex]
       const y2026 = series[0][dataPointIndex]
       const y2025 = series[1] ? series[1][dataPointIndex] : null
-      const change = y2025 ? (((y2026 - y2025) / y2025) * 100).toFixed(1) : null
+      const change = calculateGrowthRate(y2026, y2025)
 
       let html = `
         <div class="p-3 bg-white border border-neutral-100 rounded-lg shadow-lg text-sm select-none min-w-[160px]">

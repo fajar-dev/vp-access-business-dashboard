@@ -40,11 +40,7 @@ const activeStage = ref<number | null>(null)
 
 // Parse numerical values dynamically and calculate reactive SVG S-curve paths
 const wavePaths = computed(() => {
-  const parsed = props.stages.map(s => {
-    // Extract numbers from strings like "Rp 920M" -> 920
-    const num = parseFloat(s.value.replace(/[^0-9.]/g, '')) || 0
-    return num
-  })
+  const parsed = props.stages.map(s => parseNumericValue(s.value))
   
   const maxVal = Math.max(...parsed, 1)
   

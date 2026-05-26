@@ -9,8 +9,6 @@ interface Props {
 
 const props = defineProps<Props>()
 
-
-
 // Compute series representation: [Allocated Segment, Unallocated Segment]
 const chartSeries = computed(() => {
   const allocated = Math.min(props.allocationPercentage, 100)
