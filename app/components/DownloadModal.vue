@@ -26,17 +26,17 @@ const handleDownload = () => {
 </script>
 
 <template>
-  <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md' }">
+  <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md', overlay: 'bg-black/20 backdrop-blur-xs' }">
     <template #content>
       <UCard :ui="{ body: 'p-6 flex flex-col gap-6 relative' }">
       
       <!-- Modal Header -->
       <div class="flex items-start justify-between select-none">
         <div class="space-y-1.5 pr-4">
-          <h3 class="text-lg font-bold text-neutral-900 leading-none tracking-tight">
+          <h3 class="text-lg font-semibold text-neutral-900 leading-none tracking-tight">
             Download Laporan
           </h3>
-          <p class="text-xs text-neutral-500 leading-normal">
+          <p class="text-sm text-neutral-500 leading-normal">
             Pilih periode data untuk setiap dashboard yang ingin dimasukkan ke dalam laporan sebelum mengunduh file.
           </p>
         </div>
@@ -51,16 +51,16 @@ const handleDownload = () => {
       </div>
 
       <!-- Form White Container with Border -->
-      <div class="border border-neutral-200 rounded-xl p-4 bg-white shadow-xs space-y-4">
+      <div class="border border-neutral-200 rounded-lg p-4 bg-white shadow-xs space-y-4">
         
         <!-- 1. Growth Dashboard -->
         <div class="space-y-2">
-          <h4 class="text-xs font-bold text-neutral-900 tracking-wide select-none">
+          <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
             Growth Dashboard
           </h4>
           <div class="space-y-2.5">
             <div class="flex items-center justify-between gap-4">
-              <span class="text-xs font-medium text-neutral-600">Lagging Indicator</span>
+              <span class="text-sm font-medium text-neutral-600">Lagging Indicator</span>
               <USelect
                 v-model="growthLagging"
                 :items="timeframeOptions"
@@ -68,7 +68,7 @@ const handleDownload = () => {
               />
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-xs font-medium text-neutral-600">Leading Indicator</span>
+              <span class="text-sm font-medium text-neutral-600">Leading Indicator</span>
               <USelect
                 v-model="growthLeading"
                 :items="timeframeOptions"
@@ -82,12 +82,12 @@ const handleDownload = () => {
 
         <!-- 2. Retention Dashboard -->
         <div class="space-y-2">
-          <h4 class="text-xs font-bold text-neutral-900 tracking-wide select-none">
+          <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
             Retention Dashboard
           </h4>
           <div class="space-y-2.5">
             <div class="flex items-center justify-between gap-4">
-              <span class="text-xs font-medium text-neutral-600">Lagging Indicator</span>
+              <span class="text-sm font-medium text-neutral-600">Lagging Indicator</span>
               <USelect
                 v-model="retentionLagging"
                 :items="timeframeOptions"
@@ -95,7 +95,7 @@ const handleDownload = () => {
               />
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-xs font-medium text-neutral-600">Leading Indicator</span>
+              <span class="text-sm font-medium text-neutral-600">Leading Indicator</span>
               <USelect
                 v-model="retentionLeading"
                 :items="timeframeOptions"
@@ -109,12 +109,12 @@ const handleDownload = () => {
 
         <!-- 3. Service and Quality Dashboard -->
         <div class="space-y-2">
-          <h4 class="text-xs font-bold text-neutral-900 tracking-wide select-none">
+          <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
             Service and Quality Dashboard
           </h4>
           <div class="space-y-2.5">
             <div class="flex items-center justify-between gap-4">
-              <span class="text-xs font-medium text-neutral-600">Lagging Indicator</span>
+              <span class="text-sm font-medium text-neutral-600">Lagging Indicator</span>
               <USelect
                 v-model="serviceLagging"
                 :items="timeframeOptions"
@@ -122,7 +122,7 @@ const handleDownload = () => {
               />
             </div>
             <div class="flex items-center justify-between gap-4">
-              <span class="text-xs font-medium text-neutral-600">Leading Indicator</span>
+              <span class="text-sm font-medium text-neutral-600">Leading Indicator</span>
               <USelect
                 v-model="serviceLeading"
                 :items="timeframeOptions"
@@ -139,7 +139,7 @@ const handleDownload = () => {
         color="primary"
         size="lg"
         :loading="isDownloading"
-        class="w-full justify-center bg-[#009838] hover:bg-[#00802F] text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer select-none"
+        class="w-full justify-center"
         @click="handleDownload"
       >
         Download PDF

@@ -34,7 +34,7 @@ watch(() => route.path, () => {
         appear
       >
         <div 
-          class="fixed inset-0 bg-neutral-950/40 backdrop-blur-xs"
+          class="fixed inset-0 bg-black/20 backdrop-blur-xs"
           @click="isMobileMenuOpen = false"
         />
       </Transition>
