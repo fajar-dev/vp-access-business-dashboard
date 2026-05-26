@@ -25,17 +25,17 @@ const navGroups: NavGroup[] = [
       {
         label: 'Growth',
         to: '/growth/lagging-indicator', // Main growth landing page
-        icon: 'i-lucide-trending-up'
+        icon: 'i-lucide-sprout'
       },
       {
         label: 'Retention',
         to: '/retention',
-        icon: 'i-lucide-users'
+        icon: 'i-lucide-hand'
       },
       {
         label: 'Service Quality',
         to: '/service-quality',
-        icon: 'i-lucide-shield-check'
+        icon: 'i-lucide-star'
       }
     ]
   },
