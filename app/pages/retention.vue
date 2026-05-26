@@ -31,18 +31,18 @@ const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year
       title="Dashboard - Retention Metric"
       :description="route.path === '/retention/leading-indicator' ? 'Rekap performa retensi pelanggan • Senin, 4 Mei 2026' : 'Rekap dari pertumbuhan penjualan • Senin, 4 Mei 2026'"
     >
-      <!-- Dropdown selectors injected in the actions slot only when on lagging indicator page -->
-      <template v-if="route.path === '/retention/lagging-indicator'" #actions>
+      <!-- Dropdown selectors injected in the actions slot -->
+      <template #actions>
         <USelect
           v-model="selectedBranch"
           :items="branchOptions"
-          class="w-32"
+          class="md:w-32 w-100"
           aria-label="Select Branch"
         />
         <USelect
           v-model="selectedTimeframe"
           :items="timeframeOptions"
-          class="w-32"
+          class="md:w-32 w-100"
           aria-label="Select Date Range"
         />
       </template>

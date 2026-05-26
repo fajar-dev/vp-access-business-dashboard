@@ -23,27 +23,47 @@ watch(() => route.path, () => {
 
     <!-- 2. Mobile Sidebar Overlay Drawer -->
     <div v-if="isMobileMenuOpen" class="fixed inset-0 z-40 lg:hidden">
-      <!-- Backdrop -->
-      <div 
-        class="fixed inset-0 bg-neutral-950/40 backdrop-blur-xs transition-opacity duration-300"
-        @click="isMobileMenuOpen = false"
-      />
+      <!-- Backdrop with Fade Transition -->
+      <Transition
+        enter-active-class="transition-opacity duration-300 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-300 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+        appear
+      >
+        <div 
+          class="fixed inset-0 bg-neutral-950/40 backdrop-blur-xs"
+          @click="isMobileMenuOpen = false"
+        />
+      </Transition>
       
-      <!-- Drawer Sidebar Panel -->
-      <div class="fixed inset-y-0 left-0 w-68 z-50 transform transition-transform duration-300 translate-x-0 h-full">
-        <!-- Close overlay button inside sidebar header -->
-        <div class="absolute top-4 right-0 z-50">
-          <UButton
-            icon="i-lucide-x"
-            color="neutral"
-            variant="ghost"
-            class="text-neutral-600 hover:text-neutral-800"
-            @click="isMobileMenuOpen = false"
-            aria-label="Close sidebar"
-          />
+      <!-- Drawer Sidebar Panel with Slide-in Transition -->
+      <Transition
+        enter-active-class="transition-transform duration-300 ease-out"
+        enter-from-class="-translate-x-full"
+        enter-to-class="translate-x-0"
+        leave-active-class="transition-transform duration-300 ease-in"
+        leave-from-class="translate-x-0"
+        leave-to-class="-translate-x-full"
+        appear
+      >
+        <div class="fixed inset-y-0 left-0 w-68 z-50 bg-white h-full shadow-xl">
+          <!-- Close overlay button inside sidebar header -->
+          <div class="absolute top-4 right-0 z-50">
+            <UButton
+              icon="i-lucide-x"
+              color="neutral"
+              variant="ghost"
+              class="text-neutral-600 hover:text-neutral-800"
+              @click="isMobileMenuOpen = false"
+              aria-label="Close sidebar"
+            />
+          </div>
+          <Sidebar class="h-full" />
         </div>
-        <Sidebar class="h-full" />
-      </div>
+      </Transition>
     </div>
 
     <!-- 3. Main Dashboard Content (Right) -->

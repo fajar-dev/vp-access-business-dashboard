@@ -29,13 +29,13 @@ const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year
         <USelect
           v-model="selectedBranch"
           :items="branchOptions"
-          class="w-32"
+          class="md:w-32 w-100"
           aria-label="Select Branch"
         />
         <USelect
           v-model="selectedTimeframe"
           :items="timeframeOptions"
-          class="w-32"
+          class="md:w-32 w-100"
           aria-label="Select Date Range"
         />
       </template>
