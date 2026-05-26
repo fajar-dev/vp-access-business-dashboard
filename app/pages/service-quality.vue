@@ -6,7 +6,7 @@ const route = useRoute()
 
 // Scoped to the main default dashboard shell layout
 definePageMeta({
-  layout: 'default',
+  layout: 'dashboard',
   middleware: [
     function (to) {
       if (to.path === '/service-quality' || to.path === '/service-quality/') {

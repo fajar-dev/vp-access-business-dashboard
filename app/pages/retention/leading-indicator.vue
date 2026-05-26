@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Page meta to use our default layout container
 definePageMeta({
-  layout: 'default'
+  layout: 'dashboard'
 })
 </script>
 

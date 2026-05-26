@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 // Page meta to use our default layout container
 definePageMeta({
-  layout: 'default'
+  layout: 'dashboard'
 })
 
 // Scoped state for Radar timeframe selector

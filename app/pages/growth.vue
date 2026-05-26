@@ -6,7 +6,7 @@ const route = useRoute()
 
 // Scoped to the main default dashboard shell layout
 definePageMeta({
-  layout: 'default'
+  layout: 'dashboard'
 })
 
 // Scoped state for Growth selectors

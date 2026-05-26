@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Page meta to use our executive dashboard layout
 definePageMeta({
-  layout: 'default'
+  layout: 'dashboard'
 })
 </script>
 

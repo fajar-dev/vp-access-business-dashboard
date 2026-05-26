@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 
 // Set page metadata to use default sidebar layout
 definePageMeta({
-  layout: 'default'
+  layout: 'dashboard'
 })
 
 
