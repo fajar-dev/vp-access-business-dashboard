@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
 // Shared sidebar collapse state
 const isCollapsed = useState('sidebar-collapsed', () => false)
+const isModalOpen = ref(false)
 
 // Define navigation structures
 interface NavItem {
@@ -205,8 +207,9 @@ const isItemActive = (item: NavItem) => {
           color="neutral"
           variant="ghost"
           icon="i-lucide-download"
-          class="w-full text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 flex justify-center p-2.5 rounded-lg"
+          class="w-full text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 flex justify-center p-2.5 rounded-lg cursor-pointer"
           aria-label="Download as PDF"
+          @click="isModalOpen = true"
         />
       </UTooltip>
 
@@ -216,7 +219,8 @@ const isItemActive = (item: NavItem) => {
         color="neutral"
         variant="ghost"
         icon="i-lucide-download"
-        class="w-full justify-start text-sm px-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+        class="w-full justify-start text-sm px-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 cursor-pointer"
+        @click="isModalOpen = true"
       >
         <span>Download as PDF</span>
       </UButton>
@@ -266,5 +270,8 @@ const isItemActive = (item: NavItem) => {
         class="w-4 h-4"
       />
     </button>
+
+    <!-- Download Period Selection Modal -->
+    <DownloadModal v-model="isModalOpen" />
   </div>
 </template>
