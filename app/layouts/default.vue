@@ -17,12 +17,12 @@ watch(() => route.path, () => {
   <div class="flex h-screen w-full font-sans text-neutral-900 overflow-hidden">
     
     <!-- 1. Sidebar Left (Desktop) -->
-    <div class="hidden md:block h-full">
+    <div class="hidden lg:block h-full">
       <Sidebar />
     </div>
 
     <!-- 2. Mobile Sidebar Overlay Drawer -->
-    <div v-if="isMobileMenuOpen" class="fixed inset-0 z-40 md:hidden">
+    <div v-if="isMobileMenuOpen" class="fixed inset-0 z-40 lg:hidden">
       <!-- Backdrop -->
       <div 
         class="fixed inset-0 bg-neutral-950/40 backdrop-blur-xs transition-opacity duration-300"
@@ -49,7 +49,7 @@ watch(() => route.path, () => {
     <!-- 3. Main Dashboard Content (Right) -->
     <div class="flex-1 flex flex-col h-full overflow-hidden">
       <!-- Top Mobile Navigation Bar -->
-      <header class="flex items-center justify-between px-4 py-3 md:hidden bg-white border-b border-neutral-200 shrink-0">
+      <header class="flex items-center justify-between px-4 py-3 lg:hidden bg-white border-b border-neutral-200 shrink-0">
         <div class="flex items-center gap-2">
           <UButton
             icon="i-lucide-menu"
@@ -115,7 +115,7 @@ watch(() => route.path, () => {
       </header>
 
       <!-- Scrollable content area -->
-      <main class="flex-1 overflow-y-auto p-4 md:p-6">
+      <main class="flex-1 overflow-y-auto p-4 lg:p-6">
         <slot />
       </main>
     </div>

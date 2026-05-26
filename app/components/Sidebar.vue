@@ -94,7 +94,7 @@ const isItemActive = (item: NavItem) => {
             color="neutral"
             variant="ghost"
             icon="i-lucide-panel-left-close"
-            class="hidden md:inline-flex text-neutral-400 hover:text-neutral-700"
+            class="hidden lg:inline-flex text-neutral-400 hover:text-neutral-700"
             @click="isCollapsed = true"
             aria-label="Collapse sidebar"
           />
@@ -232,7 +232,7 @@ const isItemActive = (item: NavItem) => {
     <!-- Floating Toggle Sidebar Button on the Border (visible only when collapsed) -->
     <button
       v-if="isCollapsed"
-      class="hidden md:flex absolute top-4.5 -right-3 z-30 w-7 h-7 rounded-full border border-neutral-200 bg-white shadow-sm items-center justify-center text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer focus:outline-none"
+      class="hidden lg:flex absolute top-4.5 -right-3 z-30 w-7 h-7 rounded-full border border-neutral-200 bg-white shadow-sm items-center justify-center text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer focus:outline-none"
       @click="isCollapsed = false"
       aria-label="Expand sidebar"
     >

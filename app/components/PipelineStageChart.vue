@@ -1,76 +1,97 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+
+export interface PipelineStage {
+  name: string
+  value: string
+  share: string
+  color: string
+}
+
+const props = withDefaults(
+  defineProps<{
+    stages?: PipelineStage[]
+  }>(),
+  {
+    stages: () => [
+      {
+        name: 'Quotation',
+        value: 'Rp 500M',
+        share: '90.3%',
+        color: 'blue'
+      },
+      {
+        name: 'Qualified (BANT)',
+        value: 'Rp 50M',
+        share: '1.4%',
+        color: 'teal'
+      },
+      {
+        name: 'Negotiation',
+        value: 'Rp 300M',
+        share: '50.3%',
+        color: 'green'
+      }
+    ]
+  }
+)
 
 const activeStage = ref<number | null>(null)
 
-const stages = [
-  {
-    name: 'Quotation',
-    value: 'Rp 920M',
-    share: '38.3%',
-    color: 'blue'
-  },
-  {
-    name: 'Qualified (BANT)',
-    value: 'Rp 850M',
-    share: '35.4%',
-    color: 'teal'
-  },
-  {
-    name: 'Negotiation',
-    value: 'Rp 630M',
-    share: '26.3%',
-    color: 'green'
+// Parse numerical values dynamically and calculate reactive SVG S-curve paths
+const wavePaths = computed(() => {
+  const parsed = props.stages.map(s => {
+    // Extract numbers from strings like "Rp 920M" -> 920
+    const num = parseFloat(s.value.replace(/[^0-9.]/g, '')) || 0
+    return num
+  })
+  
+  const maxVal = Math.max(...parsed, 1)
+  
+  // Calculate wave heights scaled to the 300px viewBox (max height = 220px, min = 35px)
+  const h1 = Math.max(35, ((parsed[0] || 0) / maxVal) * 200)
+  const h2 = Math.max(35, ((parsed[1] || 0) / maxVal) * 200)
+  const h3 = Math.max(35, ((parsed[2] || 0) / maxVal) * 200)
+  
+  // Calculate Y coordinates (bottom is Y = 300)
+  const y1 = 300 - h1
+  const y2 = 300 - h2
+  const y3 = 300 - h3
+  
+  // Translucent crest border lines sit exactly 10px higher
+  const y1Crest = y1 - 10
+  const y2Crest = y2 - 10
+  const y3Crest = y3 - 10
+  
+  return {
+    stage1: {
+      crest: `M 0 300 L 0 ${y1Crest} C 150 ${y1Crest}, 150 ${y2Crest}, 300 ${y2Crest} L 300 300 Z`,
+      wave: `M 0 300 L 0 ${y1} C 150 ${y1}, 150 ${y2}, 300 ${y2} L 300 300 Z`
+    },
+    stage2: {
+      crest: `M 300 300 L 300 ${y2Crest} C 450 ${y2Crest}, 450 ${y3Crest}, 600 ${y3Crest} L 600 300 Z`,
+      wave: `M 300 300 L 300 ${y2} C 450 ${y2}, 450 ${y3}, 600 ${y3} L 600 300 Z`
+    },
+    stage3: {
+      crest: `M 600 300 L 600 ${y3Crest} L 900 ${y3Crest} L 900 300 Z`,
+      wave: `M 600 300 L 600 ${y3} L 900 ${y3} L 900 300 Z`
+    }
   }
-]
+})
 </script>
 
 <template>
-  <UCard class="border border-neutral-100 h-full flex flex-col justify-between overflow-hidden">
-    <!-- Header -->
-    <div class="flex items-center justify-between pb-4 border-b border-neutral-100">
-      <div>
-        <h3 class="text-base font-semibold text-neutral-900">
-          Pipeline by Stage (Rp)
-        </h3>
-      </div>
-      <UBadge
-        color="primary"
-        variant="subtle"
-        size="sm"
-        class="rounded-full font-medium"
-      >
-        <template #leading>
-          <UIcon name="i-lucide-minus" class="w-3 h-3 text-primary" />
-        </template>
-        0%
-      </UBadge>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="relative flex-1 mt-6">
-      <!-- 3-Column Labels & Metrics -->
-      <div class="grid grid-cols-3 text-center border-l border-r border-neutral-100 pb-20">
-        <div 
-          v-for="(stage, idx) in stages" 
-          :key="stage.name"
-          class="px-4 py-2 flex flex-col justify-between h-28 border-r last:border-r-0 border-neutral-100"
-          @mouseenter="activeStage = idx"
-          @mouseleave="activeStage = null"
-        >
-          <span class="text-xs font-medium text-neutral-600 uppercase tracking-wider">
-            {{ stage.name }}
-          </span>
-          <span class="text-2xl sm:text-3xl font-bold text-neutral-950 tracking-tight mt-2">
-            {{ stage.value }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Connecting Waves SVG Container -->
-      <div class="absolute bottom-0 left-0 right-0 h-32 overflow-hidden pointer-events-none select-none">
+  <UCard 
+    class="border border-neutral-100 h-full flex flex-col justify-between overflow-hidden relative shadow-xs"
+    :ui="{ body: 'p-0 flex-1 flex flex-col justify-between' }"
+  >
+    <!-- Main Content Area (Header-free, content occupies entire height) -->
+    <div class="relative flex-1 min-h-[340px] flex flex-col justify-between">
+      
+      <!-- Connecting Waves SVG Container (renders at bottom half, fully responsive) -->
+      <div class="absolute bottom-0 left-0 right-0 h-48 overflow-hidden pointer-events-none select-none z-0">
         <svg 
-          viewBox="0 0 900 130" 
+          viewBox="0 0 900 300" 
           preserveAspectRatio="none" 
           class="w-full h-full overflow-visible pointer-events-auto"
         >
@@ -78,17 +99,17 @@ const stages = [
             <!-- Blue Gradient for Quotation -->
             <linearGradient id="waveBlueGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.95" />
-              <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="#2563eb" stop-opacity="0.95" />
             </linearGradient>
             <!-- Teal Gradient for Qualified -->
             <linearGradient id="waveTealGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#0d9488" stop-opacity="0.95" />
-              <stop offset="100%" stop-color="#0f766e" stop-opacity="0.95" />
+              <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="#0891b2" stop-opacity="0.95" />
             </linearGradient>
             <!-- Green Gradient for Negotiation -->
             <linearGradient id="waveGreenGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#009838" stop-opacity="0.95" />
-              <stop offset="100%" stop-color="#006625" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="#00802f" stop-opacity="0.95" />
             </linearGradient>
 
             <!-- Shadow filter for waves -->
@@ -99,77 +120,97 @@ const stages = [
 
           <!-- Stage 1 Wave (Quotation - Blue) -->
           <g 
-            class="cursor-pointer transition-transform duration-200" 
-            :class="[activeStage === 0 ? 'opacity-100 scale-[1.01]' : 'opacity-90']"
+            class="cursor-pointer transition-all duration-200" 
+            :class="[activeStage === 0 ? 'opacity-100' : 'opacity-90']"
             @mouseenter="activeStage = 0"
             @mouseleave="activeStage = null"
           >
-            <!-- Continuous curve from y=10 to y=40, then flat drop -->
+            <!-- Translucent crest layer slightly above -->
             <path 
-              d="M 0 130 L 0 10 C 100 10, 200 40, 300 40 L 300 130 Z" 
+              :d="wavePaths.stage1.crest" 
+              fill="#3b82f6"
+              fill-opacity="0.25"
+            />
+            <!-- Solid body wave -->
+            <path 
+              :d="wavePaths.stage1.wave" 
               fill="url(#waveBlueGrad)"
               filter="url(#waveShadow)"
             />
-            <!-- Centered value label -->
-            <text 
-              x="150" 
-              y="90" 
-              text-anchor="middle" 
-              class="text-xs sm:text-sm font-bold fill-white tracking-wider"
-            >
-              38.3%
-            </text>
           </g>
 
           <!-- Stage 2 Wave (Qualified - Teal) -->
           <g 
-            class="cursor-pointer transition-transform duration-200" 
-            :class="[activeStage === 1 ? 'opacity-100 scale-[1.01]' : 'opacity-90']"
+            class="cursor-pointer transition-all duration-200" 
+            :class="[activeStage === 1 ? 'opacity-100' : 'opacity-90']"
             @mouseenter="activeStage = 1"
             @mouseleave="activeStage = null"
           >
-            <!-- Continuous curve from y=40 to y=80, then flat drop -->
+            <!-- Translucent crest layer slightly above -->
             <path 
-              d="M 300 130 L 300 40 C 400 40, 500 80, 600 80 L 600 130 Z" 
+              :d="wavePaths.stage2.crest" 
+              fill="#06b6d4"
+              fill-opacity="0.25"
+            />
+            <!-- Solid body wave -->
+            <path 
+              :d="wavePaths.stage2.wave" 
               fill="url(#waveTealGrad)"
               filter="url(#waveShadow)"
             />
-            <!-- Centered value label -->
-            <text 
-              x="450" 
-              y="105" 
-              text-anchor="middle" 
-              class="text-xs sm:text-sm font-bold fill-white tracking-wider"
-            >
-              35.4%
-            </text>
           </g>
 
           <!-- Stage 3 Wave (Negotiation - Green) -->
           <g 
-            class="cursor-pointer transition-transform duration-200" 
-            :class="[activeStage === 2 ? 'opacity-100 scale-[1.01]' : 'opacity-90']"
+            class="cursor-pointer transition-all duration-200" 
+            :class="[activeStage === 2 ? 'opacity-100' : 'opacity-90']"
             @mouseenter="activeStage = 2"
             @mouseleave="activeStage = null"
           >
-            <!-- Continuous curve from y=80 to y=80 (flat, resting wave) -->
+            <!-- Translucent crest layer slightly above -->
             <path 
-              d="M 600 130 L 600 80 C 700 80, 800 80, 900 80 L 900 130 Z" 
+              :d="wavePaths.stage3.crest" 
+              fill="#009838"
+              fill-opacity="0.25"
+            />
+            <!-- Solid body wave -->
+            <path 
+              :d="wavePaths.stage3.wave" 
               fill="url(#waveGreenGrad)"
               filter="url(#waveShadow)"
             />
-            <!-- Centered value label -->
-            <text 
-              x="750" 
-              y="110" 
-              text-anchor="middle" 
-              class="text-xs sm:text-sm font-bold fill-white tracking-wider"
-            >
-              26.3%
-            </text>
           </g>
         </svg>
       </div>
+
+      <!-- 3-Column HTML Grid: Left Aligned and Overlaid on the waves -->
+      <div class="relative z-10 grid grid-cols-3 h-full flex-1 min-h-[340px]">
+        <div 
+          v-for="(stage, idx) in props.stages" 
+          :key="stage.name"
+          class="pl-2 pr-2 pt-6 pb-2 md:pl-8 md:pr-4 md:pt-8 md:pb-2 flex flex-col justify-between border-r last:border-r-0 border-neutral-100 group transition-all duration-200 cursor-pointer"
+          @mouseenter="activeStage = idx"
+          @mouseleave="activeStage = null"
+        >
+          <!-- Text at the top, left-aligned -->
+          <div class="flex flex-col select-none">
+            <span class="text-xs md:text-sm font-medium text-neutral-500 tracking-wide">
+              {{ stage.name }}
+            </span>
+            <span class="text-lg md:text-4xl font-semibold text-neutral-900 tracking-tight mt-1 md:mt-2.5">
+              {{ stage.value }}
+            </span>
+          </div>
+          
+          <!-- Percentage label at the bottom, centered relative to column, sitting inside the wave shape -->
+          <div class="text-center w-full select-none mt-auto">
+            <span class="text-base sm:text-lg font-semibold text-white tracking-wide drop-shadow-xs">
+              {{ stage.share }}
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </UCard>
 </template>
