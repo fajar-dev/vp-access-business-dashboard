@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// Prevent using the main dashboard layout shell
+// Bind to the newly extracted Auth Layout
 definePageMeta({
-  layout: false
+  layout: 'auth'
 })
 
 // SEO meta configurations for auth flow
@@ -51,17 +51,8 @@ const handleForgotPassword = () => {
 </script>
 
 <template>
-  <div class="relative min-h-screen w-full flex items-center justify-center bg-[#e6f7ec] overflow-hidden font-sans select-none">
-    
-    <!-- Glowing brand-themed background gradient SVG -->
-    <div class="absolute inset-0 z-0 bg-[url('/gradient.svg')] bg-cover bg-center opacity-100 pointer-events-none"></div>
-    
-    <!-- Low-opacity grid overlay blending into the glowing backgrounds -->
-    <div class="absolute inset-0 z-0 bg-[url('/grid.svg')] bg-cover bg-center opacity-[0.8] pointer-events-none"></div>
-
-    <!-- Central Authentication Container -->
-    <div class="relative z-10 w-full max-w-[420px] px-4">
-      <UCard
+  <div class="relative z-10 w-full max-w-[420px] px-4">
+    <UCard
         class="w-full rounded-2xl p-2 shadow-lg"
         :ui="{ 
           body: 'flex flex-col gap-6'
@@ -170,6 +161,4 @@ const handleForgotPassword = () => {
         </form>
       </UCard>
     </div>
-
-  </div>
-</template>
+  </template>
