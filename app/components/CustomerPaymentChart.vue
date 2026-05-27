@@ -55,7 +55,7 @@ const paymentChartOptions = {
   >
     <!-- Header -->
     <div class="flex items-center gap-2 pb-4 border-b border-neutral-100 select-none shrink-0">
-      <UIcon name="i-lucide-percent" class="w-5 h-5 text-smurple-500" />
+      <UIcon name="i-lucide-percent" class="w-5 h-5 text-purple-500" />
       <h3 class="text-sm font-semibold text-neutral-900">
         Customer Monthly Payment
       </h3>

@@ -40,7 +40,7 @@ definePageMeta({
           trend="8.2%"
           trend-direction="up"
           icon="i-lucide-trending-up"
-          icon-color="text-smurple-500"
+          icon-color="text-purple-500"
         />
       </div>
 

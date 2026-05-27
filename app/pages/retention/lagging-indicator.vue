@@ -69,7 +69,7 @@ definePageMeta({
           trend-direction="up"
           trend-color="error"
           icon="i-lucide-user-round-minus"
-          icon-color="text-smurple-500"
+          icon-color="text-purple-500"
         >
           <template #details>
             <div class="space-y-2 mt-1">
@@ -152,7 +152,7 @@ definePageMeta({
             trend-color="primary"
             subtext="Bulan ini"
             icon="i-lucide-repeat"
-            icon-color="text-smurple-500"
+            icon-color="text-purple-500"
           />
 
           <!-- Migrasi -->
