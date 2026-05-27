@@ -64,9 +64,9 @@ const handleForgotPassword = () => {
     <!-- Central Authentication Container -->
     <div class="relative z-10 w-full max-w-[420px] px-4">
       <UCard
-        class="w-full rounded-xl"
+        class="w-full rounded-2xl p-2 shadow-lg"
         :ui="{ 
-          body: 'flex flex-col gap-5'
+          body: 'flex flex-col gap-6'
         }"
       >
         <!-- Logo and Header -->
@@ -86,7 +86,7 @@ const handleForgotPassword = () => {
         </div>
 
         <!-- Form fields and direct triggers -->
-        <form @submit.prevent="handleLogin" class="space-y-4">
+        <form @submit.prevent="handleLogin" class="space-y-5">
           
           <!-- ID Karyawan Input Container -->
           <UFormField label="ID Karyawan" class="w-full font-medium text-neutral-800" :ui="{ label: 'text-sm font-medium text-neutral-800 mb-1.5' }">
