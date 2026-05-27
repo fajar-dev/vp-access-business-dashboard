@@ -53,13 +53,11 @@ const handleForgotPassword = () => {
 <template>
   <div class="relative min-h-screen w-full flex items-center justify-center bg-[#e6f7ec] overflow-hidden font-sans select-none">
     
-    <!-- Glowing brand-themed background radial gradients -->
-    <div class="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-green-200/40 opacity-50 blur-[120px]"></div>
-    <div class="absolute -bottom-40 -right-40 w-[700px] h-[700px] rounded-full bg-green-300/40 opacity-50 blur-[150px]"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-white opacity-70 blur-[100px]"></div>
+    <!-- Glowing brand-themed background gradient SVG -->
+    <div class="absolute inset-0 z-0 bg-[url('/gradient.svg')] bg-cover bg-center opacity-100 pointer-events-none"></div>
     
     <!-- Low-opacity grid overlay blending into the glowing backgrounds -->
-    <div class="absolute inset-0 z-0 bg-[url('/grid.svg')] bg-cover bg-center opacity-[0.06] pointer-events-none"></div>
+    <div class="absolute inset-0 z-0 bg-[url('/grid.svg')] bg-cover bg-center opacity-[0.8] pointer-events-none"></div>
 
     <!-- Central Authentication Container -->
     <div class="relative z-10 w-full max-w-[420px] px-4">
@@ -106,7 +104,7 @@ const handleForgotPassword = () => {
             <template #hint>
               <a
                 href="#"
-                class="text-sm font-medium text-green-500 hover:text-green-600 transition-colors"
+                class="text-xs font-medium text-neutral-900 hover:text-primary transition-colors"
                 @click.prevent="handleForgotPassword"
               >
                 Forgot password?
