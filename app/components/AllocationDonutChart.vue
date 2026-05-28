@@ -31,11 +31,7 @@
       <div>
         <span class="text-xs text-neutral-400 font-medium block">Sisa yang belum teralokasi</span>
         <span
-          class="text-lg font-bold transition-colors"
-          :class="[
-            unallocatedAmount > 0 ? 'text-error' :
-            unallocatedAmount === 0 ? 'text-neutral-500' : 'text-red-600'
-          ]"
+          class="text-lg font-bold transition-colors text-red-400"
         >
           Rp. {{ formatIDR(unallocatedAmount) }}
         </span>

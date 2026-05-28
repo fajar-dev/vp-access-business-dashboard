@@ -1,11 +1,370 @@
+<template>
+  <div class="space-y-4">
+    <!-- 1. Page Title Header (matching Growth page styling) -->
+    <Header
+      title="Target Revenue Tahunan"
+      description="Baseline untuk performa dashboard • Senin, 4 Mei 2026"
+    >
+      <template #actions>
+        <USelect
+          v-model="selectedBranch"
+          :items="branchOptions"
+          class="md:w-32 w-full"
+          aria-label="Select Branch"
+        />
+        <USelect
+          v-model="selectedTimeframe"
+          :items="timeframeOptions"
+          class="md:w-32 w-full"
+          aria-label="Select Date Range"
+        />
+      </template>
+    </Header>
+
+    <!-- 2. Year & Status Select Bar -->
+    <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-semibold text-neutral-700">Tahun:</span>
+        <USelect
+          :model-value="selectedYear"
+          @update:model-value="handleYearChange"
+          :items="yearOptions"
+          class="w-32"
+          aria-label="Select Year"
+        />
+      </div>
+      <div class="flex items-center gap-3 border border-neutral-100 rounded px-2.5 py-1">
+        <span class="text-sm text-neutral-900 font-medium">Status:</span>
+        <UBadge color="neutral" variant="soft" class="font-medium text-xs px-2.5 py-1">
+          <UIcon name="i-lucide-file-pen-line" />
+          {{ isLocked ? 'Terkunci' : 'Draf' }}
+        </UBadge>
+      </div>
+    </div>
+
+    <!-- 3. Two-Column Config Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
+      <!-- Left Config Card (3 Cols / ~60%) -->
+      <UCard
+        class="lg:col-span-3 border border-neutral-100 transition-all hover:shadow-sm flex flex-col justify-between"
+        :ui="{ body: 'flex-1 flex flex-col justify-between h-full space-y-6' }"
+      >
+        <div class="space-y-5">
+          <div>
+            <h3 class="text-base font-semibold text-neutral-900 mb-2">Target Revenue Tahunan</h3>
+            <p class="text-sm text-neutral-500 mt-1">Total Target Revenue (Rupiah)</p>
+            
+            <!-- Large Formatted IDR Input using Nuxt UI -->
+            <UInput
+              type="text"
+              v-model="annualTargetFormatted"
+              @focus="isAnnualFocused = true"
+              @blur="isAnnualFocused = false"
+              :disabled="isLocked"
+              placeholder="0"
+              class="w-full mt-2 font-semibold text-neutral-900 text-2xl shadow-xs"
+              :ui="{
+                base: 'pl-12 pr-4 py-3.5 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-neutral-50 disabled:text-neutral-400 transition-all select-all'
+              }"
+            >
+              <template #leading>
+                <span class="text-neutral-400 font-semibold text-lg pl-1">Rp.</span>
+              </template>
+            </UInput>
+            <p class="text-xs text-neutral-500 mt-1.5">Isi target tahunan untuk revenue tahun ini</p>
+          </div>
+
+          <!-- Radio Selector for Distribution Mode using Nuxt UI -->
+          <div class="space-y-2.5">
+            <h4 class="text-sm font-semibold text-neutral-800">Metode Distribusi Bulanan</h4>
+            <div class="flex items-center gap-6 select-none">
+              <URadio
+                name="distribution"
+                value="same_rata"
+                label="Sama Rata per bulan"
+                :model-value="distributionMethod"
+                @update:model-value="() => handleMethodChange('same_rata')"
+                :disabled="isLocked"
+                class="cursor-pointer"
+              />
+              <URadio
+                name="distribution"
+                value="manual"
+                label="Perencanaan Manual"
+                :model-value="distributionMethod"
+                @update:model-value="() => handleMethodChange('manual')"
+                :disabled="isLocked"
+                class="cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Details Output Row (Inside Box) -->
+        <div class="border border-neutral-100 rounded-lg p-2 divide-y divide-neutral-100">
+          <!-- Avg Monthly -->
+          <div class="flex items-center justify-between pb-1">
+            <div class="flex items-center gap-1">
+              <span class="w-8 h-8 text-info flex items-center justify-center">
+                <UIcon name="i-lucide-calendar" class="w-4 h-4" />
+              </span>
+              <span class="text-sm text-neutral-900 font-medium">Rata-rata per bulan</span>
+            </div>
+            <span class="text-sm font-semibold text-neutral-900">
+              Rp. {{ formatIDR(Math.round(annualTarget / 12)) }}
+            </span>
+          </div>
+
+          <!-- YoY comparison indicator -->
+          <div class="flex items-center justify-between py-1">
+            <div class="flex items-center gap-1">
+              <span class="w-8 h-8 text-primary flex items-center justify-center">
+                <UIcon name="i-lucide-trending-up" class="w-4 h-4" />
+              </span>
+              <span class="text-sm text-neutral-900 font-medium">Kenaikan dari tahun lalu</span>
+            </div>
+            <span class="text-sm font-semibold text-neutral-900">+ 9 %</span>
+          </div>
+
+          <!-- Target Run rate percentage -->
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center gap-1">
+              <span class="w-8 h-8 text-warning flex items-center justify-center">
+                <UIcon name="i-lucide-target" class="w-4 h-4" />
+              </span>
+              <span class="text-sm text-neutral-900 font-medium">Kebutuhan Pencapaian per bulan</span>
+            </div>
+            <span class="text-sm font-semibold text-neutral-900">8,3 %</span>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- Right Dashboard Info Card (2 Cols / ~40%) -->
+      <UCard
+        class="lg:col-span-2 border border-neutral-100 transition-all hover:shadow-sm flex flex-col justify-between"
+        :ui="{ body: 'flex-1 flex flex-col justify-between h-full space-y-6' }"
+      >
+        <div class="space-y-5">
+          <h3 class="text-base font-semibold text-neutral-900">Informasi Target</h3>
+          
+          <!-- Dynamic Alert depending on allocated targets -->
+          <div>
+            <UAlert
+              v-if="allocationPercentage < 100"
+              icon="i-lucide-triangle-alert"
+              color="warning"
+              variant="subtle"
+              title="Target Revenue belum teralokasi seluruhnya."
+              class="border-none"
+            />
+            <UAlert
+              v-else-if="allocationPercentage === 100"
+              icon="i-lucide-circle-check"
+              color="success"
+              variant="subtle"
+              title="Target Revenue telah teralokasi seluruhnya."
+              class="border-none"
+            />
+            <UAlert
+              v-else
+              icon="i-lucide-circle-x"
+              color="error"
+              variant="subtle"
+              :title="`Target teralokasi melebihi total (Kelebihan Rp. ${formatIDR(Math.abs(unallocatedAmount))})`"
+              class="border-none"
+            />
+          </div>
+
+          <!-- Donut Progress and Metrics Container using ApexCharts -->
+          <AllocationDonutChart
+            :allocation-percentage="allocationPercentage"
+            :total-allocated="totalAllocated"
+            :unallocated-amount="unallocatedAmount"
+          />
+        </div>
+
+        <!-- Updating Meta Footer -->
+        <div class="p-3 rounded-lg border border-neutral-100 text-xs text-neutral-700 space-y-2">
+          <div class="flex justify-between font-medium">
+            <span>Terakhir diperbarui</span>
+            <span class="text-neutral-900">Kamis, 7 Mei 2026 - 16:12</span>
+          </div>
+          <div class="flex justify-between font-medium">
+            <span>Diperbarui oleh</span>
+            <span class="text-neutral-900">Ali Putera (VP Akses Bisnis)</span>
+          </div>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- 4. Monthly Target Sheet Accordion Card -->
+    <UCard
+      class="border border-neutral-100 transition-all hover:shadow-sm overflow-hidden flex flex-col"
+      :ui="{ body: 'p-0 flex-1 flex flex-col', header: 'border-b border-neutral-100 bg-white flex items-center justify-between' }"
+    >
+      <template #header>
+        <h3 class="text-base font-semibold text-neutral-900 select-none">Target Per Bulan</h3>
+        <div class="flex gap-2">
+          <UButton
+            icon="i-lucide-layout-grid"
+            color="neutral"
+            variant="outline"
+            size="md"
+            label="Isi Sama Rata"
+            :disabled="isLocked"
+            @click="fillSameRataAction"
+          />
+          <UButton
+            icon="i-lucide-refresh-cw"
+            color="neutral"
+            variant="outline"
+            size="md"
+            label="Atur Ulang"
+            :disabled="isLocked"
+            @click="resetAction"
+          />
+        </div>
+      </template>
+
+      <!-- Monthly Target Nested Table using Nuxt UI -->
+      <div class="overflow-x-auto">
+        <UTable
+          :data="tableRows"
+          :columns="columns"
+          :meta="{
+            class: {
+              tr: (row: any) => row.original.type === 'month' ? 'border-b-0 border-transparent' : 'border-b border-neutral-100'
+            }
+          }"
+          class="w-full text-left text-sm text-neutral-800 min-w-[700px] border border-neutral-200 rounded-lg bg-white"
+        >
+          <!-- Custom Status Name Cell (renders quarter header collapse triggers & month names) -->
+          <template #name-cell="{ row }">
+            <div
+              v-if="row.original.type === 'quarter'"
+              class="flex items-center gap-2 w-full h-full cursor-pointer select-none"
+              @click="toggleQuarter(row.original.id)"
+            >
+              <UIcon
+                :name="isQuarterExpanded[row.original.id] ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
+                class="w-4 h-4 text-neutral-400 transition-transform"
+              />
+              <span>{{ row.original.name }}</span>
+            </div>
+            <template v-else>
+              {{ row.original.name }}
+            </template>
+          </template>
+
+          <!-- Custom Target Revenue Input Cell -->
+          <template #value-cell="{ row }">
+            <div v-if="row.original.type === 'month' && row.original.idx !== undefined" class="w-full">
+              <UInput
+                type="text"
+                :model-value="getMonthFormatted(row.original.idx)"
+                @focus="focusedMonths[row.original.idx] = true"
+                @blur="focusedMonths[row.original.idx] = false"
+                @update:model-value="val => setMonthFormatted(row.original.idx as number, val)"
+                :disabled="distributionMethod === 'same_rata' || isLocked"
+                placeholder="0"
+                class="w-full font-semibold text-neutral-900 shadow-xs"
+              />
+            </div>
+          </template>
+
+          <!-- Custom Allocation Cell -->
+          <template #allocation-cell="{ row }">
+            <template v-if="row.original.type === 'month'">
+              <span v-if="annualTarget > 0">
+                {{ (((row.original.value ?? 0) / annualTarget) * 100).toFixed(1).replace('.', ',') }}%
+              </span>
+              <span v-else>0%</span>
+            </template>
+          </template>
+
+          <!-- Custom YoY Change Cell -->
+          <template #yoy-cell="{ row }">
+            <template v-if="row.original.type === 'month'">
+              <span
+                v-if="row.original.yoy !== undefined && row.original.yoy !== null"
+                :class="[(row.original.yoy ?? 0) > 0 ? 'text-emerald-600' : 'text-error']"
+              >
+                {{ (row.original.yoy ?? 0) > 0 ? '+' : '' }}{{ row.original.yoy }}%
+              </span>
+              <span v-else class="text-neutral-400">-</span>
+            </template>
+          </template>
+        </UTable>
+      </div>
+    </UCard>
+
+    <!-- 5. Bottom Action & Footer Buttons bar -->
+    <div class="flex flex-row justify-between items-center gap-4 pt-4">
+      <!-- Change Log Trigger -->
+      <UButton
+        icon="i-lucide-history"
+        color="neutral"
+        variant="ghost"
+        size="md"
+        label="Riwayat Perubahan"
+        class="cursor-pointer truncate"
+      />
+
+      <!-- Primary Action triggers -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <!-- Ubah Target (Only visible when locked) -->
+        <UButton
+          v-if="isLocked"
+          color="neutral"
+          variant="outline"
+          size="md"
+          label="Ubah Target"
+          icon="i-lucide-lock-keyhole-open"
+          @click="isEditModalOpen = true"
+          class="cursor-pointer"
+        />
+
+        <!-- Simpan Draf and Kunci Target (Only visible when NOT locked) -->
+        <template v-else>
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="md"
+            label="Simpan Draf"
+            @click="saveDraft"
+            class="cursor-pointer bg-white hover:bg-neutral-50"
+          />
+          <UButton
+            color="success"
+            size="md"
+            label="Kunci Target"
+            icon="i-lucide-lock"
+            @click="lockTarget"
+            class="cursor-pointer"
+          />
+        </template>
+      </div>
+    </div>
+
+    <!-- Lock Target Confirmation Modal -->
+    <LockTargetModal
+      v-model="isLockModalOpen"
+      @confirm="confirmLock"
+    />
+    <!-- Edit Target (Unlock) Confirmation Modal -->
+    <EditTargetModal
+      v-model="isEditModalOpen"
+      @confirm="confirmUnlock"
+    />
+  </div>
+</template>
+
 <script setup lang="ts">
 
 // Set page metadata to use default sidebar layout
 definePageMeta({
   layout: 'dashboard'
 })
-
-
 
 // Year preset mockups to show a realistic, complete UX
 interface PresetData {
@@ -135,6 +494,143 @@ const toggleQuarter = (q: string) => {
   isQuarterExpanded.value[q] = !isQuarterExpanded.value[q]
 }
 
+// Table row representation for UTable
+interface TableRowData {
+  type: 'quarter' | 'month'
+  id: string
+  name: string
+  quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4'
+  idx?: number
+  value?: number
+  yoy?: number | null
+}
+
+const tableRows = computed(() => {
+  const rows: TableRowData[] = []
+  const quarters = ['Q1', 'Q2', 'Q3', 'Q4'] as const
+  quarters.forEach(q => {
+    // Add Quarter Row
+    rows.push({
+      type: 'quarter',
+      id: q,
+      name: q
+    })
+    
+    // If expanded, add months belonging to this quarter
+    if (isQuarterExpanded.value[q]) {
+      monthlyTargets.value.forEach((month, idx) => {
+        if (month.quarter === q) {
+          rows.push({
+            type: 'month',
+            id: `${q}-${month.name}`,
+            name: month.name,
+            quarter: month.quarter,
+            idx,
+            value: month.value,
+            yoy: month.yoy
+          })
+        }
+      })
+    }
+  })
+  return rows
+})
+
+const columns: any[] = [
+  {
+    accessorKey: 'name',
+    header: 'Status',
+    meta: {
+      class: {
+        th: 'py-3 px-6 w-[280px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return 'py-3 px-6 font-semibold text-neutral-700 text-sm bg-neutral-50/50 hover:bg-neutral-50/80 transition-colors cursor-pointer select-none align-middle border-b border-neutral-100'
+          }
+          return 'py-3.5 px-6 pl-12 font-medium text-neutral-800 align-middle border-b-0'
+        }
+      },
+      colspan: {
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return '4'
+          }
+          return '1'
+        }
+      }
+    }
+  },
+  {
+    accessorKey: 'value',
+    header: 'Target Revenue (Rp)',
+    meta: {
+      class: {
+        th: 'py-3 px-6 w-[350px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return 'hidden'
+          }
+          return 'py-3.5 px-6 align-middle border-b-0'
+        }
+      },
+      colspan: {
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return '0'
+          }
+          return '1'
+        }
+      }
+    }
+  },
+  {
+    accessorKey: 'allocation',
+    header: 'Alokasi (%)',
+    meta: {
+      class: {
+        th: 'py-3 px-6 w-[300px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return 'hidden'
+          }
+          return 'py-3.5 px-6 font-semibold text-neutral-700 align-middle border-b-0'
+        }
+      },
+      colspan: {
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return '0'
+          }
+          return '1'
+        }
+      }
+    }
+  },
+  {
+    accessorKey: 'yoy',
+    header: 'Dengan 2025',
+    meta: {
+      class: {
+        th: 'py-3 px-6 bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return 'hidden'
+          }
+          return 'py-3.5 px-6 font-semibold align-middle border-b-0'
+        }
+      },
+      colspan: {
+        td: (cell: any) => {
+          if (cell.row.original.type === 'quarter') {
+            return '0'
+          }
+          return '1'
+        }
+      }
+    }
+  }
+]
+
 // Compute allocations
 const totalAllocated = computed(() => {
   return monthlyTargets.value.reduce((sum, item) => sum + item.value, 0)
@@ -204,381 +700,3 @@ const confirmUnlock = (reason: string) => {
   alert(`Target Revenue dibuka kunci untuk diedit. Alasan: ${reason}`)
 }
 </script>
-
-<template>
-  <div class="space-y-4">
-    <!-- 1. Page Title Header (matching Growth page styling) -->
-    <Header
-      title="Target Revenue Tahunan"
-      description="Baseline untuk performa dashboard • Senin, 4 Mei 2026"
-    >
-      <template #actions>
-        <USelect
-          v-model="selectedBranch"
-          :items="branchOptions"
-          class="md:w-32 w-full"
-          aria-label="Select Branch"
-        />
-        <USelect
-          v-model="selectedTimeframe"
-          :items="timeframeOptions"
-          class="md:w-32 w-full"
-          aria-label="Select Date Range"
-        />
-      </template>
-    </Header>
-
-    <!-- 2. Year & Status Select Bar -->
-    <div class="flex flex-row justify-between items-center gap-4">
-      <div class="flex items-center gap-3">
-        <span class="text-sm font-semibold text-neutral-700">Tahun:</span>
-        <USelect
-          :model-value="selectedYear"
-          @update:model-value="handleYearChange"
-          :items="yearOptions"
-          class="w-32"
-          aria-label="Select Year"
-        />
-      </div>
-      <div class="flex items-center gap-3 border border-neutral-100 rounded px-2.5 py-1">
-        <span class="text-sm text-neutral-900 font-medium">Status:</span>
-        <UBadge color="neutral" variant="soft" class="font-medium text-xs px-2.5 py-1">
-          <UIcon name="i-lucide-file-pen-line" />
-          {{ isLocked ? 'Terkunci' : 'Draf' }}
-        </UBadge>
-      </div>
-    </div>
-
-    <!-- 3. Two-Column Config Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
-      <!-- Left Config Card (3 Cols / ~60%) -->
-      <UCard
-        class="lg:col-span-3 border border-neutral-100 transition-all hover:shadow-sm flex flex-col justify-between"
-        :ui="{ body: 'flex-1 flex flex-col justify-between h-full space-y-6' }"
-      >
-        <div class="space-y-5">
-          <div>
-            <h3 class="text-base font-semibold text-neutral-900 mb-2">Target Revenue Tahunan</h3>
-            <p class="text-sm text-neutral-500 mt-1">Total Target Revenue (Rupiah)</p>
-            
-            <!-- Large Formatted IDR Input -->
-            <div class="relative mt-2">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-neutral-400 font-semibold text-lg">
-                Rp.
-              </span>
-              <input
-                type="text"
-                v-model="annualTargetFormatted"
-                @focus="isAnnualFocused = true"
-                @blur="isAnnualFocused = false"
-                :disabled="isLocked"
-                class="w-full pl-12 pr-4 py-3.5 border border-neutral-200 rounded-lg text-2xl font-semibold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-neutral-50 disabled:text-neutral-400 transition-all select-all shadow-xs"
-                placeholder="0"
-              />
-            </div>
-            <p class="text-xs text-neutral-500 mt-1.5">Isi target tahunan untuk revenue tahun ini</p>
-          </div>
-
-          <!-- Radio Selector for Distribution Mode -->
-          <div class="space-y-2.5">
-            <h4 class="text-sm font-semibold text-neutral-800">Metode Distribusi Bulanan</h4>
-            <div class="flex items-center gap-6">
-              <label class="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="radio"
-                  name="distribution"
-                  value="same_rata"
-                  :checked="distributionMethod === 'same_rata'"
-                  @change="handleMethodChange('same_rata')"
-                  :disabled="isLocked"
-                  class="w-4 h-4 text-emerald-600 border-neutral-300 focus:ring-emerald-500 cursor-pointer disabled:cursor-not-allowed"
-                />
-                <span class="text-sm text-neutral-700 font-medium">Sama Rata per bulan</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="radio"
-                  name="distribution"
-                  value="manual"
-                  :checked="distributionMethod === 'manual'"
-                  @change="handleMethodChange('manual')"
-                  :disabled="isLocked"
-                  class="w-4 h-4 text-emerald-600 border-neutral-300 focus:ring-emerald-500 cursor-pointer disabled:cursor-not-allowed"
-                />
-                <span class="text-sm text-neutral-700 font-medium">Perencanaan Manual</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Metric Details Output Row (Inside Box) -->
-        <div class="border border-neutral-100 rounded-lg p-2 divide-y divide-neutral-100">
-          <!-- Avg Monthly -->
-          <div class="flex items-center justify-between pb-1">
-            <div class="flex items-center gap-1">
-              <span class="w-8 h-8 text-info flex items-center justify-center">
-                <UIcon name="i-lucide-calendar" class="w-4 h-4" />
-              </span>
-              <span class="text-sm text-neutral-900 font-medium">Rata-rata per bulan</span>
-            </div>
-            <span class="text-sm font-semibold text-neutral-900">
-              Rp. {{ formatIDR(Math.round(annualTarget / 12)) }}
-            </span>
-          </div>
-
-          <!-- YoY comparison indicator -->
-          <div class="flex items-center justify-between py-1">
-            <div class="flex items-center gap-1">
-              <span class="w-8 h-8 text-primary flex items-center justify-center">
-                <UIcon name="i-lucide-trending-up" class="w-4 h-4" />
-              </span>
-              <span class="text-sm text-neutral-900 font-medium">Kenaikan dari tahun lalu</span>
-            </div>
-            <span class="text-sm font-semibold text-neutral-900">+ 9 %</span>
-          </div>
-
-          <!-- Target Run rate percentage -->
-          <div class="flex items-center justify-between pt-1">
-            <div class="flex items-center gap-1">
-              <span class="w-8 h-8 text-warning flex items-center justify-center">
-                <UIcon name="i-lucide-target" class="w-4 h-4" />
-              </span>
-              <span class="text-sm text-neutral-900 font-medium">Kebutuhan Pencapaian per bulan</span>
-            </div>
-            <span class="text-sm font-semibold text-neutral-900">8,3 %</span>
-          </div>
-        </div>
-      </UCard>
-
-      <!-- Right Dashboard Info Card (2 Cols / ~40%) -->
-      <UCard
-        class="lg:col-span-2 border border-neutral-100 transition-all hover:shadow-sm flex flex-col justify-between"
-        :ui="{ body: 'flex-1 flex flex-col justify-between h-full space-y-6' }"
-      >
-        <div class="space-y-5">
-          <h3 class="text-base font-semibold text-neutral-900">Informasi Target</h3>
-          
-          <!-- Dynamic Alert depending on allocated targets -->
-          <div>
-            <UAlert
-              v-if="allocationPercentage < 100"
-              icon="i-lucide-triangle-alert"
-              color="warning"
-              variant="subtle"
-              title="Target Revenue belum teralokasi seluruhnya."
-              class="border-none"
-            />
-            <UAlert
-              v-else-if="allocationPercentage === 100"
-              icon="i-lucide-circle-check"
-              color="success"
-              variant="subtle"
-              title="Target Revenue telah teralokasi seluruhnya."
-              class="border-none"
-            />
-            <UAlert
-              v-else
-              icon="i-lucide-circle-x"
-              color="error"
-              variant="subtle"
-              :title="`Target teralokasi melebihi total (Kelebihan Rp. ${formatIDR(Math.abs(unallocatedAmount))})`"
-              class="border-none"
-            />
-          </div>
-
-          <!-- Donut Progress and Metrics Container using ApexCharts -->
-          <AllocationDonutChart
-            :allocation-percentage="allocationPercentage"
-            :total-allocated="totalAllocated"
-            :unallocated-amount="unallocatedAmount"
-          />
-        </div>
-
-        <!-- Updating Meta Footer -->
-        <div class="p-3 rounded-lg border border-neutral-100 text-xs text-neutral-600 space-y-2">
-          <div class="flex justify-between font-medium">
-            <span>Terakhir diperbarui</span>
-            <span class="text-neutral-900">Kamis, 7 Mei 2026 - 16:12</span>
-          </div>
-          <div class="flex justify-between font-medium">
-            <span>Diperbarui oleh</span>
-            <span class="text-neutral-900">Ali Putera (VP Akses Bisnis)</span>
-          </div>
-        </div>
-      </UCard>
-    </div>
-
-    <!-- 4. Monthly Target Sheet Accordion Card -->
-    <UCard
-      class="border border-neutral-100 transition-all hover:shadow-sm overflow-hidden flex flex-col"
-      :ui="{ body: 'p-0 flex-1 flex flex-col', header: 'border-b border-neutral-100 bg-white flex items-center justify-between' }"
-    >
-      <template #header>
-        <h3 class="text-base font-semibold text-neutral-900 select-none">Target Per Bulan</h3>
-        <div class="flex gap-2">
-          <UButton
-            icon="i-lucide-layout-grid"
-            color="neutral"
-            variant="outline"
-            size="md"
-            label="Isi Sama Rata"
-            :disabled="isLocked"
-            @click="fillSameRataAction"
-          />
-          <UButton
-            icon="i-lucide-refresh-cw"
-            color="neutral"
-            variant="outline"
-            size="md"
-            label="Atur Ulang"
-            :disabled="isLocked"
-            @click="resetAction"
-          />
-        </div>
-      </template>
-
-      <!-- Monthly Target Nested Table -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-neutral-800 min-w-[700px] border border-neutral-200 rounded-xl">
-          <!-- Table Header -->
-          <thead class="bg-neutral-50 text-xs font-medium text-neutral-600 border-b border-neutral-200 select-none">
-            <tr>
-              <th class="py-3 px-6 w-[280px]">Status</th>
-              <th class="py-3 px-6 w-[220px]">Target Revenue (Rp)</th>
-              <th class="py-3 px-6 w-[150px]">Alokasi (%)</th>
-              <th class="py-3 px-6">Dengan 2025</th>
-            </tr>
-          </thead>
-          
-          <!-- Table Quarters Loop -->
-          <tbody v-for="q in (['Q1', 'Q2', 'Q3', 'Q4'] as const)" :key="q">
-            <!-- Collapsible Quarter Row Header -->
-            <tr
-              class="border-b border-neutral-100 bg-neutral-50/50 hover:bg-neutral-50/80 transition-colors cursor-pointer select-none"
-              @click="toggleQuarter(q)"
-            >
-              <td colspan="4" class="py-3 px-6 font-semibold text-neutral-700 text-xs">
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    :name="isQuarterExpanded[q] ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
-                    class="w-4 h-4 text-neutral-400 transition-transform"
-                  />
-                  <span>{{ q }}</span>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Render months inside Quarter if expanded -->
-            <template v-if="isQuarterExpanded[q]">
-              <tr
-                v-for="(month, idx) in monthlyTargets"
-                v-show="month.quarter === q"
-                :key="month.name"
-                class="align-middle"
-              >
-                <!-- Month Label -->
-                <td class="py-3.5 px-6 pl-12 font-medium text-neutral-800">
-                  {{ month.name }}
-                </td>
-
-                <!-- Month Formatted Input Box -->
-                <td class="py-3.5 px-6">
-                  <div class="relative w-44">
-                    <input
-                      type="text"
-                      :value="getMonthFormatted(idx)"
-                      @focus="focusedMonths[idx] = true"
-                      @blur="focusedMonths[idx] = false"
-                      @input="e => setMonthFormatted(idx, (e.target as HTMLInputElement).value)"
-                      :disabled="distributionMethod === 'same_rata' || isLocked"
-                      class="w-full px-3 py-1.5 border border-neutral-200 rounded-lg text-sm font-semibold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-neutral-50 disabled:text-neutral-500 disabled:cursor-not-allowed transition-all"
-                      placeholder="0"
-                    />
-                  </div>
-                </td>
-
-                <!-- Computed Allocation % of total -->
-                <td class="py-3.5 px-6 font-semibold text-neutral-600">
-                  <span v-if="annualTarget > 0">
-                    {{ ((month.value / annualTarget) * 100).toFixed(1).replace('.', ',') }}%
-                  </span>
-                  <span v-else>0%</span>
-                </td>
-
-                <!-- Comparison change indicator compared to 2025 -->
-                <td class="py-3.5 px-6 font-semibold">
-                  <span
-                    v-if="month.yoy !== null"
-                    :class="[month.yoy > 0 ? 'text-emerald-600' : 'text-error']"
-                  >
-                    {{ month.yoy > 0 ? '+' : '' }}{{ month.yoy }}%
-                  </span>
-                  <span v-else class="text-neutral-400">-</span>
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-      </div>
-    </UCard>
-
-    <!-- 5. Bottom Action & Footer Buttons bar -->
-    <div class="flex flex-row justify-between items-center gap-4 pt-4">
-      <!-- Change Log Trigger -->
-      <UButton
-        icon="i-lucide-history"
-        color="neutral"
-        variant="ghost"
-        size="md"
-        label="Riwayat Perubahan"
-        class="cursor-pointer truncate"
-      />
-
-      <!-- Primary Action triggers -->
-      <div class="flex items-center gap-3 w-full sm:w-auto">
-        <!-- Ubah Target (Only visible when locked) -->
-        <UButton
-          v-if="isLocked"
-          color="neutral"
-          variant="outline"
-          size="md"
-          label="Ubah Target"
-          icon="i-lucide-lock-keyhole-open"
-          @click="isEditModalOpen = true"
-          class="cursor-pointer"
-        />
-
-        <!-- Simpan Draf and Kunci Target (Only visible when NOT locked) -->
-        <template v-else>
-          <UButton
-            color="neutral"
-            variant="outline"
-            size="md"
-            label="Simpan Draf"
-            @click="saveDraft"
-            class="cursor-pointer bg-white hover:bg-neutral-50"
-          />
-          <UButton
-            color="success"
-            size="md"
-            label="Kunci Target"
-            icon="i-lucide-lock"
-            @click="lockTarget"
-            class="cursor-pointer"
-          />
-        </template>
-      </div>
-    </div>
-
-    <!-- Lock Target Confirmation Modal -->
-    <LockTargetModal
-      v-model="isLockModalOpen"
-      @confirm="confirmLock"
-    />
-    <!-- Edit Target (Unlock) Confirmation Modal -->
-    <EditTargetModal
-      v-model="isEditModalOpen"
-      @confirm="confirmUnlock"
-    />
-  </div>
-</template>
