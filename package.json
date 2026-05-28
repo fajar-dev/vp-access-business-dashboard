@@ -1,9 +1,9 @@
 {
-  "name": "fe",
+  "name": "fe-vp-access-business-dashboard",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "HOME=/Users/fajar/Nusanet/vp-access-business-dashboard/fe/.home nuxt build",
+    "build": "nuxt build",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -29,5 +29,5 @@
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.0"
   },
-  "packageManager": "pnpm@11.1.3"
+  "packageManager": "bun@1.3.1"
 }
