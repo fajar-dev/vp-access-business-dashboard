@@ -61,42 +61,31 @@
               @focus="isAnnualFocused = true"
               @blur="isAnnualFocused = false"
               :disabled="isLocked"
+              size="xl"
               placeholder="0"
-              class="w-full mt-2 font-semibold text-neutral-900 text-2xl shadow-xs"
+              class="w-full mt-2 font-semibold "
               :ui="{
-                base: 'pl-12 pr-4 py-3.5 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-neutral-50 disabled:text-neutral-400 transition-all select-all'
+                base: 'pl-12.5 py-2.5 '
               }"
             >
               <template #leading>
-                <span class="text-neutral-400 font-semibold text-lg pl-1">Rp.</span>
+                <span class="text-neutral-400 font-medium text-lg pl-1">Rp.</span>
               </template>
             </UInput>
             <p class="text-xs text-neutral-500 mt-1.5">Isi target tahunan untuk revenue tahun ini</p>
           </div>
 
-          <!-- Radio Selector for Distribution Mode using Nuxt UI -->
+          <!-- Radio Selector for Distribution Mode using Nuxt UI URadioGroup -->
           <div class="space-y-2.5">
             <h4 class="text-sm font-semibold text-neutral-800">Metode Distribusi Bulanan</h4>
-            <div class="flex items-center gap-6 select-none">
-              <URadio
-                name="distribution"
-                value="same_rata"
-                label="Sama Rata per bulan"
-                :model-value="distributionMethod"
-                @update:model-value="() => handleMethodChange('same_rata')"
-                :disabled="isLocked"
-                class="cursor-pointer"
-              />
-              <URadio
-                name="distribution"
-                value="manual"
-                label="Perencanaan Manual"
-                :model-value="distributionMethod"
-                @update:model-value="() => handleMethodChange('manual')"
-                :disabled="isLocked"
-                class="cursor-pointer"
-              />
-            </div>
+            <URadioGroup
+              :model-value="distributionMethod"
+              @update:model-value="val => handleMethodChange(val as 'same_rata' | 'manual')"
+              :items="distributionOptions"
+              orientation="horizontal"
+              :disabled="isLocked"
+              class="cursor-pointer select-none"
+            />
           </div>
         </div>
 
@@ -404,6 +393,11 @@ const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = u
 // Core Page State
 const annualTarget = ref(presets['2026'].annualTarget)
 const distributionMethod = ref<'same_rata' | 'manual'>(presets['2026'].distributionMethod)
+
+const distributionOptions = [
+  { value: 'same_rata', label: 'Sama Rata per bulan' },
+  { value: 'manual', label: 'Perencanaan Manual' }
+]
 
 // Handle Year Change
 const handleYearChange = (year: string) => {
