@@ -57,16 +57,14 @@
           <!-- Group Items -->
           <div class="space-y-1">
             <template v-for="item in group.items" :key="item.label">
-              <!-- Collapsed state: Wrapped in UTooltip -->
-              <UTooltip
-                v-if="isCollapsed"
-                :delay-duration="0"
-                :text="item.label"
-                :content="{
-                  align: 'center',
-                  side: 'right',
-                  sideOffset: 8
-                }"
+              <!-- Reusable NavLink with conditional tooltip wrapping -->
+              <component
+                :is="isCollapsed ? 'UTooltip' : 'div'"
+                v-bind="isCollapsed ? {
+                  delayDuration: 0,
+                  text: item.label,
+                  content: { align: 'center', side: 'right', sideOffset: 8 }
+                } : {}"
               >
                 <NuxtLink
                   :to="item.to"
@@ -87,32 +85,9 @@
                         : 'text-neutral-600 group-hover:text-neutral-900'
                     ]"
                   />
+                  <span v-if="!isCollapsed" class="truncate">{{ item.label }}</span>
                 </NuxtLink>
-              </UTooltip>
-
-              <!-- Expanded state: Standard Link -->
-              <NuxtLink
-                v-else
-                :to="item.to"
-                class="flex items-center transition-colors group"
-                :class="[
-                  isCollapsed ? 'w-10 h-10 mx-auto justify-center rounded-lg' : 'w-full gap-3 px-3 py-2 text-sm rounded-lg',
-                  isItemActive(item)
-                    ? 'bg-primary text-white'
-                    : 'text-neutral-800 hover:bg-neutral-50 hover:text-neutral-900'
-                ]"
-              >
-                <UIcon
-                  :name="item.icon"
-                  class="w-5 h-5 shrink-0 transition-colors"
-                  :class="[
-                    isItemActive(item)
-                      ? 'text-white'
-                      : 'text-neutral-600 group-hover:text-neutral-900'
-                  ]"
-                />
-                <span v-if="!isCollapsed" class="truncate">{{ item.label }}</span>
-              </NuxtLink>
+              </component>
             </template>
           </div>
         </div>
@@ -121,72 +96,49 @@
 
     <!-- Bottom Section (Actions & Logout) -->
     <div class="pt-4 border-t border-neutral-200 space-y-1">
-      <!-- Collapsed Download: Wrapped in UTooltip -->
-      <UTooltip
-        v-if="isCollapsed"
-        :delay-duration="0"
-        text="Download as PDF"
-        :content="{
-          align: 'center',
-          side: 'right',
-          sideOffset: 8
-        }"
+      <!-- Download Button with conditional tooltip wrapper -->
+      <component
+        :is="isCollapsed ? 'UTooltip' : 'div'"
+        v-bind="isCollapsed ? {
+          delayDuration: 0,
+          text: 'Download as PDF',
+          content: { align: 'center', side: 'right', sideOffset: 8 }
+        } : {}"
       >
         <UButton
           color="neutral"
           variant="ghost"
           icon="i-lucide-download"
-          class="w-full text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 flex justify-center p-2.5 rounded-lg cursor-pointer"
+          class="w-full text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 cursor-pointer"
+          :class="[isCollapsed ? 'text-sm flex justify-center p-2.5 rounded-lg' : 'justify-start text-sm px-3']"
           aria-label="Download as PDF"
           @click="isModalOpen = true"
-        />
-      </UTooltip>
+        >
+          <span v-if="!isCollapsed">Download as PDF</span>
+        </UButton>
+      </component>
 
-      <!-- Expanded Download: Standard Button -->
-      <UButton
-        v-else
-        color="neutral"
-        variant="ghost"
-        icon="i-lucide-download"
-        class="w-full justify-start text-sm px-3 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 cursor-pointer"
-        @click="isModalOpen = true"
-      >
-        <span>Download as PDF</span>
-      </UButton>
-
-      <!-- Collapsed Logout: Wrapped in UTooltip -->
-      <UTooltip
-        v-if="isCollapsed"
-        :delay-duration="0"
-        text="Logout"
-        :content="{
-          align: 'center',
-          side: 'right',
-          sideOffset: 8
-        }"
+      <!-- Logout Button with conditional tooltip wrapper -->
+      <component
+        :is="isCollapsed ? 'UTooltip' : 'div'"
+        v-bind="isCollapsed ? {
+          delayDuration: 0,
+          text: 'Logout',
+          content: { align: 'center', side: 'right', sideOffset: 8 }
+        } : {}"
       >
         <UButton
           color="error"
           variant="ghost"
           icon="i-lucide-log-out"
-          class="w-full text-sm text-red-400 hover:bg-red-50 flex justify-center p-2.5 rounded-lg"
+          class="w-full text-red-400 hover:bg-red-50 cursor-pointer"
+          :class="[isCollapsed ? 'text-sm flex justify-center p-2.5 rounded-lg' : 'justify-start text-sm px-3']"
           aria-label="Logout"
           @click="handleLogout"
-        />
-      </UTooltip>
-
-      <!-- Expanded Logout: Standard Button -->
-      <UButton
-        v-else
-        color="error"
-        variant="ghost"
-        icon="i-lucide-log-out"
-        class="w-full justify-start text-sm px-3 text-red-400 hover:bg-red-50 cursor-pointer"
-        aria-label="Logout"
-        @click="handleLogout"
-      >
-        <span v-if="!isCollapsed">Logout</span>
-      </UButton>
+        >
+          <span v-if="!isCollapsed">Logout</span>
+        </UButton>
+      </component>
     </div>
     </aside>
 
