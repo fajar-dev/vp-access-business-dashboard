@@ -1,18 +1,3 @@
-<script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-const isMobileMenuOpen = useState('isMobileMenuOpen', () => false)
-
-
-
-// Close mobile sidebar when switching pages
-watch(() => route.path, () => {
-  isMobileMenuOpen.value = false
-})
-</script>
-
 <template>
   <div class="flex h-screen w-full font-sans text-neutral-900 overflow-hidden">
     
@@ -77,3 +62,15 @@ watch(() => route.path, () => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const isMobileMenuOpen = useState('isMobileMenuOpen', () => false)
+
+// Close mobile sidebar when switching pages
+watch(() => route.path, () => {
+  isMobileMenuOpen.value = false
+})
+</script>

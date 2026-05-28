@@ -1,3 +1,11 @@
+<template>
+  <UApp :toaster="{ position: 'top-right', progress: false }">
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </UApp>
+</template>
+
 <script setup>
 useHead({
   meta: [
@@ -21,11 +29,3 @@ useSeoMeta({
   ogDescription: description
 })
 </script>
-
-<template>
-  <UApp :toaster="{ position: 'top-right', progress: false }">
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </UApp>
-</template>

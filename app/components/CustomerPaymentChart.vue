@@ -1,3 +1,43 @@
+<template>
+  <UCard 
+    class="border border-neutral-100 h-full flex flex-col justify-between"
+    :ui="{ body: 'p-6 flex-1 flex flex-col justify-between' }"
+  >
+    <!-- Header -->
+    <div class="flex items-center gap-2 pb-4">
+      <UIcon name="i-lucide-percent" class="w-5 h-5 text-purple-500" />
+      <h3 class="text-sm font-semibold text-neutral-900">
+        Customer Monthly Payment
+      </h3>
+    </div>
+
+    <!-- Chart Area -->
+    <div class="relative flex-1 flex items-center justify-center min-h-[220px] my-6">
+      <ClientOnly>
+        <apexchart
+          type="pie"
+          width="240"
+          height="240"
+          :options="paymentChartOptions"
+          :series="paymentSeries"
+        />
+      </ClientOnly>
+    </div>
+
+    <!-- Customized Legend -->
+    <div class="flex items-center justify-center gap-6 text-sm font-semibold text-neutral-600 pt-4 select-none shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span>
+        <span>Monthly</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-purple-800 inline-block"></span>
+        <span>Annual</span>
+      </div>
+    </div>
+  </UCard>
+</template>
+
 <script setup lang="ts">
 const paymentSeries = [35, 65] // [Monthly (Orange), Annual (Purple)]
 
@@ -47,43 +87,3 @@ const paymentChartOptions = {
   }
 }
 </script>
-
-<template>
-  <UCard 
-    class="border border-neutral-100 h-full flex flex-col justify-between"
-    :ui="{ body: 'p-6 flex-1 flex flex-col justify-between' }"
-  >
-    <!-- Header -->
-    <div class="flex items-center gap-2 pb-4 border-b border-neutral-100 select-none shrink-0">
-      <UIcon name="i-lucide-percent" class="w-5 h-5 text-purple-500" />
-      <h3 class="text-sm font-semibold text-neutral-900">
-        Customer Monthly Payment
-      </h3>
-    </div>
-
-    <!-- Chart Area -->
-    <div class="relative flex-1 flex items-center justify-center min-h-[220px] my-6">
-      <ClientOnly>
-        <apexchart
-          type="pie"
-          width="240"
-          height="240"
-          :options="paymentChartOptions"
-          :series="paymentSeries"
-        />
-      </ClientOnly>
-    </div>
-
-    <!-- Customized Legend -->
-    <div class="flex items-center justify-center gap-6 text-sm font-semibold text-neutral-600 pt-4 select-none shrink-0">
-      <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-orange-500 inline-block"></span>
-        <span>Monthly</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-purple-800 inline-block"></span>
-        <span>Annual</span>
-      </div>
-    </div>
-  </UCard>
-</template>

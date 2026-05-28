@@ -1,84 +1,3 @@
-<script setup lang="ts">
-import { useRoute } from 'vue-router'
-
-const { state: authState, service: authService } = useAuth()
-const toast = useToast()
-const route = useRoute()
-
-// Shared sidebar collapse state
-const isCollapsed = useState('sidebar-collapsed', () => false)
-const isModalOpen = ref(false)
-
-const handleLogout = async () => {
-  await authService.logout()
-  toast.add({
-    title: 'Logout success',
-    icon: 'i-lucide-circle-check',
-    color: 'success'
-  })
-}
-
-// Define navigation structures
-interface NavItem {
-  label: string
-  to: string
-  icon: string
-}
-
-interface NavGroup {
-  title: string
-  items: NavItem[]
-}
-
-const navGroups: NavGroup[] = [
-  {
-    title: 'Dashboard',
-    items: [
-      {
-        label: 'Growth',
-        to: '/growth/lagging-indicator', // Main growth landing page
-        icon: 'i-lucide-sprout'
-      },
-      {
-        label: 'Retention',
-        to: '/retention',
-        icon: 'i-lucide-hand'
-      },
-      {
-        label: 'Service Quality',
-        to: '/service-quality',
-        icon: 'i-lucide-star'
-      }
-    ]
-  },
-  {
-    title: 'Pengaturan',
-    items: [
-      {
-        label: 'Target Revenue',
-        to: '/settings/target-revenue',
-        icon: 'i-lucide-target'
-      }
-    ]
-  }
-]
-
-// Helper to determine if a route is active
-// Active highlighting remains for both indicator sub-pages
-const isItemActive = (item: NavItem) => {
-  if (item.label === 'Growth') {
-    return route.path.startsWith('/growth')
-  }
-  if (item.label === 'Retention') {
-    return route.path.startsWith('/retention')
-  }
-  if (item.label === 'Service Quality') {
-    return route.path.startsWith('/service-quality')
-  }
-  return route.path === item.to
-}
-</script>
-
 <template>
   <div class="relative h-full shrink-0">
     <aside
@@ -252,6 +171,7 @@ const isItemActive = (item: NavItem) => {
           icon="i-lucide-log-out"
           class="w-full text-sm text-red-400 hover:bg-red-50 flex justify-center p-2.5 rounded-lg"
           aria-label="Logout"
+          @click="handleLogout"
         />
       </UTooltip>
 
@@ -287,3 +207,84 @@ const isItemActive = (item: NavItem) => {
     <DownloadModal v-model="isModalOpen" />
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+
+const { state: authState, service: authService } = useAuth()
+const toast = useToast()
+const route = useRoute()
+
+// Shared sidebar collapse state
+const isCollapsed = useState('sidebar-collapsed', () => false)
+const isModalOpen = ref(false)
+
+const handleLogout = async () => {
+  await authService.logout()
+  toast.add({
+    title: 'Logout success',
+    icon: 'i-lucide-circle-check',
+    color: 'success'
+  })
+}
+
+// Define navigation structures
+interface NavItem {
+  label: string
+  to: string
+  icon: string
+}
+
+interface NavGroup {
+  title: string
+  items: NavItem[]
+}
+
+const navGroups: NavGroup[] = [
+  {
+    title: 'Dashboard',
+    items: [
+      {
+        label: 'Growth',
+        to: '/growth/lagging-indicator', // Main growth landing page
+        icon: 'i-lucide-sprout'
+      },
+      {
+        label: 'Retention',
+        to: '/retention',
+        icon: 'i-lucide-hand'
+      },
+      {
+        label: 'Service Quality',
+        to: '/service-quality',
+        icon: 'i-lucide-star'
+      }
+    ]
+  },
+  {
+    title: 'Pengaturan',
+    items: [
+      {
+        label: 'Target Revenue',
+        to: '/settings/target-revenue',
+        icon: 'i-lucide-target'
+      }
+    ]
+  }
+]
+
+// Helper to determine if a route is active
+// Active highlighting remains for both indicator sub-pages
+const isItemActive = (item: NavItem) => {
+  if (item.label === 'Growth') {
+    return route.path.startsWith('/growth')
+  }
+  if (item.label === 'Retention') {
+    return route.path.startsWith('/retention')
+  }
+  if (item.label === 'Service Quality') {
+    return route.path.startsWith('/service-quality')
+  }
+  return route.path === item.to
+}
+</script>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 
 // Page meta to use our default layout container
 definePageMeta({

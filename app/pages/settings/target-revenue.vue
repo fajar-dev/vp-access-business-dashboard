@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 
 // Set page metadata to use default sidebar layout
 definePageMeta({
@@ -40,11 +39,8 @@ const presets = {
 const selectedYear = ref('2026')
 const yearOptions = ['2026', '2025', '2024']
 
-const selectedBranch = ref('All Branch')
-const branchOptions = ['All Branch', 'Medan', 'Surabaya', 'Jakarta', 'Bali']
-
-const selectedTimeframe = ref('This Month')
-const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year']
+// Retrieve global dashboard filters
+const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
 
 // Core Page State
 const annualTarget = ref(presets['2026'].annualTarget)

@@ -1,27 +1,3 @@
-<script setup lang="ts">
-const { state: authState, service: authService } = useAuth()
-const toast = useToast()
-
-interface Props {
-  title: string
-  description?: string
-}
-
-defineProps<Props>()
-
-// Share mobile sidebar menu open state globally across layout and headers
-const isMobileMenuOpen = useState('isMobileMenuOpen', () => false)
-
-const handleLogout = async () => {
-  await authService.logout()
-  toast.add({
-    title: 'Logout success',
-    icon: 'i-lucide-circle-check',
-    color: 'success'
-  })
-}
-</script>
-
 <template>
   <div class="space-y-4 shrink-0 select-none">
     <!-- Top Mobile Navigation Bar (Visible on mobile viewports only) -->
@@ -105,3 +81,27 @@ const handleLogout = async () => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { state: authState, service: authService } = useAuth()
+const toast = useToast()
+
+interface Props {
+  title: string
+  description?: string
+}
+
+defineProps<Props>()
+
+// Share mobile sidebar menu open state globally across layout and headers
+const isMobileMenuOpen = useState('isMobileMenuOpen', () => false)
+
+const handleLogout = async () => {
+  await authService.logout()
+  toast.add({
+    title: 'Logout success',
+    icon: 'i-lucide-circle-check',
+    color: 'success'
+  })
+}
+</script>

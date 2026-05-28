@@ -110,7 +110,6 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
 import { z } from 'zod'
 import { authService } from '~/services/auth-service'
 

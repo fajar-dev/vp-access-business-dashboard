@@ -1,14 +1,3 @@
-<script setup lang="ts">
-withDefaults(
-  defineProps<{
-    isCollapsed?: boolean
-  }>(),
-  {
-    isCollapsed: false
-  }
-)
-</script>
-
 <template>
   <div class="flex items-center gap-3">
     <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary text-white shadow-sm shrink-0">
@@ -24,3 +13,14 @@ withDefaults(
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    isCollapsed?: boolean
+  }>(),
+  {
+    isCollapsed: false
+  }
+)
+</script>

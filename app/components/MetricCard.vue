@@ -1,21 +1,3 @@
-<script setup lang="ts">
-interface Props {
-  title: string
-  value: string
-  subtext?: string
-  trend?: string
-  trendDirection?: 'up' | 'down' | 'neutral'
-  trendColor?: 'primary' | 'error' | 'neutral'
-  icon?: string
-  iconColor?: string
-}
-
-withDefaults(defineProps<Props>(), {
-  trendDirection: 'up',
-  iconColor: 'text-primary'
-})
-</script>
-
 <template>
   <UCard 
     class="h-full border border-neutral-100 transition-all hover:shadow-sm flex flex-col"
@@ -78,3 +60,21 @@ withDefaults(defineProps<Props>(), {
     </div>
   </UCard>
 </template>
+
+<script setup lang="ts">
+interface Props {
+  title: string
+  value: string
+  subtext?: string
+  trend?: string
+  trendDirection?: 'up' | 'down' | 'neutral'
+  trendColor?: 'primary' | 'error' | 'neutral'
+  icon?: string
+  iconColor?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  trendDirection: 'up',
+  iconColor: 'text-primary'
+})
+</script>

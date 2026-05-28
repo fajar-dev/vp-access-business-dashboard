@@ -1,30 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-
-// Modal open state bound as a model
-const open = defineModel<boolean>({ default: false })
-const isDownloading = ref(false)
-
-// Select options state matching the mockup design
-const growthLagging = ref('This Month')
-const growthLeading = ref('Last Month')
-const retentionLagging = ref('This Month')
-const retentionLeading = ref('Last Month')
-const serviceLagging = ref('This Month')
-const serviceLeading = ref('Last Month')
-
-const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year']
-
-// Simulates a premium download delay with a loading spinner
-const handleDownload = () => {
-  isDownloading.value = true
-  setTimeout(() => {
-    isDownloading.value = false
-    open.value = false
-  }, 1500)
-}
-</script>
-
 <template>
   <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md', overlay: 'bg-black/40' }">
     <template #content>
@@ -52,86 +25,26 @@ const handleDownload = () => {
 
       <!-- Form White Container with Border -->
       <div class="border border-neutral-200 rounded-lg p-4 bg-white shadow-xs space-y-4">
-        
-        <!-- 1. Growth Dashboard -->
-        <div class="space-y-2">
-          <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
-            Growth Dashboard
-          </h4>
-          <div class="space-y-2.5">
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium text-neutral-600">Lagging Indicator</span>
-              <USelect
-                v-model="growthLagging"
-                :items="timeframeOptions"
-                class="w-36 shrink-0"
-              />
-            </div>
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium text-neutral-600">Leading Indicator</span>
-              <USelect
-                v-model="growthLeading"
-                :items="timeframeOptions"
-                class="w-36 shrink-0"
-              />
+        <template v-for="(section, idx) in sections" :key="section.title">
+          <!-- Divider between sections -->
+          <div v-if="idx > 0" class="border-t border-neutral-100 my-2"></div>
+          
+          <div class="space-y-2">
+            <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
+              {{ section.title }}
+            </h4>
+            <div class="space-y-2.5">
+              <div v-for="item in section.items" :key="item.label" class="flex items-center justify-between gap-4">
+                <span class="text-sm font-medium text-neutral-600">{{ item.label }}</span>
+                <USelect
+                  v-model="item.model.value"
+                  :items="timeframeOptions"
+                  class="w-36 shrink-0"
+                />
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="border-t border-neutral-100 my-2"></div>
-
-        <!-- 2. Retention Dashboard -->
-        <div class="space-y-2">
-          <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
-            Retention Dashboard
-          </h4>
-          <div class="space-y-2.5">
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium text-neutral-600">Lagging Indicator</span>
-              <USelect
-                v-model="retentionLagging"
-                :items="timeframeOptions"
-                class="w-36 shrink-0"
-              />
-            </div>
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium text-neutral-600">Leading Indicator</span>
-              <USelect
-                v-model="retentionLeading"
-                :items="timeframeOptions"
-                class="w-36 shrink-0"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-neutral-100 my-2"></div>
-
-        <!-- 3. Service and Quality Dashboard -->
-        <div class="space-y-2">
-          <h4 class="text-sm font-semibold text-neutral-900 tracking-wide select-none">
-            Service and Quality Dashboard
-          </h4>
-          <div class="space-y-2.5">
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium text-neutral-600">Lagging Indicator</span>
-              <USelect
-                v-model="serviceLagging"
-                :items="timeframeOptions"
-                class="w-36 shrink-0"
-              />
-            </div>
-            <div class="flex items-center justify-between gap-4">
-              <span class="text-sm font-medium text-neutral-600">Leading Indicator</span>
-              <USelect
-                v-model="serviceLeading"
-                :items="timeframeOptions"
-                class="w-36 shrink-0"
-              />
-            </div>
-          </div>
-        </div>
-
+        </template>
       </div>
 
       <!-- Action Button -->
@@ -149,3 +62,53 @@ const handleDownload = () => {
     </template>
   </UModal>
 </template>
+
+<script setup lang="ts">
+// Modal open state bound as a model
+const open = defineModel<boolean>({ default: false })
+const isDownloading = ref(false)
+
+// Select options state matching the mockup design
+const growthLagging = ref('This Month')
+const growthLeading = ref('Last Month')
+const retentionLagging = ref('This Month')
+const retentionLeading = ref('Last Month')
+const serviceLagging = ref('This Month')
+const serviceLeading = ref('Last Month')
+
+const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year']
+
+// Group items into data-driven structures to eliminate template duplication
+const sections = [
+  {
+    title: 'Growth Dashboard',
+    items: [
+      { label: 'Lagging Indicator', model: growthLagging },
+      { label: 'Leading Indicator', model: growthLeading }
+    ]
+  },
+  {
+    title: 'Retention Dashboard',
+    items: [
+      { label: 'Lagging Indicator', model: retentionLagging },
+      { label: 'Leading Indicator', model: retentionLeading }
+    ]
+  },
+  {
+    title: 'Service and Quality Dashboard',
+    items: [
+      { label: 'Lagging Indicator', model: serviceLagging },
+      { label: 'Leading Indicator', model: serviceLeading }
+    ]
+  }
+]
+
+// Simulates a premium download delay with a loading spinner
+const handleDownload = () => {
+  isDownloading.value = true
+  setTimeout(() => {
+    isDownloading.value = false
+    open.value = false
+  }, 1500)
+}
+</script>

@@ -1,17 +1,3 @@
-<script setup lang="ts">
-// Modal open state bound as a model
-const open = defineModel<boolean>({ default: false })
-
-const emit = defineEmits<{
-  (e: 'confirm'): void
-}>()
-
-const handleConfirm = () => {
-  emit('confirm')
-  open.value = false
-}
-</script>
-
 <template>
   <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md', overlay: 'bg-black/40' }">
     <template #content>
@@ -55,3 +41,17 @@ const handleConfirm = () => {
     </template>
   </UModal>
 </template>
+
+<script setup lang="ts">
+// Modal open state bound as a model
+const open = defineModel<boolean>({ default: false })
+
+const emit = defineEmits<{
+  (e: 'confirm'): void
+}>()
+
+const handleConfirm = () => {
+  emit('confirm')
+  open.value = false
+}
+</script>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -16,12 +15,8 @@ definePageMeta({
   ]
 })
 
-// Scoped state for Service Quality selectors
-const selectedBranch = ref('All Branch')
-const selectedTimeframe = ref('This Month')
-
-const branchOptions = ['All Branch', 'Medan', 'Surabaya', 'Jakarta', 'Bali']
-const timeframeOptions = ['This Month', 'Last Month', 'This Quarter', 'This Year']
+// Retrieve global dashboard filters
+const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
 </script>
 
 <template>

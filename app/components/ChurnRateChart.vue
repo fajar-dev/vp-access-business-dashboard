@@ -1,6 +1,70 @@
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+<template>
+  <UCard class="border border-neutral-100 h-full flex flex-col justify-between">
+    <!-- Header with controls -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
+      <div>
+        <h3 class="text-base font-semibold text-neutral-900">
+          Churn Rate (YTD)
+        </h3>
+        <p class="text-sm text-neutral-500">
+          Year to Date sampai 24 April 2026
+        </p>
+      </div>
 
+      <!-- Controls Switches -->
+      <div class="flex items-center gap-6 text-sm font-medium text-neutral-700 select-none shrink-0">
+        <div class="flex items-center gap-2">
+          <span>Tampilkan Nama</span>
+          <USwitch
+            v-model="showNames"
+            color="primary"
+            aria-label="Toggle names display"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <span>Compare</span>
+          <USwitch
+            v-model="compare"
+            color="primary"
+            aria-label="Toggle comparison line"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Render Area using ClientOnly to support Nuxt SSR -->
+    <div class="relative flex-1 min-h-64 mt-4 w-full">
+      <ClientOnly>
+        <apexchart
+          type="area"
+          height="320"
+          :options="chartOptions"
+          :series="series"
+        />
+      </ClientOnly>
+    </div>
+
+    <!-- Chart Legend/Key -->
+    <div class="flex items-center justify-center gap-6 text-sm font-medium text-neutral-600 pt-4 mt-2 border-t border-neutral-100 select-none">
+      <div class="flex items-center gap-2">
+        <UIcon
+          name="i-lucide-line-dot-right-horizontal"
+          class="w-5 h-5 text-neutral-300"
+        />
+        <span>2025 YTD</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <UIcon
+          name="i-lucide-line-dot-right-horizontal"
+          class="w-5 h-5 text-rose-500"
+        />
+        <span>2026 YTD</span>
+      </div>
+    </div>
+  </UCard>
+</template>
+
+<script setup lang="ts">
 // Define switches
 const showNames = ref(false)
 const compare = ref(true)
@@ -163,69 +227,3 @@ const chartOptions = computed(() => ({
   }
 }))
 </script>
-
-<template>
-  <UCard class="border border-neutral-100 h-full flex flex-col justify-between">
-    <!-- Header with controls -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
-      <div>
-        <h3 class="text-base font-semibold text-neutral-900">
-          Churn Rate (YTD)
-        </h3>
-        <p class="text-sm text-neutral-500">
-          Year to Date sampai 24 April 2026
-        </p>
-      </div>
-
-      <!-- Controls Switches -->
-      <div class="flex items-center gap-6 text-sm font-medium text-neutral-700 select-none shrink-0">
-        <div class="flex items-center gap-2">
-          <span>Tampilkan Nama</span>
-          <USwitch
-            v-model="showNames"
-            color="primary"
-            aria-label="Toggle names display"
-          />
-        </div>
-        <div class="flex items-center gap-2">
-          <span>Compare</span>
-          <USwitch
-            v-model="compare"
-            color="primary"
-            aria-label="Toggle comparison line"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Chart Render Area using ClientOnly to support Nuxt SSR -->
-    <div class="relative flex-1 min-h-64 mt-4 w-full">
-      <ClientOnly>
-        <apexchart
-          type="area"
-          height="320"
-          :options="chartOptions"
-          :series="series"
-        />
-      </ClientOnly>
-    </div>
-
-    <!-- Chart Legend/Key -->
-    <div class="flex items-center justify-center gap-6 text-sm font-medium text-neutral-600 pt-4 mt-2 border-t border-neutral-100 select-none">
-      <div class="flex items-center gap-2">
-        <UIcon
-          name="i-lucide-line-dot-right-horizontal"
-          class="w-5 h-5 text-neutral-300"
-        />
-        <span>2025 YTD</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <UIcon
-          name="i-lucide-line-dot-right-horizontal"
-          class="w-5 h-5 text-rose-500"
-        />
-        <span>2026 YTD</span>
-      </div>
-    </div>
-  </UCard>
-</template>

@@ -1,81 +1,3 @@
-<script setup lang="ts">
-import { ref, computed } from 'vue'
-
-export interface PipelineStage {
-  name: string
-  value: string
-  share: string
-  color: string
-}
-
-const props = withDefaults(
-  defineProps<{
-    stages?: PipelineStage[]
-  }>(),
-  {
-    stages: () => [
-      {
-        name: 'Quotation',
-        value: 'Rp 500M',
-        share: '90.3%',
-        color: 'blue'
-      },
-      {
-        name: 'Qualified (BANT)',
-        value: 'Rp 50M',
-        share: '1.4%',
-        color: 'teal'
-      },
-      {
-        name: 'Negotiation',
-        value: 'Rp 300M',
-        share: '50.3%',
-        color: 'green'
-      }
-    ]
-  }
-)
-
-const activeStage = ref<number | null>(null)
-
-// Parse numerical values dynamically and calculate reactive SVG S-curve paths
-const wavePaths = computed(() => {
-  const parsed = props.stages.map(s => parseNumericValue(s.value))
-  
-  const maxVal = Math.max(...parsed, 1)
-  
-  // Calculate wave heights scaled to the 300px viewBox (max height = 220px, min = 35px)
-  const h1 = Math.max(35, ((parsed[0] || 0) / maxVal) * 200)
-  const h2 = Math.max(35, ((parsed[1] || 0) / maxVal) * 200)
-  const h3 = Math.max(35, ((parsed[2] || 0) / maxVal) * 200)
-  
-  // Calculate Y coordinates (bottom is Y = 300)
-  const y1 = 300 - h1
-  const y2 = 300 - h2
-  const y3 = 300 - h3
-  
-  // Translucent crest border lines sit exactly 10px higher
-  const y1Crest = y1 - 10
-  const y2Crest = y2 - 10
-  const y3Crest = y3 - 10
-  
-  return {
-    stage1: {
-      crest: `M 0 300 L 0 ${y1Crest} C 150 ${y1Crest}, 150 ${y2Crest}, 300 ${y2Crest} L 300 300 Z`,
-      wave: `M 0 300 L 0 ${y1} C 150 ${y1}, 150 ${y2}, 300 ${y2} L 300 300 Z`
-    },
-    stage2: {
-      crest: `M 300 300 L 300 ${y2Crest} C 450 ${y2Crest}, 450 ${y3Crest}, 600 ${y3Crest} L 600 300 Z`,
-      wave: `M 300 300 L 300 ${y2} C 450 ${y2}, 450 ${y3}, 600 ${y3} L 600 300 Z`
-    },
-    stage3: {
-      crest: `M 600 300 L 600 ${y3Crest} L 900 ${y3Crest} L 900 300 Z`,
-      wave: `M 600 300 L 600 ${y3} L 900 ${y3} L 900 300 Z`
-    }
-  }
-})
-</script>
-
 <template>
   <UCard 
     class="border border-neutral-100 h-full flex flex-col justify-between overflow-hidden relative shadow-xs"
@@ -210,3 +132,79 @@ const wavePaths = computed(() => {
     </div>
   </UCard>
 </template>
+
+<script setup lang="ts">
+export interface PipelineStage {
+  name: string
+  value: string
+  share: string
+  color: string
+}
+
+const props = withDefaults(
+  defineProps<{
+    stages?: PipelineStage[]
+  }>(),
+  {
+    stages: () => [
+      {
+        name: 'Quotation',
+        value: 'Rp 500M',
+        share: '90.3%',
+        color: 'blue'
+      },
+      {
+        name: 'Qualified (BANT)',
+        value: 'Rp 50M',
+        share: '1.4%',
+        color: 'teal'
+      },
+      {
+        name: 'Negotiation',
+        value: 'Rp 300M',
+        share: '50.3%',
+        color: 'green'
+      }
+    ]
+  }
+)
+
+const activeStage = ref<number | null>(null)
+
+// Parse numerical values dynamically and calculate reactive SVG S-curve paths
+const wavePaths = computed(() => {
+  const parsed = props.stages.map(s => parseNumericValue(s.value))
+  
+  const maxVal = Math.max(...parsed, 1)
+  
+  // Calculate wave heights scaled to the 300px viewBox (max height = 220px, min = 35px)
+  const h1 = Math.max(35, ((parsed[0] || 0) / maxVal) * 200)
+  const h2 = Math.max(35, ((parsed[1] || 0) / maxVal) * 200)
+  const h3 = Math.max(35, ((parsed[2] || 0) / maxVal) * 200)
+  
+  // Calculate Y coordinates (bottom is Y = 300)
+  const y1 = 300 - h1
+  const y2 = 300 - h2
+  const y3 = 300 - h3
+  
+  // Translucent crest border lines sit exactly 10px higher
+  const y1Crest = y1 - 10
+  const y2Crest = y2 - 10
+  const y3Crest = y3 - 10
+  
+  return {
+    stage1: {
+      crest: `M 0 300 L 0 ${y1Crest} C 150 ${y1Crest}, 150 ${y2Crest}, 300 ${y2Crest} L 300 300 Z`,
+      wave: `M 0 300 L 0 ${y1} C 150 ${y1}, 150 ${y2}, 300 ${y2} L 300 300 Z`
+    },
+    stage2: {
+      crest: `M 300 300 L 300 ${y2Crest} C 450 ${y2Crest}, 450 ${y3Crest}, 600 ${y3Crest} L 600 300 Z`,
+      wave: `M 300 300 L 300 ${y2} C 450 ${y2}, 450 ${y3}, 600 ${y3} L 600 300 Z`
+    },
+    stage3: {
+      crest: `M 600 300 L 600 ${y3Crest} L 900 ${y3Crest} L 900 300 Z`,
+      wave: `M 600 300 L 600 ${y3} L 900 ${y3} L 900 300 Z`
+    }
+  }
+})
+</script>
