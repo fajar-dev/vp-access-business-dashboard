@@ -144,11 +144,11 @@ definePageMeta({
             <div class="space-y-2 mt-1">
               <div class="flex items-center justify-between text-sm font-medium">
                 <span class="text-neutral-600">Dedicated</span>
-                <span class="text-red-500 font-semibold">Rp. 30 Jt</span>
+                <span class="text-error font-semibold">Rp. 30 Jt</span>
               </div>
               <div class="flex items-center justify-between text-sm font-medium">
                 <span class="text-neutral-600">Broadband</span>
-                <span class="text-red-500 font-semibold">Rp. 2 Jt</span>
+                <span class="text-error font-semibold">Rp. 2 Jt</span>
               </div>
             </div>
           </template>

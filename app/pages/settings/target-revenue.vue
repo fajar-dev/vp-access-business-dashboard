@@ -368,7 +368,7 @@ const confirmUnlock = (reason: string) => {
               v-if="allocationPercentage < 100"
               icon="i-lucide-triangle-alert"
               color="warning"
-              variant="soft"
+              variant="subtle"
               title="Target Revenue belum teralokasi seluruhnya."
               class="border-none"
             />
@@ -376,7 +376,7 @@ const confirmUnlock = (reason: string) => {
               v-else-if="allocationPercentage === 100"
               icon="i-lucide-circle-check"
               color="success"
-              variant="soft"
+              variant="subtle"
               title="Target Revenue telah teralokasi seluruhnya."
               class="border-none"
             />
@@ -384,7 +384,7 @@ const confirmUnlock = (reason: string) => {
               v-else
               icon="i-lucide-circle-x"
               color="error"
-              variant="soft"
+              variant="subtle"
               :title="`Target teralokasi melebihi total (Kelebihan Rp. ${formatIDR(Math.abs(unallocatedAmount))})`"
               class="border-none"
             />
@@ -513,7 +513,7 @@ const confirmUnlock = (reason: string) => {
                 <td class="py-3.5 px-6 font-semibold">
                   <span
                     v-if="month.yoy !== null"
-                    :class="[month.yoy > 0 ? 'text-emerald-600' : 'text-red-500']"
+                    :class="[month.yoy > 0 ? 'text-emerald-600' : 'text-error']"
                   >
                     {{ month.yoy > 0 ? '+' : '' }}{{ month.yoy }}%
                   </span>

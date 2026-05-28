@@ -250,7 +250,7 @@ const isItemActive = (item: NavItem) => {
           color="error"
           variant="ghost"
           icon="i-lucide-log-out"
-          class="w-full text-sm text-red-600 hover:text-red-700 hover:bg-red-50 flex justify-center p-2.5 rounded-lg"
+          class="w-full text-sm text-red-400 hover:bg-red-50 flex justify-center p-2.5 rounded-lg"
           aria-label="Logout"
         />
       </UTooltip>
@@ -261,7 +261,7 @@ const isItemActive = (item: NavItem) => {
         color="error"
         variant="ghost"
         icon="i-lucide-log-out"
-        class="w-full justify-start text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+        class="w-full justify-start text-sm px-3 text-red-400 hover:bg-red-50 cursor-pointer"
         aria-label="Logout"
         @click="handleLogout"
       >

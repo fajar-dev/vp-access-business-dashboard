@@ -35,7 +35,7 @@ const chartOptions = computed(() => ({
   },
   colors: ['#009838', '#d4d4d4'],
   stroke: {
-    curve: 'smooth',
+    curve: 'straight',
     width: compare.value ? [3, 2] : [3],
     dashArray: compare.value ? [0, 5] : [0]
   },
@@ -143,7 +143,7 @@ const chartOptions = computed(() => ({
             </div>
             <div class="pt-1.5 flex items-center justify-between border-t border-neutral-100">
               <span class="text-neutral-600">Pertumbuhan:</span>
-              <span class="font-semibold rounded px-1 ${Number(change) >= 0 ? 'text-primary' : 'text-red-500'}">
+              <span class="font-semibold rounded px-1 ${Number(change) >= 0 ? 'text-primary' : 'text-error'}">
                 ${Number(change) >= 0 ? '↑' : '↓'} ${change}%
               </span>
             </div>

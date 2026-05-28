@@ -35,7 +35,7 @@ const chartOptions = computed(() => ({
   },
   colors: ['#f43f5e', '#d4d4d4'], // Rose for 2026, Light Gray for 2025
   stroke: {
-    curve: 'smooth',
+    curve: 'straight',
     width: compare.value ? [3, 2] : [3],
     dashArray: compare.value ? [0, 5] : [0]
   },

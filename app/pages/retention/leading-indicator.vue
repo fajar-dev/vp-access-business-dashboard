@@ -35,7 +35,7 @@ definePageMeta({
                 <span class="text-sm font-medium text-neutral-600">30 Hari</span>
                 <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
                   <template #leading>
-                    <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-red-500" />
+                    <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-error" />
                   </template>
                   25%
                 </UBadge>
@@ -52,7 +52,7 @@ definePageMeta({
                 <span class="text-sm font-medium text-neutral-600">60 Hari</span>
                 <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
                   <template #leading>
-                    <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-red-500" />
+                    <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-error" />
                   </template>
                   12%
                 </UBadge>

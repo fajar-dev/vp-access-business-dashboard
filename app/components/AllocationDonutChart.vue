@@ -99,7 +99,7 @@ const chartOptions = computed(() => {
         <span
           class="text-lg font-bold transition-colors"
           :class="[
-            unallocatedAmount > 0 ? 'text-red-500' :
+            unallocatedAmount > 0 ? 'text-error' :
             unallocatedAmount === 0 ? 'text-neutral-500' : 'text-red-600'
           ]"
         >

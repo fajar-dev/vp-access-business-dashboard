@@ -40,8 +40,8 @@ withDefaults(defineProps<Props>(), {
         <UBadge
           v-if="trend"
           :color="trendColor || (trendDirection === 'down' ? 'error' : 'primary')"
-          variant="subtle"
-          size="sm"
+          variant="soft"
+          size="md"
           class="rounded-full font-medium"
         >
           <template #leading>
@@ -49,12 +49,12 @@ withDefaults(defineProps<Props>(), {
               v-if="trendDirection === 'up'"
               name="i-lucide-arrow-up"
               class="w-3 h-3"
-              :class="(trendColor === 'error') ? 'text-red-500' : 'text-primary'"
+              :class="(trendColor === 'error') ? 'text-error' : 'text-primary'"
             />
             <UIcon
               v-else-if="trendDirection === 'down'"
               name="i-lucide-arrow-down"
-              class="w-3 h-3 text-red-500"
+              class="w-3 h-3 text-error"
             />
           </template>
           {{ trend }}
