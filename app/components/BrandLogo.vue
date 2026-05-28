@@ -16,10 +16,10 @@ withDefaults(
     </div>
     <div v-if="!isCollapsed" class="min-w-0">
       <h1 class="text-sm font-medium text-neutral-900 truncate">
-        PT Media Antar Nusa
+        VP Dashboard
       </h1>
       <p class="text-xs text-neutral-600">
-        Executive Dashboard
+        Access Business
       </p>
     </div>
   </div>

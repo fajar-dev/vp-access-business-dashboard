@@ -1,12 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+const { state: authState, service: authService } = useAuth()
+const toast = useToast()
 const route = useRoute()
 
 // Shared sidebar collapse state
 const isCollapsed = useState('sidebar-collapsed', () => false)
 const isModalOpen = ref(false)
+
+const handleLogout = async () => {
+  await authService.logout()
+  toast.add({
+    title: 'Logout success',
+    icon: 'i-lucide-circle-check',
+    color: 'success'
+  })
+}
 
 // Define navigation structures
 interface NavItem {
@@ -73,7 +83,7 @@ const isItemActive = (item: NavItem) => {
   <div class="relative h-full shrink-0">
     <aside
       class="flex flex-col h-full bg-white border-r border-neutral-200 shrink-0 justify-between select-none transition-all duration-300"
-      :class="[isCollapsed ? 'w-20 p-3' : 'w-72 p-4']"
+      :class="[isCollapsed ? 'w-20 p-3' : 'w-68 p-4']"
     >
       <!-- Top Section -->
       <div class="space-y-4">
@@ -99,17 +109,17 @@ const isItemActive = (item: NavItem) => {
       <!-- User Profile Card -->
       <div class="flex pb-3" :class="[isCollapsed ? 'justify-center' : 'items-center gap-3']">
         <UAvatar
-          src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
-          alt="Ali Putera"
+          :src="authState.user?.photo"
+          :alt="authState.user?.name"
           size="md"
           class="ring-2 ring-primary/10 shrink-0"
         />
         <div v-if="!isCollapsed" class="min-w-0 flex-1">
           <h2 class="text-sm font-medium truncate">
-            Ali Putera
+            {{ authState.user?.name }}
           </h2>
           <p class="text-xs text-neutral-600 truncate">
-            aliputera@nusa.net.id
+            {{ authState.user?.email }}
           </p>
         </div>
       </div>
@@ -251,7 +261,9 @@ const isItemActive = (item: NavItem) => {
         color="error"
         variant="ghost"
         icon="i-lucide-log-out"
-        class="w-full justify-start text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+        class="w-full justify-start text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+        aria-label="Logout"
+        @click="handleLogout"
       >
         <span v-if="!isCollapsed">Logout</span>
       </UButton>
