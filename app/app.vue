@@ -23,7 +23,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <UApp>
+  <UApp :toaster="{ position: 'top-right', progress: false }">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
