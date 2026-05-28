@@ -13,7 +13,7 @@ const handleConfirm = () => {
 </script>
 
 <template>
-  <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md', overlay: 'bg-black/20 backdrop-blur-xs' }">
+  <UModal v-model:open="open" :ui="{ content: 'sm:max-w-md', overlay: 'bg-black/40' }">
     <template #content>
       <UCard :ui="{ body: 'flex flex-col relative' }">
         <!-- Header -->
