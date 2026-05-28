@@ -256,7 +256,8 @@
                 @update:model-value="val => setMonthFormatted(row.original.idx as number, val)"
                 :disabled="distributionMethod === 'same_rata' || isLocked"
                 placeholder="0"
-                class="w-full font-semibold text-neutral-900 shadow-xs"
+                size="lg"
+                class="w-full"
               />
             </div>
           </template>
@@ -539,9 +540,9 @@ const columns: any[] = [
         th: 'py-3 px-6 w-[280px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
         td: (cell: any) => {
           if (cell.row.original.type === 'quarter') {
-            return 'py-3 px-6 font-semibold text-neutral-700 text-sm bg-neutral-50/50 hover:bg-neutral-50/80 transition-colors cursor-pointer select-none align-middle border-b border-neutral-100'
+            return 'py-3 px-6 font-medium text-neutral-700 text-sm bg-neutral-50/50 hover:bg-neutral-50/80 transition-colors cursor-pointer select-none align-middle border-b border-neutral-100'
           }
-          return 'py-3.5 px-6 pl-12 font-medium text-neutral-800 align-middle border-b-0'
+          return 'py-2 px-6 pl-12 font-medium text-neutral-800 align-middle border-b-0'
         }
       },
       colspan: {
@@ -564,7 +565,7 @@ const columns: any[] = [
           if (cell.row.original.type === 'quarter') {
             return 'hidden'
           }
-          return 'py-3.5 px-6 align-middle border-b-0'
+          return 'py-2 px-6 align-middle border-b-0'
         }
       },
       colspan: {
@@ -587,7 +588,7 @@ const columns: any[] = [
           if (cell.row.original.type === 'quarter') {
             return 'hidden'
           }
-          return 'py-3.5 px-6 font-semibold text-neutral-700 align-middle border-b-0'
+          return 'py-2 px-6 font-medium text-neutral-700 align-middle border-b-0'
         }
       },
       colspan: {
@@ -610,7 +611,7 @@ const columns: any[] = [
           if (cell.row.original.type === 'quarter') {
             return 'hidden'
           }
-          return 'py-3.5 px-6 font-semibold align-middle border-b-0'
+          return 'py-2 px-6 font-semibold align-middle border-b-0'
         }
       },
       colspan: {

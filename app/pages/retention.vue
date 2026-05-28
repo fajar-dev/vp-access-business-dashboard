@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
 
 const route = useRoute()
 
