@@ -1,7 +1,34 @@
 <script setup lang="ts">
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { retentionService } from '~/services/retention-service'
+import type { ChurnStats } from '~/types/retention'
+import { formatCurrency } from '~/utils/format'
+
 // Page meta to use our default layout container
 definePageMeta({
   layout: 'dashboard'
+})
+
+const { selectedBranch, selectedTimeframe } = useDashboardFilters()
+
+const churnStats = ref<ChurnStats | null>(null)
+const isLoading = ref(false)
+
+const fetchChurnStats = async () => {
+  isLoading.value = true
+  const response = await retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value)
+  if (response?.success) {
+    churnStats.value = response.data
+  }
+  isLoading.value = false
+}
+
+watch([selectedBranch, selectedTimeframe], () => {
+  fetchChurnStats()
+})
+
+onMounted(() => {
+  fetchChurnStats()
 })
 </script>
 
@@ -52,11 +79,11 @@ definePageMeta({
         <!-- Churn Revenue Card -->
         <MetricCard
           title="Churn Revenue"
-          value="Rp 125 Jt"
-          trend="8.3%"
-          trend-direction="up"
-          trend-color="error"
-          subtext="Bulan ini"
+          :value="churnStats ? formatCurrency(Math.abs(churnStats.revenue)) : 'Rp 0'"
+          :trend="churnStats ? `${Math.abs(churnStats.churnRate).toFixed(1)}%` : '0%'"
+          :trend-direction="churnStats?.trend === 'down' ? 'down' : 'up'"
+          :trend-color="churnStats?.trend === 'down' ? 'error' : 'primary'"
+          :subtext="churnStats?.period || 'Bulan ini'"
           icon="i-lucide-dollar-sign"
           icon-color="text-warning"
         />
