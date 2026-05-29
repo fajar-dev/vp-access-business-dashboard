@@ -30,9 +30,9 @@ definePageMeta({
                   <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                   <span>Net MRC</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex items-center gap-10 shrink-0">
                   <span class="text-neutral-900">Rp 190 Jt</span>
-                  <span class="text-primary font-semibold text-[10px]">↑ 10%</span>
+                  <UBadge color="primary" variant="soft" size="md" class="rounded-full font-medium">↑ 10%</UBadge>
                 </div>
               </div>
               <div class="flex items-center justify-between text-sm font-medium">
@@ -40,9 +40,9 @@ definePageMeta({
                   <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                   <span>Churn MRC</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex items-center gap-10 shrink-0">
                   <span class="text-neutral-900">Rp 125 Jt</span>
-                  <span class="text-error font-semibold text-[10px]">↑ 8.3%</span>
+                  <UBadge color="error" variant="soft" size="md" class="rounded-full font-medium">↑ 8.3%</UBadge>
                 </div>
               </div>
             </div>
@@ -80,7 +80,7 @@ definePageMeta({
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
                   <span class="text-neutral-900">8</span>
-                  <span class="text-error font-semibold text-[10px]">↑ 14.3%</span>
+                  <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">↑ 14.3%</UBadge>
                 </div>
               </div>
               <div class="flex items-center justify-between text-sm font-medium">
@@ -90,7 +90,7 @@ definePageMeta({
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
                   <span class="text-neutral-900">12</span>
-                  <span class="text-primary font-semibold text-[10px]">↓ 7.7%</span>
+                  <UBadge color="primary" variant="subtle" size="sm" class="rounded-full font-medium">↓ 7.7%</UBadge>
                 </div>
               </div>
             </div>
