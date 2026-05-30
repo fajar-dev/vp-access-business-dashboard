@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { ApiResponse, ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from "../types/retention"
+import type { ApiResponse, ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData, ContractExpiringStats } from "../types/retention"
 
 export class RetentionService {
 
@@ -37,6 +37,15 @@ export class RetentionService {
     async getChurnRate(branchId: string): Promise<ApiResponse<ChurnRateData[]>> {
         try {
             const response = await apiService.client.get<ApiResponse<ChurnRateData[]>>(`/vp-access-business/retention/churn-rate?branchId=${branchId}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getContractExpiring(branchId: string): Promise<ApiResponse<ContractExpiringStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<ContractExpiringStats>>(`/vp-access-business/retention/contract-expiring?branchId=${branchId}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

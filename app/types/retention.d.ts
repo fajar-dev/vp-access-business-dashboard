@@ -63,3 +63,10 @@ export interface ChurnRateData {
         [year: string]: ChurnRateMonthData
     }
 }
+
+export interface ContractExpiringStats {
+    total: number
+    total_30: number
+    total_60: number
+    total_90: number
+}

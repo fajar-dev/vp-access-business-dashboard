@@ -1,7 +1,37 @@
 <script setup lang="ts">
+import { retentionService } from '~/services/retention-service'
+import type { ContractExpiringStats } from '~/types/retention'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+
 // Page meta to use our default layout container
 definePageMeta({
   layout: 'dashboard'
+})
+
+const { selectedBranch } = useDashboardFilters()
+const contractExpiringStats = ref<ContractExpiringStats | null>(null)
+const isLoading = ref(false)
+
+const fetchData = async () => {
+  isLoading.value = true
+  const [expiringResponse] = await Promise.all([
+    retentionService.getContractExpiring(selectedBranch.value)
+  ])
+  
+  if (expiringResponse?.success) {
+    contractExpiringStats.value = expiringResponse.data
+  }
+  
+  isLoading.value = false
+}
+
+// Watchers to trigger re-fetch when branch changes
+watch([selectedBranch], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
 })
 </script>
 
@@ -33,15 +63,12 @@ definePageMeta({
             <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-neutral-600">30 Hari</span>
-                <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
-                  <template #leading>
-                    <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-error" />
-                  </template>
-                  25%
-                </UBadge>
               </div>
               <div class="flex flex-col gap-1 select-none">
-                <span class="text-3xl font-semibold text-neutral-900">15</span>
+                <span class="text-3xl font-semibold text-neutral-900">
+                  <span v-if="isLoading" class="text-neutral-300">...</span>
+                  <span v-else>{{ contractExpiringStats?.total_30 || 0 }}</span>
+                </span>
                 <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
               </div>
             </div>
@@ -50,15 +77,12 @@ definePageMeta({
             <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-neutral-600">60 Hari</span>
-                <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">
-                  <template #leading>
-                    <UIcon name="i-lucide-arrow-up" class="w-3 h-3 text-error" />
-                  </template>
-                  12%
-                </UBadge>
               </div>
               <div class="flex flex-col gap-1 select-none">
-                <span class="text-3xl font-semibold text-neutral-900">28</span>
+                <span class="text-3xl font-semibold text-neutral-900">
+                  <span v-if="isLoading" class="text-neutral-300">...</span>
+                  <span v-else>{{ contractExpiringStats?.total_60 || 0 }}</span>
+                </span>
                 <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
               </div>
             </div>
@@ -67,15 +91,12 @@ definePageMeta({
             <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-neutral-600">90 Hari</span>
-                <UBadge color="primary" variant="subtle" size="sm" class="rounded-full font-medium">
-                  <template #leading>
-                    <UIcon name="i-lucide-arrow-down" class="w-3 h-3 text-primary" />
-                  </template>
-                  4.5%
-                </UBadge>
               </div>
               <div class="flex flex-col gap-1 select-none">
-                <span class="text-3xl font-semibold text-neutral-900">42</span>
+                <span class="text-3xl font-semibold text-neutral-900">
+                  <span v-if="isLoading" class="text-neutral-300">...</span>
+                  <span v-else>{{ contractExpiringStats?.total_90 || 0 }}</span>
+                </span>
                 <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
               </div>
             </div>
