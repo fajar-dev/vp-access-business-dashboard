@@ -2,7 +2,7 @@
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
 import type { ChurnStats, CustomerLoseStats } from '~/types/retention'
-import { formatCurrency } from '~/utils/format'
+import { formatCurrency, formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
 definePageMeta({
@@ -87,7 +87,7 @@ onMounted(() => {
         <MetricCard
           title="Churn Revenue"
           :value="churnStats ? formatCurrency(Math.abs(churnStats.revenue)) : 'Rp 0'"
-          :trend="churnStats ? `${Number(Math.abs(churnStats.percentage).toFixed(1))}%` : '0%'"
+          :trend="churnStats ? formatPercentage(churnStats.percentage) : '0%'"
           :trend-direction="churnStats?.trend === 'down' ? 'down' : 'up'"
           :trend-color="churnStats?.trend === 'down' ? 'primary' : 'error'"
           :subtext="churnStats?.period || 'Bulan ini'"
@@ -99,7 +99,7 @@ onMounted(() => {
         <MetricCard
           title="Customer Lose"
           :value="customerLoseStats ? String(customerLoseStats.total.value) : '0'"
-          :trend="customerLoseStats ? `${Number(Math.abs(customerLoseStats.total.percentage).toFixed(1))}%` : '0%'"
+          :trend="customerLoseStats ? formatPercentage(customerLoseStats.total.percentage) : '0%'"
           :trend-direction="customerLoseStats?.total.trend === 'down' ? 'down' : 'up'"
           :trend-color="customerLoseStats?.total.trend === 'down' ? 'primary' : 'error'"
           :subtext="customerLoseStats?.total.period || 'Bulan ini'"
@@ -116,7 +116,7 @@ onMounted(() => {
                 <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
                   <span class="text-neutral-900">{{ item.value }}</span>
                   <UBadge :color="item.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
-                    {{ item.trend === 'up' ? '↑' : '↓' }} {{ Number(Math.abs(item.percentage).toFixed(1)) }}%
+                    {{ item.trend === 'up' ? '↑' : '↓' }} {{ formatPercentage(item.percentage) }}
                   </UBadge>
                 </div>
               </div>
