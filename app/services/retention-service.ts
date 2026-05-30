@@ -10,7 +10,7 @@ export class RetentionService {
 
     async getChurnStats(branchId: string, period: string): Promise<ApiResponse<ChurnStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<ChurnStats>>(`/vp-access-business/retention/churn?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<ChurnStats>>(`/vp-access-business/retention/churn-revenue?branchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

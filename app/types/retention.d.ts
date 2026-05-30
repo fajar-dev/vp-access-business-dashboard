@@ -6,10 +6,7 @@ export interface ApiResponse<T = any> {
 }
 export interface ChurnStats {
     trend: 'up' | 'down'
-    customers: number
-    customersPrevious: number
-    customersGrowth: number
-    churnRate: number
+    percentage: number
     revenue: number
     period: string
 }

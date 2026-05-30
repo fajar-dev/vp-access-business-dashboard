@@ -57,7 +57,7 @@ onMounted(() => {
                   <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                   <span>Net MRC</span>
                 </div>
-                <div class="flex items-center gap-10 shrink-0">
+                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
                   <span class="text-neutral-900">Rp 190 Jt</span>
                   <UBadge color="primary" variant="soft" size="md" class="rounded-full font-medium">↑ 10%</UBadge>
                 </div>
@@ -67,7 +67,7 @@ onMounted(() => {
                   <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                   <span>Churn MRC</span>
                 </div>
-                <div class="flex items-center gap-10 shrink-0">
+                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
                   <span class="text-neutral-900">Rp 125 Jt</span>
                   <UBadge color="error" variant="soft" size="md" class="rounded-full font-medium">↑ 8.3%</UBadge>
                 </div>
@@ -80,7 +80,7 @@ onMounted(() => {
         <MetricCard
           title="Churn Revenue"
           :value="churnStats ? formatCurrency(Math.abs(churnStats.revenue)) : 'Rp 0'"
-          :trend="churnStats ? `${Math.abs(churnStats.churnRate).toFixed(1)}%` : '0%'"
+          :trend="churnStats ? `${Math.abs(churnStats.percentage).toFixed(1)}%` : '0%'"
           :trend-direction="churnStats?.trend === 'down' ? 'down' : 'up'"
           :trend-color="churnStats?.trend === 'down' ? 'error' : 'primary'"
           :subtext="churnStats?.period || 'Bulan ini'"
@@ -105,9 +105,9 @@ onMounted(() => {
                   <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
                   <span>Dedicated</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
                   <span class="text-neutral-900">8</span>
-                  <UBadge color="error" variant="subtle" size="sm" class="rounded-full font-medium">↑ 14.3%</UBadge>
+                  <UBadge color="error" variant="soft" size="md" class="rounded-full font-medium">↑ 14.3%</UBadge>
                 </div>
               </div>
               <div class="flex items-center justify-between text-sm font-medium">
@@ -115,9 +115,9 @@ onMounted(() => {
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                   <span>Broadband</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
                   <span class="text-neutral-900">12</span>
-                  <UBadge color="primary" variant="subtle" size="sm" class="rounded-full font-medium">↓ 7.7%</UBadge>
+                  <UBadge color="primary" variant="soft" size="md" class="rounded-full font-medium">↓ 7.7%</UBadge>
                 </div>
               </div>
             </div>
