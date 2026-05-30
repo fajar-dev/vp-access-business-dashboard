@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
-import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats } from '~/types/retention'
+import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from '~/types/retention'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
@@ -14,14 +14,16 @@ const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 const churnStats = ref<ChurnStats | null>(null)
 const customerLoseStats = ref<CustomerLoseStats | null>(null)
 const wirelessMigrationStats = ref<WirelessMigrationStats | null>(null)
+const churnRateData = ref<ChurnRateData[] | null>(null)
 const isLoading = ref(false)
 
 const fetchData = async () => {
   isLoading.value = true
-  const [churnResponse, loseResponse, migrationResponse] = await Promise.all([
+  const [churnResponse, loseResponse, migrationResponse, rateResponse] = await Promise.all([
     retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value),
     retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value),
-    retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value)
+    retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value),
+    retentionService.getChurnRate(selectedBranch.value)
   ])
   if (churnResponse?.success) {
     churnStats.value = churnResponse.data
@@ -31,6 +33,9 @@ const fetchData = async () => {
   }
   if (migrationResponse?.success) {
     wirelessMigrationStats.value = migrationResponse.data
+  }
+  if (rateResponse?.success) {
+    churnRateData.value = rateResponse.data
   }
   isLoading.value = false
 }
@@ -146,7 +151,7 @@ onMounted(() => {
       <div class="lg:col-span-2 flex flex-col gap-6">
         
         <!-- YTD Churn Rate Area Chart Component -->
-        <ChurnRateChart />
+        <ChurnRateChart :data="churnRateData" />
 
         <!-- 2x2 Grid of Secondary Metrics under the Chart -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

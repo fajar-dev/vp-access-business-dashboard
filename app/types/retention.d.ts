@@ -50,3 +50,16 @@ export interface WirelessMigrationStats {
         period: string
     }
 }
+
+export interface ChurnRateMonthData {
+    churn: number
+    active: number
+    ret: number
+}
+
+export interface ChurnRateData {
+    period: string
+    month: {
+        [year: string]: ChurnRateMonthData
+    }
+}
