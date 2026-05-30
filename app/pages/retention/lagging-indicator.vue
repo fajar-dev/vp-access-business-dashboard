@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
-import type { ChurnStats, CustomerLoseStats } from '~/types/retention'
+import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats } from '~/types/retention'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
@@ -13,19 +13,24 @@ const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 
 const churnStats = ref<ChurnStats | null>(null)
 const customerLoseStats = ref<CustomerLoseStats | null>(null)
+const wirelessMigrationStats = ref<WirelessMigrationStats | null>(null)
 const isLoading = ref(false)
 
 const fetchData = async () => {
   isLoading.value = true
-  const [churnResponse, loseResponse] = await Promise.all([
+  const [churnResponse, loseResponse, migrationResponse] = await Promise.all([
     retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value),
-    retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value)
+    retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value),
+    retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value)
   ])
   if (churnResponse?.success) {
     churnStats.value = churnResponse.data
   }
   if (loseResponse?.success) {
     customerLoseStats.value = loseResponse.data
+  }
+  if (migrationResponse?.success) {
+    wirelessMigrationStats.value = migrationResponse.data
   }
   isLoading.value = false
 }
@@ -127,10 +132,10 @@ onMounted(() => {
         <!-- Total Customer Wireless Card -->
         <MetricCard
           title="Total Customer Wireless"
-          value="245"
-          trend="3.2%"
-          trend-direction="up"
-          trend-color="primary"
+          :value="wirelessMigrationStats ? String(wirelessMigrationStats.totalCustomer.value) : '0'"
+          :trend="wirelessMigrationStats ? `${Math.abs(wirelessMigrationStats.totalCustomer.percentage).toFixed(1)}%` : '0%'"
+          :trend-direction="wirelessMigrationStats?.totalCustomer.trend === 'down' ? 'down' : 'up'"
+          :trend-color="wirelessMigrationStats?.totalCustomer.trend === 'down' ? 'error' : 'primary'"
           subtext="Layanan Aktif"
           icon="i-lucide-radio-tower"
           icon-color="text-info"
@@ -173,11 +178,11 @@ onMounted(() => {
           <!-- Customer Wireless Termigrasi -->
           <MetricCard
             title="Customer Wireless Termigrasi"
-            value="28"
-            trend="25.5%"
-            trend-direction="up"
-            trend-color="primary"
-            subtext="Bulan ini"
+            :value="wirelessMigrationStats ? String(wirelessMigrationStats.migrated.value) : '0'"
+            :trend="wirelessMigrationStats ? `${Math.abs(wirelessMigrationStats.migrated.percentage).toFixed(1)}%` : '0%'"
+            :trend-direction="wirelessMigrationStats?.migrated.trend === 'down' ? 'down' : 'up'"
+            :trend-color="wirelessMigrationStats?.migrated.trend === 'down' ? 'error' : 'primary'"
+            :subtext="wirelessMigrationStats?.migrated.period || 'Bulan ini'"
             icon="i-lucide-repeat"
             icon-color="text-purple-500"
           />
@@ -185,11 +190,11 @@ onMounted(() => {
           <!-- Migrasi -->
           <MetricCard
             title="Migrasi"
-            value="11.4%"
-            trend="5.6%"
-            trend-direction="up"
-            trend-color="primary"
-            subtext="28 dari 245 customer wireless"
+            :value="wirelessMigrationStats ? `${wirelessMigrationStats.migrationRate.value.toFixed(1)}%` : '0%'"
+            :trend="wirelessMigrationStats ? `${Math.abs(wirelessMigrationStats.migrationRate.percentage).toFixed(1)}%` : '0%'"
+            :trend-direction="wirelessMigrationStats?.migrationRate.trend === 'down' ? 'down' : 'up'"
+            :trend-color="wirelessMigrationStats?.migrationRate.trend === 'down' ? 'error' : 'primary'"
+            :subtext="wirelessMigrationStats ? `${wirelessMigrationStats.migrationRate.migratedValue} dari ${wirelessMigrationStats.migrationRate.totalValue} customer wireless` : '0 dari 0 customer wireless'"
             icon="i-lucide-percent"
             icon-color="text-primary"
           />

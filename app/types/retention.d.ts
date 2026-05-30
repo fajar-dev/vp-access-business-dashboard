@@ -27,3 +27,26 @@ export interface CustomerLoseStats {
     }
     detail: CustomerLoseDetail[]
 }
+
+export interface WirelessMigrationStats {
+    totalCustomer: {
+        value: number
+        trend: 'up' | 'down'
+        percentage: number
+        period: string
+    }
+    migrated: {
+        value: number
+        trend: 'up' | 'down'
+        percentage: number
+        period: string
+    }
+    migrationRate: {
+        value: number
+        trend: 'up' | 'down'
+        percentage: number
+        migratedValue: number
+        totalValue: number
+        period: string
+    }
+}
