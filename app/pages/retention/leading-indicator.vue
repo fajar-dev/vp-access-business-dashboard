@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { retentionService } from '~/services/retention-service'
-import type { ContractExpiringStats, TicketStats } from '~/types/retention'
+import type { ContractExpiringStats, TicketStats, UsageStats } from '~/types/retention'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage } from '~/utils/format'
 
@@ -12,13 +12,15 @@ definePageMeta({
 const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 const contractExpiringStats = ref<ContractExpiringStats | null>(null)
 const ticketStats = ref<TicketStats | null>(null)
+const usageStats = ref<UsageStats | null>(null)
 const isLoading = ref(false)
 
 const fetchData = async () => {
   isLoading.value = true
-  const [expiringResponse, ticketResponse] = await Promise.all([
+  const [expiringResponse, ticketResponse, usageResponse] = await Promise.all([
     retentionService.getContractExpiring(selectedBranch.value),
-    retentionService.getTicket(selectedBranch.value, selectedTimeframe.value)
+    retentionService.getTicket(selectedBranch.value, selectedTimeframe.value),
+    retentionService.getUsage(selectedBranch.value, selectedTimeframe.value)
   ])
   
   if (expiringResponse?.success) {
@@ -26,6 +28,9 @@ const fetchData = async () => {
   }
   if (ticketResponse?.success) {
     ticketStats.value = ticketResponse.data
+  }
+  if (usageResponse?.success) {
+    usageStats.value = usageResponse.data
   }
   
   isLoading.value = false
@@ -125,14 +130,13 @@ onMounted(() => {
             icon-color="text-indigo-500"
           />
 
-          <!-- Customer Usage Decrease Alert -->
           <MetricCard
             title="Penurunan Usage Customer"
-            value="237"
-            trend="18.3%"
-            trend-direction="up"
-            trend-color="error"
-            subtext="Usage <500MB per bulan"
+            :value="usageStats ? String(usageStats.value) : '0'"
+            :trend="usageStats ? formatPercentage(usageStats.percentage) : '0%'"
+            :trend-direction="usageStats?.trend === 'down' ? 'down' : 'up'"
+            :trend-color="usageStats?.trend === 'down' ? 'primary' : 'error'"
+            :subtext="`Usage < 500MB per ${usageStats?.period || 'Bulan'}`"
             icon="i-lucide-trending-down"
             icon-color="text-rose-500"
           />

@@ -77,3 +77,10 @@ export interface TicketStats {
     percentage: number
     period: string
 }
+
+export interface UsageStats {
+    value: number
+    trend: 'up' | 'down'
+    percentage: number
+    period: string
+}
