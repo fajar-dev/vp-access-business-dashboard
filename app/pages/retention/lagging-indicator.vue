@@ -133,7 +133,7 @@ onMounted(() => {
         <MetricCard
           title="Total Customer Wireless"
           :value="wirelessMigrationStats ? String(wirelessMigrationStats.totalCustomer.value) : '0'"
-          :trend="wirelessMigrationStats ? `${Math.abs(wirelessMigrationStats.totalCustomer.percentage).toFixed(1)}%` : '0%'"
+          :trend="wirelessMigrationStats ? formatPercentage(wirelessMigrationStats.totalCustomer.percentage) : '0%'"
           :trend-direction="wirelessMigrationStats?.totalCustomer.trend === 'down' ? 'down' : 'up'"
           :trend-color="wirelessMigrationStats?.totalCustomer.trend === 'down' ? 'error' : 'primary'"
           subtext="Layanan Aktif"
@@ -179,7 +179,7 @@ onMounted(() => {
           <MetricCard
             title="Customer Wireless Termigrasi"
             :value="wirelessMigrationStats ? String(wirelessMigrationStats.migrated.value) : '0'"
-            :trend="wirelessMigrationStats ? `${Math.abs(wirelessMigrationStats.migrated.percentage).toFixed(1)}%` : '0%'"
+            :trend="wirelessMigrationStats ? formatPercentage(wirelessMigrationStats.migrated.percentage) : '0%'"
             :trend-direction="wirelessMigrationStats?.migrated.trend === 'down' ? 'down' : 'up'"
             :trend-color="wirelessMigrationStats?.migrated.trend === 'down' ? 'error' : 'primary'"
             :subtext="wirelessMigrationStats?.migrated.period || 'Bulan ini'"
@@ -190,8 +190,8 @@ onMounted(() => {
           <!-- Migrasi -->
           <MetricCard
             title="Migrasi"
-            :value="wirelessMigrationStats ? `${wirelessMigrationStats.migrationRate.value.toFixed(1)}%` : '0%'"
-            :trend="wirelessMigrationStats ? `${Math.abs(wirelessMigrationStats.migrationRate.percentage).toFixed(1)}%` : '0%'"
+            :value="wirelessMigrationStats ? `${Number(wirelessMigrationStats.migrationRate.value.toFixed(1))}%` : '0%'"
+            :trend="wirelessMigrationStats ? formatPercentage(wirelessMigrationStats.migrationRate.percentage) : '0%'"
             :trend-direction="wirelessMigrationStats?.migrationRate.trend === 'down' ? 'down' : 'up'"
             :trend-color="wirelessMigrationStats?.migrationRate.trend === 'down' ? 'error' : 'primary'"
             :subtext="wirelessMigrationStats ? `${wirelessMigrationStats.migrationRate.migratedValue} dari ${wirelessMigrationStats.migrationRate.totalValue} customer wireless` : '0 dari 0 customer wireless'"
