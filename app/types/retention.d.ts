@@ -70,3 +70,10 @@ export interface ContractExpiringStats {
     total_60: number
     total_90: number
 }
+
+export interface TicketStats {
+    value: number
+    trend: 'up' | 'down'
+    percentage: number
+    period: string
+}

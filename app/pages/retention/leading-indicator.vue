@@ -1,32 +1,38 @@
 <script setup lang="ts">
 import { retentionService } from '~/services/retention-service'
-import type { ContractExpiringStats } from '~/types/retention'
+import type { ContractExpiringStats, TicketStats } from '~/types/retention'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
 definePageMeta({
   layout: 'dashboard'
 })
 
-const { selectedBranch } = useDashboardFilters()
+const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 const contractExpiringStats = ref<ContractExpiringStats | null>(null)
+const ticketStats = ref<TicketStats | null>(null)
 const isLoading = ref(false)
 
 const fetchData = async () => {
   isLoading.value = true
-  const [expiringResponse] = await Promise.all([
-    retentionService.getContractExpiring(selectedBranch.value)
+  const [expiringResponse, ticketResponse] = await Promise.all([
+    retentionService.getContractExpiring(selectedBranch.value),
+    retentionService.getTicket(selectedBranch.value, selectedTimeframe.value)
   ])
   
   if (expiringResponse?.success) {
     contractExpiringStats.value = expiringResponse.data
+  }
+  if (ticketResponse?.success) {
+    ticketStats.value = ticketResponse.data
   }
   
   isLoading.value = false
 }
 
 // Watchers to trigger re-fetch when branch changes
-watch([selectedBranch], () => {
+watch([selectedBranch, selectedTimeframe], () => {
   fetchData()
 })
 
@@ -110,10 +116,10 @@ onMounted(() => {
           <!-- Customer Support Ticket Alert -->
           <MetricCard
             title="Customer ≥2 Ticket dalam 1 Bulan"
-            value="156"
-            trend="12.5%"
-            trend-direction="up"
-            trend-color="error"
+            :value="ticketStats ? String(ticketStats.value) : '0'"
+            :trend="ticketStats ? formatPercentage(ticketStats.percentage) : '0%'"
+            :trend-direction="ticketStats?.trend === 'down' ? 'down' : 'up'"
+            :trend-color="ticketStats?.trend === 'down' ? 'primary' : 'error'"
             subtext="Indikasi ketidakpuasan layanan"
             icon="i-lucide-ticket"
             icon-color="text-indigo-500"
