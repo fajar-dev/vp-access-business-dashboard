@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
-import type { ChurnStats } from '~/types/retention'
+import type { ChurnStats, CustomerLoseStats } from '~/types/retention'
 import { formatCurrency } from '~/utils/format'
 
 // Page meta to use our default layout container
@@ -12,23 +12,30 @@ definePageMeta({
 const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 
 const churnStats = ref<ChurnStats | null>(null)
+const customerLoseStats = ref<CustomerLoseStats | null>(null)
 const isLoading = ref(false)
 
-const fetchChurnStats = async () => {
+const fetchData = async () => {
   isLoading.value = true
-  const response = await retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value)
-  if (response?.success) {
-    churnStats.value = response.data
+  const [churnResponse, loseResponse] = await Promise.all([
+    retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value),
+    retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value)
+  ])
+  if (churnResponse?.success) {
+    churnStats.value = churnResponse.data
+  }
+  if (loseResponse?.success) {
+    customerLoseStats.value = loseResponse.data
   }
   isLoading.value = false
 }
 
 watch([selectedBranch, selectedTimeframe], () => {
-  fetchChurnStats()
+  fetchData()
 })
 
 onMounted(() => {
-  fetchChurnStats()
+  fetchData()
 })
 </script>
 
@@ -80,9 +87,9 @@ onMounted(() => {
         <MetricCard
           title="Churn Revenue"
           :value="churnStats ? formatCurrency(Math.abs(churnStats.revenue)) : 'Rp 0'"
-          :trend="churnStats ? `${Math.abs(churnStats.percentage).toFixed(1)}%` : '0%'"
+          :trend="churnStats ? `${Number(Math.abs(churnStats.percentage).toFixed(1))}%` : '0%'"
           :trend-direction="churnStats?.trend === 'down' ? 'down' : 'up'"
-          :trend-color="churnStats?.trend === 'down' ? 'error' : 'primary'"
+          :trend-color="churnStats?.trend === 'down' ? 'primary' : 'error'"
           :subtext="churnStats?.period || 'Bulan ini'"
           icon="i-lucide-dollar-sign"
           icon-color="text-warning"
@@ -91,33 +98,26 @@ onMounted(() => {
         <!-- Customer Lose Card with Detailed Breakdowns -->
         <MetricCard
           title="Customer Lose"
-          value="20"
-          trend="11.1%"
-          trend-direction="up"
-          trend-color="error"
+          :value="customerLoseStats ? String(customerLoseStats.total.value) : '0'"
+          :trend="customerLoseStats ? `${Number(Math.abs(customerLoseStats.total.percentage).toFixed(1))}%` : '0%'"
+          :trend-direction="customerLoseStats?.total.trend === 'down' ? 'down' : 'up'"
+          :trend-color="customerLoseStats?.total.trend === 'down' ? 'primary' : 'error'"
+          :subtext="customerLoseStats?.total.period || 'Bulan ini'"
           icon="i-lucide-user-round-minus"
           icon-color="text-purple-500"
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <div class="flex items-center justify-between text-sm font-medium">
+              <div v-for="(item, index) in customerLoseStats?.detail || []" :key="index" class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
-                  <span>Dedicated</span>
+                  <span class="w-2.5 h-2.5 rounded-full inline-block" :class="index % 2 === 0 ? 'bg-blue-500' : 'bg-emerald-500'"></span>
+                  <span>{{ item.service_group }}</span>
                 </div>
                 <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <span class="text-neutral-900">8</span>
-                  <UBadge color="error" variant="soft" size="md" class="rounded-full font-medium">↑ 14.3%</UBadge>
-                </div>
-              </div>
-              <div class="flex items-center justify-between text-sm font-medium">
-                <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                  <span>Broadband</span>
-                </div>
-                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <span class="text-neutral-900">12</span>
-                  <UBadge color="primary" variant="soft" size="md" class="rounded-full font-medium">↓ 7.7%</UBadge>
+                  <span class="text-neutral-900">{{ item.value }}</span>
+                  <UBadge :color="item.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
+                    {{ item.trend === 'up' ? '↑' : '↓' }} {{ Number(Math.abs(item.percentage).toFixed(1)) }}%
+                  </UBadge>
                 </div>
               </div>
             </div>

@@ -36,7 +36,8 @@
             <UIcon
               v-else-if="trendDirection === 'down'"
               name="i-lucide-arrow-down"
-              class="w-3 h-3 text-error"
+              class="w-3 h-3"
+              :class="(trendColor === 'error' || (!trendColor && trendDirection === 'down')) ? 'text-error' : 'text-primary'"
             />
           </template>
           {{ trend }}

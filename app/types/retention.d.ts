@@ -10,3 +10,20 @@ export interface ChurnStats {
     revenue: number
     period: string
 }
+
+export interface CustomerLoseDetail {
+    service_group: string
+    value: number
+    trend: 'up' | 'down'
+    percentage: number
+}
+
+export interface CustomerLoseStats {
+    total: {
+        value: number
+        trend: 'up' | 'down'
+        percentage: number
+        period: string
+    }
+    detail: CustomerLoseDetail[]
+}

@@ -49,3 +49,7 @@ export function formatCurrency(value: number, compact: boolean = true): string {
 
 // Alias for backward compatibility if needed, but it's better to update callers
 export const formatRevenue = formatCompact
+
+export function formatPercentage(value: number): string {
+  return `${Number(Math.abs(value).toFixed(1))}%`
+}
