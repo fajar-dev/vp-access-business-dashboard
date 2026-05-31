@@ -112,14 +112,14 @@ const radarChartOptions = {
       />
     </div>
 
-    <!-- Middle Section: Radar Chart and Insight Panel Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-stretch">
+    <!-- Middle Section: Radar Chart and Insight Panel -->
+    <UCard 
+      class="border border-neutral-100"
+      :ui="{ body: 'p-0 flex flex-col lg:flex-row items-stretch' }"
+    >
       
-      <!-- Left Card: Interactive Overall Radar Chart (Spans 3 columns) -->
-      <UCard 
-        class="lg:col-span-3 border border-neutral-100 flex flex-col justify-between"
-        :ui="{ body: 'p-6 flex-1 flex flex-col justify-between relative overflow-hidden' }"
-      >
+      <!-- Left Area: Interactive Overall Radar Chart (3/4 width) -->
+      <div class="lg:w-3/4 md:p-0 md:pr-4 p-4 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-neutral-100">
         <!-- Header area of Radar card -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100 select-none shrink-0 z-10">
           <div>
@@ -208,13 +208,10 @@ const radarChartOptions = {
           </div>
 
         </div>
-      </UCard>
+      </div>
 
-      <!-- Right Card: Insight Panel & Rating System (Spans 1 column) -->
-      <UCard 
-        class="lg:col-span-1 border border-neutral-100 flex flex-col justify-between"
-        :ui="{ body: 'p-6 flex-1 flex flex-col gap-6 justify-between select-none' }"
-      >
+      <!-- Right Area: Insight Panel & Rating System (1/4 width) -->
+      <div class="lg:w-1/4 p-4 flex flex-col gap-6 justify-between select-none">
         <!-- Section 1: Cara Membaca -->
         <div class="space-y-3">
           <h4 class="text-sm font-bold text-neutral-900">
@@ -222,61 +219,61 @@ const radarChartOptions = {
           </h4>
           <div class="flex gap-4 items-start">
             <!-- Miniature Radar SVG Indicator -->
-            <div class="w-16 h-16 rounded-lg border border-neutral-100 bg-neutral-50/50 flex items-center justify-center shrink-0">
+            <div class="w-16 h-16 rounded-lg border border-neutral-100 bg-white flex items-center justify-center shrink-0 shadow-sm">
               <svg viewBox="0 0 100 100" class="w-12 h-12">
                 <polygon points="50,15 85,50 50,85 15,50" fill="none" stroke="#e5e7eb" stroke-width="1.5" />
                 <polygon points="50,25 75,50 50,75 25,50" fill="#10b981" fill-opacity="0.25" stroke="#10b981" stroke-width="2" />
                 <circle cx="50" cy="50" r="2" fill="#10b981" />
               </svg>
             </div>
-            <p class="text-sm text-neutral-600">
+            <p class="text-sm text-neutral-600 leading-relaxed">
               Semakin luas area hijau, semakin baik kualitas layanan secara keseluruhan.
             </p>
           </div>
         </div>
 
         <!-- Section 2: Skala Penilaian -->
-        <div class="space-y-3 pt-4 border-t border-neutral-100">
+        <div class="space-y-3 pt-5 border-t border-neutral-200/60">
           <h4 class="text-sm font-bold text-neutral-900">
             Skala Penilaian
           </h4>
-          <div class="space-y-2">
+          <div class="space-y-2.5">
             <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                <span class="text-neutral-700">75 - 100</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm"></span>
+                <span class="text-neutral-700 font-medium">75 - 100</span>
               </div>
-              <span class="text-neutral-700">Baik</span>
+              <span class="text-neutral-600">Baik</span>
             </div>
             <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-                <span class="text-neutral-700">50 - 74</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-sm"></span>
+                <span class="text-neutral-700 font-medium">50 - 74</span>
               </div>
-              <span class="text-neutral-700">Cukup</span>
+              <span class="text-neutral-600">Cukup</span>
             </div>
             <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
-                <span class="text-neutral-700">0 - 49</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shadow-sm"></span>
+                <span class="text-neutral-700 font-medium">0 - 49</span>
               </div>
-              <span class="text-neutral-700">Perlu Perbaikan</span>
+              <span class="text-neutral-600">Perlu Perbaikan</span>
             </div>
           </div>
         </div>
 
         <!-- Section 3: Insight -->
-        <div class="space-y-2 pt-4 border-t border-neutral-100">
+        <div class="space-y-2 pt-5 border-t border-neutral-200/60">
           <h4 class="text-sm font-bold text-neutral-900">
             Insight
           </h4>
-          <p class="text-sm text-neutral-600">
+          <p class="text-sm text-neutral-600 leading-relaxed">
             Performa cukup baik pada solved customers dan total solved. Perlu perhatian pada total komplain customer dan total tiket untuk meningkatkan kualitas layanan.
           </p>
         </div>
 
-      </UCard>
-    </div>
+      </div>
+    </UCard>
 
     <!-- Bottom Full Width Info Bar -->
     <UAlert
