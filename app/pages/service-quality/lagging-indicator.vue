@@ -17,6 +17,12 @@ const ticketStats = ref<TicketStats | null>(null)
 const isLoadingComplaint = ref(false)
 const complaintStats = ref<TicketStats | null>(null)
 
+const isLoadingSolved = ref(false)
+const solvedStats = ref<TicketStats | null>(null)
+
+const isLoadingSolvedPercentage = ref(false)
+const solvedPercentageStats = ref<TicketStats | null>(null)
+
 const fetchTicket = async () => {
   isLoadingTicket.value = true
   const res = await serviceQualityService.getTicket(selectedBranch.value, globalTimeframe.value)
@@ -31,9 +37,25 @@ const fetchComplaint = async () => {
   isLoadingComplaint.value = false
 }
 
+const fetchSolved = async () => {
+  isLoadingSolved.value = true
+  const res = await serviceQualityService.getSolved(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) solvedStats.value = res.data
+  isLoadingSolved.value = false
+}
+
+const fetchSolvedPercentage = async () => {
+  isLoadingSolvedPercentage.value = true
+  const res = await serviceQualityService.getSolvedPercentage(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) solvedPercentageStats.value = res.data
+  isLoadingSolvedPercentage.value = false
+}
+
 const fetchData = () => {
   fetchTicket()
   fetchComplaint()
+  fetchSolved()
+  fetchSolvedPercentage()
 }
 
 watch([selectedBranch, globalTimeframe], () => {
@@ -131,25 +153,27 @@ const radarChartOptions = {
       <!-- Solved Customers -->
       <MetricCard
         title="Solved Customers"
-        value="69%"
-        trend="8.4%"
-        trend-direction="up"
-        trend-color="primary"
-        subtext="Bulan ini"
+        :value="solvedPercentageStats ? formatPercentage(solvedPercentageStats.value) : '0%'"
+        :trend="solvedPercentageStats ? formatPercentage(solvedPercentageStats.percentage) : '0%'"
+        :trend-direction="solvedPercentageStats?.trend === 'down' ? 'down' : 'up'"
+        :trend-color="solvedPercentageStats?.trend === 'down' ? 'error' : 'primary'"
+        :subtext="`${solvedPercentageStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-thumbs-up"
         icon-color="text-info"
+        :is-loading="isLoadingSolvedPercentage"
       />
 
       <!-- Total Solved -->
       <MetricCard
         title="Total Solved"
-        value="33"
-        trend="3.2%"
-        trend-direction="up"
-        trend-color="primary"
-        subtext="Bulan ini"
+        :value="solvedStats ? String(solvedStats.value) : '0'"
+        :trend="solvedStats ? formatPercentage(solvedStats.percentage) : '0%'"
+        :trend-direction="solvedStats?.trend === 'down' ? 'down' : 'up'"
+        :trend-color="solvedStats?.trend === 'down' ? 'error' : 'primary'"
+        :subtext="`${solvedStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-square-check-big"
         icon-color="text-info"
+        :is-loading="isLoadingSolved"
       />
     </div>
 
