@@ -13,27 +13,35 @@ const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 const contractExpiringStats = ref<ContractExpiringStats | null>(null)
 const ticketStats = ref<TicketStats | null>(null)
 const usageStats = ref<UsageStats | null>(null)
-const isLoading = ref(false)
+const isLoadingExpiring = ref(false)
+const isLoadingTicket = ref(false)
+const isLoadingUsage = ref(false)
 
-const fetchData = async () => {
-  isLoading.value = true
-  const [expiringResponse, ticketResponse, usageResponse] = await Promise.all([
-    retentionService.getContractExpiring(selectedBranch.value),
-    retentionService.getTicket(selectedBranch.value, selectedTimeframe.value),
-    retentionService.getUsage(selectedBranch.value, selectedTimeframe.value)
-  ])
-  
-  if (expiringResponse?.success) {
-    contractExpiringStats.value = expiringResponse.data
-  }
-  if (ticketResponse?.success) {
-    ticketStats.value = ticketResponse.data
-  }
-  if (usageResponse?.success) {
-    usageStats.value = usageResponse.data
-  }
-  
-  isLoading.value = false
+const fetchContractExpiring = async () => {
+  isLoadingExpiring.value = true
+  const res = await retentionService.getContractExpiring(selectedBranch.value)
+  if (res?.success) contractExpiringStats.value = res.data
+  isLoadingExpiring.value = false
+}
+
+const fetchTicket = async () => {
+  isLoadingTicket.value = true
+  const res = await retentionService.getTicket(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) ticketStats.value = res.data
+  isLoadingTicket.value = false
+}
+
+const fetchUsage = async () => {
+  isLoadingUsage.value = true
+  const res = await retentionService.getUsage(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) usageStats.value = res.data
+  isLoadingUsage.value = false
+}
+
+const fetchData = () => {
+  fetchContractExpiring()
+  fetchTicket()
+  fetchUsage()
 }
 
 // Watchers to trigger re-fetch when branch changes
@@ -71,46 +79,28 @@ onMounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
             
             <!-- 30 Hari -->
-            <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-neutral-600">30 Hari</span>
-              </div>
-              <div class="flex flex-col gap-1 select-none">
-                <span class="text-3xl font-semibold text-neutral-900">
-                  <span v-if="isLoading" class="text-neutral-300">...</span>
-                  <span v-else>{{ contractExpiringStats?.total_30 || 0 }}</span>
-                </span>
-                <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
-              </div>
-            </div>
+            <MetricCard
+              title="30 Hari"
+              :value="contractExpiringStats ? String(contractExpiringStats.total_30) : '0'"
+              subtext="Kontrak segera berakhir"
+              :is-loading="isLoadingExpiring"
+            />
 
             <!-- 60 Hari -->
-            <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-neutral-600">60 Hari</span>
-              </div>
-              <div class="flex flex-col gap-1 select-none">
-                <span class="text-3xl font-semibold text-neutral-900">
-                  <span v-if="isLoading" class="text-neutral-300">...</span>
-                  <span v-else>{{ contractExpiringStats?.total_60 || 0 }}</span>
-                </span>
-                <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
-              </div>
-            </div>
+            <MetricCard
+              title="60 Hari"
+              :value="contractExpiringStats ? String(contractExpiringStats.total_60) : '0'"
+              subtext="Kontrak segera berakhir"
+              :is-loading="isLoadingExpiring"
+            />
 
             <!-- 90 Hari -->
-            <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3 hover:shadow-xs transition-all duration-200">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-neutral-600">90 Hari</span>
-              </div>
-              <div class="flex flex-col gap-1 select-none">
-                <span class="text-3xl font-semibold text-neutral-900">
-                  <span v-if="isLoading" class="text-neutral-300">...</span>
-                  <span v-else>{{ contractExpiringStats?.total_90 || 0 }}</span>
-                </span>
-                <span class="text-sm text-neutral-500">Kontrak segera berakhir</span>
-              </div>
-            </div>
+            <MetricCard
+              title="90 Hari"
+              :value="contractExpiringStats ? String(contractExpiringStats.total_90) : '0'"
+              subtext="Kontrak segera berakhir"
+              :is-loading="isLoadingExpiring"
+            />
 
           </div>
         </UCard>
@@ -128,6 +118,7 @@ onMounted(() => {
             subtext="Indikasi ketidakpuasan layanan"
             icon="i-lucide-ticket"
             icon-color="text-indigo-500"
+            :is-loading="isLoadingTicket"
           />
 
           <MetricCard
@@ -136,9 +127,10 @@ onMounted(() => {
             :trend="usageStats ? formatPercentage(usageStats.percentage) : '0%'"
             :trend-direction="usageStats?.trend === 'down' ? 'down' : 'up'"
             :trend-color="usageStats?.trend === 'down' ? 'primary' : 'error'"
-            :subtext="`Usage < 500MB per ${usageStats?.period || 'Bulan'}`"
+            subtext="Usage <500MB per bulan"
             icon="i-lucide-trending-down"
             icon-color="text-rose-500"
+            :is-loading="isLoadingUsage"
           />
         </div>
       </div>

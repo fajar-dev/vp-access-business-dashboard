@@ -19,8 +19,9 @@
         </div>
 
         <!-- Trend Badge -->
+        <USkeleton v-if="isLoading && trend" class="h-6 w-16 rounded-full" />
         <UBadge
-          v-if="trend"
+          v-else-if="trend"
           :color="trendColor || (trendDirection === 'down' ? 'error' : 'primary')"
           variant="soft"
           size="md"
@@ -47,11 +48,13 @@
       <!-- Card Content -->
       <div class="flex-1 flex flex-col justify-between min-h-[68px]">
         <div class="text-4xl font-semibold tracking-tight text-neutral-900">
-          {{ value }}
+          <USkeleton v-if="isLoading" class="h-10 w-3/4" />
+          <span v-else>{{ value }}</span>
         </div>
-        <p v-if="subtext" class="text-sm text-neutral-500">
-          {{ subtext }}
-        </p>
+        <div v-if="subtext" class="text-sm text-neutral-500 mt-2">
+          <USkeleton v-if="isLoading" class="h-5 w-1/2" />
+          <span v-else>{{ subtext }}</span>
+        </div>
       </div>
 
       <!-- Slots for breakdowns / lists (optional) -->
@@ -72,10 +75,12 @@ interface Props {
   trendColor?: 'primary' | 'error' | 'neutral'
   icon?: string
   iconColor?: string
+  isLoading?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   trendDirection: 'up',
-  iconColor: 'text-primary'
+  iconColor: 'text-primary',
+  isLoading: false
 })
 </script>

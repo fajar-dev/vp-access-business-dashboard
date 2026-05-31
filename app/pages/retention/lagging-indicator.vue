@@ -15,29 +15,44 @@ const churnStats = ref<ChurnStats | null>(null)
 const customerLoseStats = ref<CustomerLoseStats | null>(null)
 const wirelessMigrationStats = ref<WirelessMigrationStats | null>(null)
 const churnRateData = ref<ChurnRateData[] | null>(null)
-const isLoading = ref(false)
+const isLoadingChurn = ref(false)
+const isLoadingLose = ref(false)
+const isLoadingMigration = ref(false)
+const isLoadingRate = ref(false)
 
-const fetchData = async () => {
-  isLoading.value = true
-  const [churnResponse, loseResponse, migrationResponse, rateResponse] = await Promise.all([
-    retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value),
-    retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value),
-    retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value),
-    retentionService.getChurnRate(selectedBranch.value)
-  ])
-  if (churnResponse?.success) {
-    churnStats.value = churnResponse.data
-  }
-  if (loseResponse?.success) {
-    customerLoseStats.value = loseResponse.data
-  }
-  if (migrationResponse?.success) {
-    wirelessMigrationStats.value = migrationResponse.data
-  }
-  if (rateResponse?.success) {
-    churnRateData.value = rateResponse.data
-  }
-  isLoading.value = false
+const fetchChurnStats = async () => {
+  isLoadingChurn.value = true
+  const res = await retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) churnStats.value = res.data
+  isLoadingChurn.value = false
+}
+
+const fetchCustomerLose = async () => {
+  isLoadingLose.value = true
+  const res = await retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) customerLoseStats.value = res.data
+  isLoadingLose.value = false
+}
+
+const fetchWirelessMigration = async () => {
+  isLoadingMigration.value = true
+  const res = await retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) wirelessMigrationStats.value = res.data
+  isLoadingMigration.value = false
+}
+
+const fetchChurnRate = async () => {
+  isLoadingRate.value = true
+  const res = await retentionService.getChurnRate(selectedBranch.value)
+  if (res?.success) churnRateData.value = res.data
+  isLoadingRate.value = false
+}
+
+const fetchData = () => {
+  fetchChurnStats()
+  fetchCustomerLose()
+  fetchWirelessMigration()
+  fetchChurnRate()
 }
 
 watch([selectedBranch, selectedTimeframe], () => {
@@ -96,13 +111,14 @@ onMounted(() => {
         <!-- Churn Revenue Card -->
         <MetricCard
           title="Churn Revenue"
-          :value="churnStats ? formatCurrency(Math.abs(churnStats.revenue)) : 'Rp 0'"
+          :value="churnStats ? formatCurrency(Math.abs(churnStats.revenue)) : '0'"
           :trend="churnStats ? formatPercentage(churnStats.percentage) : '0%'"
           :trend-direction="churnStats?.trend === 'down' ? 'down' : 'up'"
           :trend-color="churnStats?.trend === 'down' ? 'primary' : 'error'"
           :subtext="churnStats?.period || 'Bulan ini'"
           icon="i-lucide-dollar-sign"
           icon-color="text-warning"
+          :is-loading="isLoadingChurn"
         />
 
         <!-- Customer Lose Card with Detailed Breakdowns -->
@@ -115,9 +131,14 @@ onMounted(() => {
           :subtext="customerLoseStats?.total.period || 'Bulan ini'"
           icon="i-lucide-user-round-minus"
           icon-color="text-purple-500"
+          :is-loading="isLoadingLose"
         >
           <template #details>
-            <div class="space-y-2 mt-1">
+            <div v-if="isLoadingLose" class="space-y-3 mt-1">
+              <USkeleton class="h-5 w-full" />
+              <USkeleton class="h-5 w-full" />
+            </div>
+            <div v-else class="space-y-2 mt-1">
               <div v-for="(item, index) in customerLoseStats?.detail || []" :key="index" class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full inline-block" :class="index % 2 === 0 ? 'bg-blue-500' : 'bg-emerald-500'"></span>
@@ -144,6 +165,7 @@ onMounted(() => {
           subtext="Layanan Aktif"
           icon="i-lucide-radio-tower"
           icon-color="text-info"
+          :is-loading="isLoadingMigration"
         />
       </div>
 
@@ -151,7 +173,10 @@ onMounted(() => {
       <div class="lg:col-span-2 flex flex-col gap-6">
         
         <!-- YTD Churn Rate Area Chart Component -->
-        <ChurnRateChart :data="churnRateData" />
+        <div v-if="isLoadingRate" class="h-80 w-full rounded-xl overflow-hidden border border-neutral-100">
+          <USkeleton class="h-full w-full" />
+        </div>
+        <ChurnRateChart v-else :data="churnRateData" />
 
         <!-- 2x2 Grid of Secondary Metrics under the Chart -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -190,6 +215,7 @@ onMounted(() => {
             :subtext="wirelessMigrationStats?.migrated.period || 'Bulan ini'"
             icon="i-lucide-repeat"
             icon-color="text-purple-500"
+            :is-loading="isLoadingMigration"
           />
 
           <!-- Migrasi -->
@@ -202,6 +228,7 @@ onMounted(() => {
             :subtext="wirelessMigrationStats ? `${wirelessMigrationStats.migrationRate.migratedValue} dari ${wirelessMigrationStats.migrationRate.totalValue} customer wireless` : '0 dari 0 customer wireless'"
             icon="i-lucide-percent"
             icon-color="text-primary"
+            :is-loading="isLoadingMigration"
           />
         </div>
       </div>
