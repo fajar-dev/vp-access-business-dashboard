@@ -173,10 +173,7 @@ onMounted(() => {
       <div class="lg:col-span-2 flex flex-col gap-6">
         
         <!-- YTD Churn Rate Area Chart Component -->
-        <div v-if="isLoadingRate" class="h-80 w-full rounded-xl overflow-hidden border border-neutral-100">
-          <USkeleton class="h-full w-full" />
-        </div>
-        <ChurnRateChart v-else :data="churnRateData" />
+        <ChurnRateChart :data="churnRateData" :is-loading="isLoadingRate" />
 
         <!-- 2x2 Grid of Secondary Metrics under the Chart -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

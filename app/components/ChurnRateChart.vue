@@ -33,8 +33,9 @@
     </div>
 
     <!-- Chart Render Area using ClientOnly to support Nuxt SSR -->
-    <div class="relative flex-1 min-h-64 mt-4 w-full">
-      <ClientOnly>
+    <div class="relative flex-1 min-h-[320px] mt-4 w-full flex flex-col">
+      <USkeleton v-if="isLoading" class="flex-1 w-full rounded-xl" />
+      <ClientOnly v-else>
         <apexchart
           type="area"
           height="320"
@@ -69,6 +70,7 @@ import type { ChurnRateData } from '~/types/retention'
 
 const props = defineProps<{
   data: ChurnRateData[] | null
+  isLoading?: boolean
 }>()
 
 // Define switches
