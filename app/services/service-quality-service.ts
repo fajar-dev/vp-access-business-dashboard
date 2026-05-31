@@ -16,6 +16,15 @@ export class ServiceQualityService {
             return handleServiceError(error)
         }
     }
+
+    async getComplaint(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/complaint?branchId=${branchId}&period=${period}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
 }
 
 export const serviceQualityService = new ServiceQualityService()

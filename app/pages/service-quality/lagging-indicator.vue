@@ -14,6 +14,9 @@ const { selectedBranch, selectedTimeframe: globalTimeframe } = useDashboardFilte
 const isLoadingTicket = ref(false)
 const ticketStats = ref<TicketStats | null>(null)
 
+const isLoadingComplaint = ref(false)
+const complaintStats = ref<TicketStats | null>(null)
+
 const fetchTicket = async () => {
   isLoadingTicket.value = true
   const res = await serviceQualityService.getTicket(selectedBranch.value, globalTimeframe.value)
@@ -21,8 +24,16 @@ const fetchTicket = async () => {
   isLoadingTicket.value = false
 }
 
+const fetchComplaint = async () => {
+  isLoadingComplaint.value = true
+  const res = await serviceQualityService.getComplaint(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) complaintStats.value = res.data
+  isLoadingComplaint.value = false
+}
+
 const fetchData = () => {
   fetchTicket()
+  fetchComplaint()
 }
 
 watch([selectedBranch, globalTimeframe], () => {
@@ -98,7 +109,7 @@ const radarChartOptions = {
         :trend="ticketStats ? formatPercentage(ticketStats.percentage) : '0%'"
         :trend-direction="ticketStats?.trend === 'down' ? 'down' : 'up'"
         :trend-color="ticketStats?.trend === 'down' ? 'primary' : 'error'"
-        :subtext="`per ${ticketStats?.period || 'Bulan'}`"
+        :subtext="`${ticketStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-message-circle-more"
         icon-color="text-error"
         :is-loading="isLoadingTicket"
@@ -107,13 +118,14 @@ const radarChartOptions = {
       <!-- Total Komplain Customer -->
       <MetricCard
         title="Total Komplain Customer"
-        value="48"
-        trend="3.2%"
-        trend-direction="up"
-        trend-color="error"
-        subtext="Bulan ini"
+        :value="complaintStats ? String(complaintStats.value) : '0'"
+        :trend="complaintStats ? formatPercentage(complaintStats.percentage) : '0%'"
+        :trend-direction="complaintStats?.trend === 'down' ? 'down' : 'up'"
+        :trend-color="complaintStats?.trend === 'down' ? 'primary' : 'error'"
+        :subtext="`${complaintStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-message-square-warning"
         icon-color="text-info"
+        :is-loading="isLoadingComplaint"
       />
 
       <!-- Solved Customers -->
