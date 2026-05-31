@@ -1,8 +1,36 @@
 <script setup lang="ts">
+import { serviceQualityService } from '~/services/service-quality-service'
+import type { TicketStats } from '~/types/service-quality'
+import { formatPercentage } from '~/utils/format'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
 
 // Page meta to use our default layout container
 definePageMeta({
   layout: 'dashboard'
+})
+
+const { selectedBranch, selectedTimeframe: globalTimeframe } = useDashboardFilters()
+
+const isLoadingTicket = ref(false)
+const ticketStats = ref<TicketStats | null>(null)
+
+const fetchTicket = async () => {
+  isLoadingTicket.value = true
+  const res = await serviceQualityService.getTicket(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) ticketStats.value = res.data
+  isLoadingTicket.value = false
+}
+
+const fetchData = () => {
+  fetchTicket()
+}
+
+watch([selectedBranch, globalTimeframe], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
 })
 
 // Scoped state for Radar timeframe selector
@@ -66,13 +94,14 @@ const radarChartOptions = {
       <!-- Total Tiket -->
       <MetricCard
         title="Total Tiket"
-        value="54"
-        trend="8.3%"
-        trend-direction="up"
-        trend-color="error"
-        subtext="Bulan ini"
+        :value="ticketStats ? String(ticketStats.value) : '0'"
+        :trend="ticketStats ? formatPercentage(ticketStats.percentage) : '0%'"
+        :trend-direction="ticketStats?.trend === 'down' ? 'down' : 'up'"
+        :trend-color="ticketStats?.trend === 'down' ? 'primary' : 'error'"
+        :subtext="`per ${ticketStats?.period || 'Bulan'}`"
         icon="i-lucide-message-circle-more"
         icon-color="text-error"
+        :is-loading="isLoadingTicket"
       />
 
       <!-- Total Komplain Customer -->
