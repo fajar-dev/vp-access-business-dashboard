@@ -1,7 +1,40 @@
 <script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+import { serviceQualityService } from '~/services/service-quality-service'
+import type { TicketStats } from '~/types/service-quality'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { formatPercentage } from '~/utils/format'
+
 // Page meta to use our default layout container
 definePageMeta({
   layout: 'dashboard'
+})
+
+const { selectedBranch, selectedTimeframe: globalTimeframe } = useDashboardFilters()
+
+const issueStats = ref<TicketStats | null>(null)
+const isLoadingIssue = ref(true)
+
+const fetchIssue = async () => {
+  isLoadingIssue.value = true
+  try {
+    const response = await serviceQualityService.getIssue(selectedBranch.value, globalTimeframe.value)
+    if (response.success && response.data) {
+      issueStats.value = response.data
+    }
+  } catch (error) {
+    console.error('Failed to fetch issue stats:', error)
+  } finally {
+    isLoadingIssue.value = false
+  }
+}
+
+watch([selectedBranch, globalTimeframe], () => {
+  fetchIssue()
+})
+
+onMounted(() => {
+  fetchIssue()
 })
 </script>
 
@@ -20,13 +53,14 @@ definePageMeta({
       <!-- Repeat Issue Rate -->
       <MetricCard
         title="Repeat Issue rate"
-        value="63%"
-        trend="3.2%"
-        trend-direction="down"
-        trend-color="error"
-        subtext="Bulan ini"
+        :value="issueStats ? formatPercentage(issueStats.value) : '0%'"
+        :trend="issueStats ? formatPercentage(issueStats.percentage) : '0%'"
+        :trend-direction="issueStats?.trend === 'down' ? 'down' : 'up'"
+        :trend-color="issueStats?.trend === 'down' ? 'primary' : 'error'"
+        :subtext="`${issueStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-percent"
         icon-color="text-info"
+        :is-loading="isLoadingIssue"
       />
 
       <!-- Network Incident -->
