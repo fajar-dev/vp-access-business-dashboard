@@ -1,7 +1,7 @@
 <template>
   <UCard class="border border-neutral-100 h-full flex flex-col justify-between">
     <!-- Header with controls -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h3 class="text-base font-semibold text-neutral-900">
           Revenue (YTD)
@@ -37,7 +37,7 @@
       <ClientOnly>
         <apexchart
           type="area"
-          height="320"
+          height="360"
           :options="chartOptions"
           :series="series"
         />
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Chart Legend/Key -->
-    <div class="flex items-center justify-center gap-6 text-sm font-medium text-neutral-600 pt-4 mt-2 border-t border-neutral-100 select-none">
+    <div class="flex items-center justify-center gap-6 text-sm font-medium text-neutral-600 mt-4 select-none">
       <div class="flex items-center gap-2">
         <UIcon
           name="i-lucide-line-dot-right-horizontal bg-neutral-300"

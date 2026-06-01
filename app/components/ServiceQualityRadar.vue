@@ -120,7 +120,7 @@ const radarChartOptions = {
       <!-- Left Area: Interactive Overall Radar Chart (3/4 width) -->
       <div class="lg:w-3/4 md:p-0 md:pr-4 p-4 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-neutral-100">
         <!-- Header area of Radar card -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100 select-none shrink-0 z-10">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 select-none shrink-0 z-10">
           <div>
             <div class="flex items-center gap-2">
               <h3 class="text-base font-semibold text-neutral-900">
