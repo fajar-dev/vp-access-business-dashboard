@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage, formatNumber } from '~/utils/format'
 
@@ -18,6 +18,9 @@ const leadsStats = ref<GrowthLeadsStats | null>(null)
 const isLoadingOpportunity = ref(true)
 const opportunityStats = ref<GrowthOpportunityStats | null>(null)
 
+const isLoadingWinRate = ref(true)
+const winRateStats = ref<GrowthWinRateStats | null>(null)
+
 const fetchLeads = async () => {
   isLoadingLeads.value = true
   const res = await growthService.getLeads(globalTimeframe.value)
@@ -32,9 +35,17 @@ const fetchOpportunity = async () => {
   isLoadingOpportunity.value = false
 }
 
+const fetchWinRate = async () => {
+  isLoadingWinRate.value = true
+  const res = await growthService.getWinRate(globalTimeframe.value)
+  if (res?.success) winRateStats.value = res.data
+  isLoadingWinRate.value = false
+}
+
 const fetchData = () => {
   fetchLeads()
   fetchOpportunity()
+  fetchWinRate()
 }
 
 watch([globalTimeframe], () => {
@@ -145,22 +156,29 @@ onMounted(() => {
 
         <MetricCard
           title="Win Rate"
-          value="68.5%"
-          trend="12.5%"
-          trend-direction="up"
+          :value="winRateStats ? formatPercentage(winRateStats.value) : '0%'"
+          :trend="winRateStats ? formatPercentage(winRateStats.percentage) : '0%'"
+          :trend-direction="winRateStats?.trend === 'down' ? 'down' : 'up'"
+          :trend-color="winRateStats?.trend === 'down' ? 'error' : 'primary'"
           icon="i-lucide-percent"
           icon-color="text-primary"
+          :is-loading="isLoadingWinRate"
         >
           <template #details>
             <div class="space-y-2 mt-1">
               <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                   <span>Opportunity Win</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span class="text-neutral-900">142</span>
-                  <span class="text-primary font-semibold text-[10px]">↑ 9%</span>
+                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
+                  <USkeleton v-if="isLoadingWinRate" class="h-4 w-16" />
+                  <template v-else>
+                    <span class="text-neutral-900">{{ winRateStats ? formatNumber(winRateStats.details.win.value) : 0 }}</span>
+                    <UBadge :color="winRateStats?.details.win.trend === 'down' ? 'error' : 'primary'" variant="soft" size="md" class="rounded-full font-medium">
+                      {{ winRateStats?.details.win.trend === 'down' ? '↓' : '↑' }} {{ winRateStats ? formatPercentage(winRateStats.details.win.percentage) : '0%' }}
+                    </UBadge>
+                  </template>
                 </div>
               </div>
               <div class="flex items-center justify-between text-sm font-medium">
@@ -168,9 +186,14 @@ onMounted(() => {
                   <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                   <span>Opportunity Lose</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span class="text-neutral-900">292</span>
-                  <span class="text-primary font-semibold text-[10px]">↑ 1%</span>
+                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
+                  <USkeleton v-if="isLoadingWinRate" class="h-4 w-16" />
+                  <template v-else>
+                    <span class="text-neutral-900">{{ winRateStats ? formatNumber(winRateStats.details.lose.value) : 0 }}</span>
+                    <UBadge :color="winRateStats?.details.lose.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
+                      {{ winRateStats?.details.lose.trend === 'down' ? '↓' : '↑' }} {{ winRateStats ? formatPercentage(winRateStats.details.lose.percentage) : '0%' }}
+                    </UBadge>
+                  </template>
                 </div>
               </div>
             </div>

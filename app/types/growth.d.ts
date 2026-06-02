@@ -35,6 +35,23 @@ export interface GrowthOpportunityStats {
   period: string;
 }
 
+export interface GrowthWinRateDetail {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+}
+
+export interface GrowthWinRateStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+  details: {
+    win: GrowthWinRateDetail;
+    lose: GrowthWinRateDetail;
+  };
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
