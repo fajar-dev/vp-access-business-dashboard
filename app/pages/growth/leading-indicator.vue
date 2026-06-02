@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
-import { formatPercentage, formatNumber } from '~/utils/format'
+import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
 
 // Page meta to use our executive dashboard layout
 definePageMeta({
@@ -20,6 +20,12 @@ const opportunityStats = ref<GrowthOpportunityStats | null>(null)
 
 const isLoadingWinRate = ref(true)
 const winRateStats = ref<GrowthWinRateStats | null>(null)
+
+const isLoadingActivity = ref(true)
+const activityStats = ref<GrowthActivityStats | null>(null)
+
+const isLoadingPipeline = ref(true)
+const pipelineStats = ref<GrowthPipelineStats | null>(null)
 
 const fetchLeads = async () => {
   isLoadingLeads.value = true
@@ -42,10 +48,26 @@ const fetchWinRate = async () => {
   isLoadingWinRate.value = false
 }
 
+const fetchActivity = async () => {
+  isLoadingActivity.value = true
+  const res = await growthService.getActivity(globalTimeframe.value)
+  if (res?.success) activityStats.value = res.data
+  isLoadingActivity.value = false
+}
+
+const fetchPipeline = async () => {
+  isLoadingPipeline.value = true
+  const res = await growthService.getPipeline(globalTimeframe.value)
+  if (res?.success) pipelineStats.value = res.data
+  isLoadingPipeline.value = false
+}
+
 const fetchData = () => {
   fetchLeads()
   fetchOpportunity()
   fetchWinRate()
+  fetchActivity()
+  fetchPipeline()
 }
 
 watch([globalTimeframe], () => {
@@ -131,12 +153,14 @@ onMounted(() => {
 
             <MetricCard
               title="Avg. Activity per Sales"
-              value="230"
-              subtext="Dari semua sales"
-              trend="8.2%"
-              trend-direction="up"
+              :value="activityStats ? formatNumber(activityStats.value) : '0'"
+              :subtext="activityStats ? 'Dari semua sales ' + activityStats.period : 'Dari semua sales'"
+              :trend="activityStats ? formatPercentage(activityStats.percentage) : '0%'"
+              :trend-direction="activityStats?.trend === 'down' ? 'down' : 'up'"
+              :trend-color="activityStats?.trend === 'down' ? 'error' : 'primary'"
               icon="i-lucide-trending-up"
               icon-color="text-purple-500"
+              :is-loading="isLoadingActivity"
             />
           </div>
         </div>
@@ -146,12 +170,14 @@ onMounted(() => {
       <div class="lg:col-span-1 flex flex-col gap-6">
         <MetricCard
           title="Pipeline Value"
-          value="Rp. 2.4 M"
-          subtext="target: Rp 600 Jt"
-          trend="2.3%"
-          trend-direction="up"
+          :value="pipelineStats ? formatCurrency(pipelineStats.value) : '0'"
+          :subtext="pipelineStats ? pipelineStats.period : 'target: Rp 600 Jt'"
+          :trend="pipelineStats ? formatPercentage(pipelineStats.percentage) : '0%'"
+          :trend-direction="pipelineStats?.trend === 'down' ? 'down' : 'up'"
+          :trend-color="pipelineStats?.trend === 'down' ? 'error' : 'primary'"
           icon="i-lucide-activity"
           icon-color="text-info"
+          :is-loading="isLoadingPipeline"
         />
 
         <MetricCard
@@ -165,7 +191,7 @@ onMounted(() => {
           :is-loading="isLoadingWinRate"
         >
           <template #details>
-            <div class="space-y-2 mt-1">
+            <div class="space-y-2 mt-0">
               <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
