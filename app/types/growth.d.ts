@@ -49,6 +49,13 @@ export interface GrowthPipelineStats {
   period: string;
 }
 
+export interface GrowthCycleStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
 export interface GrowthWinRateDetail {
   value: number;
   trend: 'up' | 'down';

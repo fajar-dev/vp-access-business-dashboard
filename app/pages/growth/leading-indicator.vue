@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
 
@@ -26,6 +26,9 @@ const activityStats = ref<GrowthActivityStats | null>(null)
 
 const isLoadingPipeline = ref(true)
 const pipelineStats = ref<GrowthPipelineStats | null>(null)
+
+const isLoadingCycle = ref(true)
+const cycleStats = ref<GrowthCycleStats | null>(null)
 
 const fetchLeads = async () => {
   isLoadingLeads.value = true
@@ -62,12 +65,20 @@ const fetchPipeline = async () => {
   isLoadingPipeline.value = false
 }
 
+const fetchCycle = async () => {
+  isLoadingCycle.value = true
+  const res = await growthService.getCycle(globalTimeframe.value)
+  if (res?.success) cycleStats.value = res.data
+  isLoadingCycle.value = false
+}
+
 const fetchData = () => {
   fetchLeads()
   fetchOpportunity()
   fetchWinRate()
   fetchActivity()
   fetchPipeline()
+  fetchCycle()
 }
 
 watch([globalTimeframe], () => {
@@ -118,12 +129,14 @@ onMounted(() => {
 
             <MetricCard
               title="Avg. Sales Cycle"
-              value="42 Days"
+              :value="cycleStats ? formatNumber(cycleStats.value) + ' Days' : '0 Days'"
               subtext="-"
-              trend="12.5%"
-              trend-direction="up"
+              :trend="cycleStats ? formatPercentage(cycleStats.percentage) : '0%'"
+              :trend-direction="cycleStats?.trend === 'down' ? 'down' : 'up'"
+              :trend-color="cycleStats?.trend === 'down' ? 'error' : 'primary'"
               icon="i-lucide-dollar-sign"
               icon-color="text-warning"
+              :is-loading="isLoadingCycle"
             />
           </div>
 
@@ -154,7 +167,7 @@ onMounted(() => {
             <MetricCard
               title="Avg. Activity per Sales"
               :value="activityStats ? formatNumber(activityStats.value) : '0'"
-              :subtext="activityStats ? 'Dari semua sales ' + activityStats.period : 'Dari semua sales'"
+              subtext="Dari semua sales"
               :trend="activityStats ? formatPercentage(activityStats.percentage) : '0%'"
               :trend-direction="activityStats?.trend === 'down' ? 'down' : 'up'"
               :trend-color="activityStats?.trend === 'down' ? 'error' : 'primary'"

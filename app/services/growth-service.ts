@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { GrowthMrcStats, GrowthRevenueData, GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, ApiResponse } from "../types/growth"
+import type { GrowthMrcStats, GrowthRevenueData, GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, ApiResponse } from "../types/growth"
 
 export class GrowthService {
 
@@ -65,6 +65,15 @@ export class GrowthService {
     async getPipeline(period: string): Promise<ApiResponse<GrowthPipelineStats>> {
         try {
             const response = await apiService.client.get<ApiResponse<GrowthPipelineStats>>(`/vp-access-business/growth/pipeline?period=${period}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getCycle(period: string): Promise<ApiResponse<GrowthCycleStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<GrowthCycleStats>>(`/vp-access-business/growth/cycle?period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
