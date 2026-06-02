@@ -3,10 +3,11 @@ export const useDashboardFilters = () => {
   const selectedTimeframe = useState<string>('selected-timeframe', () => 'month')
 
   const branchOptions = [
-    { label: 'Medan', value: '020' },
-    { label: 'Surabaya', value: '021' },
-    { label: 'Jakarta', value: '022' },
-    { label: 'Bali', value: '023' }
+    { label: 'Medan (HO)', value: '020' },
+    { label: 'Jakarta', value: '003' },
+    { label: 'Bali', value: '062' },
+    { label: 'Binjai', value: '027' },
+    { label: 'Tanjung Morawa', value: '029' }
   ]
 
   const timeframeOptions = [
