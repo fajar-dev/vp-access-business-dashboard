@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
 
@@ -29,6 +29,9 @@ const pipelineStats = ref<GrowthPipelineStats | null>(null)
 
 const isLoadingCycle = ref(true)
 const cycleStats = ref<GrowthCycleStats | null>(null)
+
+const isLoadingDiscount = ref(true)
+const discountStats = ref<GrowthDiscountStats | null>(null)
 
 const fetchLeads = async () => {
   isLoadingLeads.value = true
@@ -72,6 +75,13 @@ const fetchCycle = async () => {
   isLoadingCycle.value = false
 }
 
+const fetchDiscount = async () => {
+  isLoadingDiscount.value = true
+  const res = await growthService.getDiscount(globalTimeframe.value)
+  if (res?.success) discountStats.value = res.data
+  isLoadingDiscount.value = false
+}
+
 const fetchData = () => {
   fetchLeads()
   fetchOpportunity()
@@ -79,6 +89,7 @@ const fetchData = () => {
   fetchActivity()
   fetchPipeline()
   fetchCycle()
+  fetchDiscount()
 }
 
 watch([globalTimeframe], () => {
@@ -241,22 +252,32 @@ onMounted(() => {
 
         <MetricCard
           title="Discount Exposure"
-          value="Rp 185M"
-          trend="8.2%"
-          trend-direction="up"
+          :value="discountStats ? formatCurrency(discountStats.value, true) : 'Rp 0'"
+          :trend="discountStats ? formatPercentage(discountStats.percentage) : '0%'"
+          :trend-direction="discountStats?.trend === 'down' ? 'down' : 'up'"
+          :trend-color="discountStats?.trend === 'down' ? 'primary' : 'error'"
           icon="i-lucide-dollar-sign"
           icon-color="text-rose-500"
+          :is-loading="isLoadingDiscount"
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <div class="flex items-center justify-between text-sm font-medium">
-                <span class="text-neutral-600">Dedicated</span>
-                <span class="text-error font-semibold">Rp. 30 Jt</span>
-              </div>
-              <div class="flex items-center justify-between text-sm font-medium">
-                <span class="text-neutral-600">Broadband</span>
-                <span class="text-error font-semibold">Rp. 2 Jt</span>
-              </div>
+              <template v-if="discountStats">
+                <div v-for="detail in discountStats.details" :key="detail.serviceGroup" class="flex items-center justify-between text-sm font-medium">
+                  <span class="text-neutral-600">{{ detail.serviceGroup || 'Unknown' }}</span>
+                  <span class="text-error font-semibold">{{ formatCurrency(detail.discount, true) }}</span>
+                </div>
+              </template>
+              <template v-else>
+                <div class="flex items-center justify-between text-sm font-medium">
+                  <span class="text-neutral-600">Dedicated</span>
+                  <span class="text-error font-semibold">Rp 0</span>
+                </div>
+                <div class="flex items-center justify-between text-sm font-medium">
+                  <span class="text-neutral-600">Broadband</span>
+                  <span class="text-error font-semibold">Rp 0</span>
+                </div>
+              </template>
             </div>
           </template>
         </MetricCard>

@@ -75,18 +75,7 @@
             <p class="text-xs text-neutral-500 mt-1.5">Isi target tahunan untuk revenue tahun ini</p>
           </div>
 
-          <!-- Radio Selector for Distribution Mode using Nuxt UI URadioGroup -->
-          <div class="space-y-2.5">
-            <h4 class="text-sm font-semibold text-neutral-800">Metode Distribusi Bulanan</h4>
-            <URadioGroup
-              :model-value="distributionMethod"
-              @update:model-value="val => handleMethodChange(val as 'same_rata' | 'manual')"
-              :items="distributionOptions"
-              orientation="horizontal"
-              :disabled="isLocked"
-              class="cursor-pointer select-none"
-            />
-          </div>
+
         </div>
 
         <!-- Metric Details Output Row (Inside Box) -->

@@ -56,6 +56,19 @@ export interface GrowthCycleStats {
   period: string;
 }
 
+export interface GrowthDiscountDetail {
+  serviceGroup: string;
+  discount: number;
+}
+
+export interface GrowthDiscountStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+  details: GrowthDiscountDetail[];
+}
+
 export interface GrowthWinRateDetail {
   value: number;
   trend: 'up' | 'down';
