@@ -84,3 +84,8 @@ export interface UsageStats {
     percentage: number
     period: string
 }
+
+export interface PaymentStats {
+    monthly: number
+    annual: number
+}

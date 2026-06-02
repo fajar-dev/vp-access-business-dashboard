@@ -13,7 +13,8 @@
 
     <!-- Chart Area -->
     <div class="relative flex-1 flex items-center justify-center min-h-[220px] my-6">
-      <ClientOnly>
+      <USkeleton v-if="isLoading" class="w-[200px] h-[200px] rounded-full" />
+      <ClientOnly v-else>
         <apexchart
           type="pie"
           width="240"
@@ -39,7 +40,19 @@
 </template>
 
 <script setup lang="ts">
-const paymentSeries = [35, 65] // [Monthly (Orange), Annual (Purple)]
+import { computed } from 'vue'
+import type { PaymentStats } from '~/types/retention'
+import { formatPercentage } from '~/utils/format'
+
+const props = defineProps<{
+  data: PaymentStats | null
+  isLoading?: boolean
+}>()
+
+const paymentSeries = computed(() => {
+  if (!props.data) return [0, 0]
+  return [props.data.monthly, props.data.annual]
+})
 
 const paymentChartOptions = {
   chart: {
@@ -73,7 +86,7 @@ const paymentChartOptions = {
     // Return array of strings to render text in beautiful separate lines in ApexCharts!
     formatter: (val: any, opts: any) => {
       const name = opts.w.globals.labels[opts.seriesIndex]
-      return [name, `${val}%`]
+      return [name, formatPercentage(val)]
     }
   },
   legend: {
@@ -82,7 +95,7 @@ const paymentChartOptions = {
   tooltip: {
     enabled: true,
     y: {
-      formatter: (val: number) => `${val}%`
+      formatter: (val: number) => formatPercentage(val)
     }
   }
 }

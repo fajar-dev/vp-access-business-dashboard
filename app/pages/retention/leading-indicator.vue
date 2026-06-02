@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { retentionService } from '~/services/retention-service'
-import type { ContractExpiringStats, TicketStats, UsageStats } from '~/types/retention'
+import type { ContractExpiringStats, TicketStats, UsageStats, PaymentStats } from '~/types/retention'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage } from '~/utils/format'
 
@@ -13,9 +13,11 @@ const { selectedBranch, selectedTimeframe } = useDashboardFilters()
 const contractExpiringStats = ref<ContractExpiringStats | null>(null)
 const ticketStats = ref<TicketStats | null>(null)
 const usageStats = ref<UsageStats | null>(null)
+const paymentStats = ref<PaymentStats | null>(null)
 const isLoadingExpiring = ref(false)
 const isLoadingTicket = ref(false)
 const isLoadingUsage = ref(false)
+const isLoadingPayment = ref(false)
 
 const fetchContractExpiring = async () => {
   isLoadingExpiring.value = true
@@ -38,10 +40,18 @@ const fetchUsage = async () => {
   isLoadingUsage.value = false
 }
 
+const fetchPayment = async () => {
+  isLoadingPayment.value = true
+  const res = await retentionService.getPayment(selectedBranch.value)
+  if (res?.success) paymentStats.value = res.data
+  isLoadingPayment.value = false
+}
+
 const fetchData = () => {
   fetchContractExpiring()
   fetchTicket()
   fetchUsage()
+  fetchPayment()
 }
 
 // Watchers to trigger re-fetch when branch changes
@@ -137,7 +147,7 @@ onMounted(() => {
 
       <!-- Right Column: Customer Monthly Payment Donut Chart (1/3 width) -->
       <div class="lg:col-span-1">
-        <CustomerPaymentChart />
+        <CustomerPaymentChart :data="paymentStats" :is-loading="isLoadingPayment" />
       </div>
 
     </div>
