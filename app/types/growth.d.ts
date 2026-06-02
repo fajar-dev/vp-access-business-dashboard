@@ -21,6 +21,20 @@ export interface GrowthRevenueData {
   month: Record<string, GrowthRevenueMonthData>;
 }
 
+export interface GrowthLeadsStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
+export interface GrowthOpportunityStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;

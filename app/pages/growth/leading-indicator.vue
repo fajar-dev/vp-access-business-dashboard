@@ -1,7 +1,48 @@
 <script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+import { growthService } from '~/services/growth-service'
+import type { GrowthLeadsStats, GrowthOpportunityStats } from '~/types/growth'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { formatPercentage, formatNumber } from '~/utils/format'
+
 // Page meta to use our executive dashboard layout
 definePageMeta({
   layout: 'dashboard'
+})
+
+const { selectedTimeframe: globalTimeframe } = useDashboardFilters()
+
+const isLoadingLeads = ref(true)
+const leadsStats = ref<GrowthLeadsStats | null>(null)
+
+const isLoadingOpportunity = ref(true)
+const opportunityStats = ref<GrowthOpportunityStats | null>(null)
+
+const fetchLeads = async () => {
+  isLoadingLeads.value = true
+  const res = await growthService.getLeads(globalTimeframe.value)
+  if (res?.success) leadsStats.value = res.data
+  isLoadingLeads.value = false
+}
+
+const fetchOpportunity = async () => {
+  isLoadingOpportunity.value = true
+  const res = await growthService.getOpportunity(globalTimeframe.value)
+  if (res?.success) opportunityStats.value = res.data
+  isLoadingOpportunity.value = false
+}
+
+const fetchData = () => {
+  fetchLeads()
+  fetchOpportunity()
+}
+
+watch([globalTimeframe], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
 })
 </script>
 
@@ -32,12 +73,14 @@ definePageMeta({
 
             <MetricCard
               title="Total Opportunity"
-              value="156"
-              subtext="Semua Opportunity bulan ini"
-              trend="12.5%"
-              trend-direction="up"
+              :value="opportunityStats ? formatNumber(opportunityStats.value) : '0'"
+              :subtext="opportunityStats ? 'Semua Opportunity ' + opportunityStats.period : 'Semua Opportunity bulan ini'"
+              :trend="opportunityStats ? formatPercentage(opportunityStats.percentage) : '0%'"
+              :trend-direction="opportunityStats?.trend === 'down' ? 'down' : 'up'"
+              :trend-color="opportunityStats?.trend === 'down' ? 'error' : 'primary'"
               icon="i-lucide-users"
               icon-color="text-info"
+              :is-loading="isLoadingOpportunity"
             />
 
             <MetricCard
@@ -65,12 +108,14 @@ definePageMeta({
 
             <MetricCard
               title="Total Leads"
-              value="42"
-              subtext="Semua prospect bulan ini"
-              trend="12.5%"
-              trend-direction="up"
+              :value="leadsStats ? formatNumber(leadsStats.value) : '0'"
+              :subtext="leadsStats ? 'Semua prospect ' + leadsStats.period : 'Semua prospect bulan ini'"
+              :trend="leadsStats ? formatPercentage(leadsStats.percentage) : '0%'"
+              :trend-direction="leadsStats?.trend === 'down' ? 'down' : 'up'"
+              :trend-color="leadsStats?.trend === 'down' ? 'error' : 'primary'"
               icon="i-lucide-users"
               icon-color="text-info"
+              :is-loading="isLoadingLeads"
             />
 
             <MetricCard
