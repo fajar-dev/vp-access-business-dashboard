@@ -75,18 +75,18 @@ const radarChartOptions = {
   },
   colors: ['#009838'], // Brand primary green
   stroke: {
-    width: 3,
+    width: 2,
     colors: ['#009838']
   },
   fill: {
-    opacity: 0.45,
+    opacity: 0.1,
     colors: ['#009838'] // Elegant light green area
   },
   markers: {
-    size: 5,
+    size: 4,
     colors: ['#009838'],
     strokeColors: '#ffffff',
-    strokeWidth: 2
+    strokeWidth: 1
   },
   xaxis: {
     categories: ['', '', '', ''], // Blank out since we overlay premium HTML custom labels!
