@@ -12,6 +12,15 @@ export interface GrowthMrcStats {
   details: GrowthMrcDetails;
 }
 
+export interface GrowthRevenueMonthData {
+  revenue: number;
+}
+
+export interface GrowthRevenueData {
+  period: string;
+  month: Record<string, GrowthRevenueMonthData>;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;

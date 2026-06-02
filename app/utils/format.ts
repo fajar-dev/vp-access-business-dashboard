@@ -29,15 +29,15 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
 
 export function formatCompact(value: number): string {
   if (value >= 1_000_000_000) {
-    return (value / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'M'
+    return (value / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + 'M'
   }
   if (value >= 1_000_000) {
-    return (value / 1_000_000).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'jt'
+    return (value / 1_000_000).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + 'jt'
   }
   if (value >= 1_000) {
-    return (value / 1_000).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'rb'
+    return (value / 1_000).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + 'rb'
   }
-  return value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return value.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
 }
 
 export function formatCurrency(value: number, compact: boolean = true): string {
@@ -51,5 +51,5 @@ export function formatCurrency(value: number, compact: boolean = true): string {
 export const formatRevenue = formatCompact
 
 export function formatPercentage(value: number): string {
-  return `${Number(Math.abs(value).toFixed(1))}%`
+  return `${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(Math.abs(value))}%`
 }

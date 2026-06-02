@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats } from '~/types/growth'
+import type { GrowthMrcStats, GrowthRevenueData } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
@@ -22,8 +22,19 @@ const fetchNewMrc = async () => {
   isLoadingNewMrc.value = false
 }
 
+const isLoadingRevenue = ref(true)
+const revenueData = ref<GrowthRevenueData[] | null>(null)
+
+const fetchRevenue = async () => {
+  isLoadingRevenue.value = true
+  const res = await growthService.getRevenue(selectedBranch.value)
+  if (res?.success) revenueData.value = res.data
+  isLoadingRevenue.value = false
+}
+
 const fetchData = () => {
   fetchNewMrc()
+  fetchRevenue()
 }
 
 watch([selectedBranch, globalTimeframe], () => {
@@ -76,7 +87,7 @@ onMounted(() => {
 
       <!-- Right Column: Interactive Line Chart -->
       <div class="lg:col-span-2">
-        <YtdRevenueChart />
+        <YtdRevenueChart :data="revenueData" :is-loading="isLoadingRevenue" />
       </div>
 
     </div>
