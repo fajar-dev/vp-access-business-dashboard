@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { GrowthMrcStats, GrowthRevenueData, GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthPipelineStageStats, GrowthCycleStats, GrowthDiscountStats, ApiResponse } from "../types/growth"
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthPipelineStageStats, GrowthCycleStats, GrowthDiscountStats, ApiResponse } from "../types/growth"
 
 export class GrowthService {
 
@@ -20,6 +20,15 @@ export class GrowthService {
     async getRevenue(branchId: string): Promise<ApiResponse<GrowthRevenueData[]>> {
         try {
             const response = await apiService.client.get<ApiResponse<GrowthRevenueData[]>>(`/vp-access-business/growth/revenue?branchId=${branchId}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getRevenueAchievement(branchId: string, period: string): Promise<ApiResponse<GrowthRevenueAchievementStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<GrowthRevenueAchievementStats>>(`/vp-access-business/growth/revenue-achievement?branchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

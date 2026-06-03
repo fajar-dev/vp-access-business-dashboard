@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats, GrowthRevenueData } from '~/types/growth'
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
@@ -15,11 +15,21 @@ const { selectedBranch, selectedTimeframe: globalTimeframe } = useDashboardFilte
 const isLoadingNewMrc = ref(true)
 const newMrcStats = ref<GrowthMrcStats | null>(null)
 
+const isLoadingRevenueAchievement = ref(true)
+const revenueAchievementStats = ref<GrowthRevenueAchievementStats | null>(null)
+
 const fetchNewMrc = async () => {
   isLoadingNewMrc.value = true
   const res = await growthService.getNewMrc(selectedBranch.value, globalTimeframe.value)
   if (res?.success) newMrcStats.value = res.data
   isLoadingNewMrc.value = false
+}
+
+const fetchRevenueAchievement = async () => {
+  isLoadingRevenueAchievement.value = true
+  const res = await growthService.getRevenueAchievement(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) revenueAchievementStats.value = res.data
+  isLoadingRevenueAchievement.value = false
 }
 
 const isLoadingRevenue = ref(true)
@@ -34,6 +44,7 @@ const fetchRevenue = async () => {
 
 const fetchData = () => {
   fetchNewMrc()
+  fetchRevenueAchievement()
   fetchRevenue()
 }
 
@@ -56,12 +67,13 @@ onMounted(() => {
       <div class="lg:col-span-1 flex flex-col gap-6">
         <MetricCard
           title="Revenue Achievement"
-          value="93.5%"
-          subtext="target: Rp 600M"
-          trend="2.3%"
-          trend-direction="up"
+          :value="revenueAchievementStats ? formatPercentage(revenueAchievementStats.percentage) : '0%'"
+          :subtext="revenueAchievementStats ? `target: ${formatCurrency(revenueAchievementStats.target, true)}` : 'target: Rp 0'"
+          :trend="revenueAchievementStats ? formatPercentage(revenueAchievementStats.trendPercentage) : '0%'"
+          :trend-direction="revenueAchievementStats?.trend === 'down' ? 'down' : 'up'"
           icon="i-lucide-activity"
           icon-color="text-primary"
+          :is-loading="isLoadingRevenueAchievement"
         />
         
         <MetricCard
