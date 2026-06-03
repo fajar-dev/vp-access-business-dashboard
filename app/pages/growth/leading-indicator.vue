@@ -253,36 +253,38 @@ onMounted(() => {
         >
           <template #details>
             <div class="space-y-2 mt-0">
-              <div class="flex items-center justify-between text-sm font-medium">
-                <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
-                  <span>Opportunity Win</span>
+              <template v-if="isLoadingWinRate">
+                <div class="space-y-3 mt-1">
+                  <USkeleton class="h-5 w-full" />
+                  <USkeleton class="h-5 w-full" />
                 </div>
-                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <USkeleton v-if="isLoadingWinRate" class="h-4 w-16" />
-                  <template v-else>
-                    <span class="text-neutral-900">{{ winRateStats ? formatNumber(winRateStats.details.win.value) : 0 }}</span>
-                    <UBadge :color="winRateStats?.details.win.trend === 'down' ? 'error' : 'primary'" variant="soft" size="md" class="rounded-full font-medium">
-                      {{ winRateStats?.details.win.trend === 'down' ? '↓' : '↑' }} {{ winRateStats ? formatPercentage(winRateStats.details.win.percentage) : '0%' }}
-                    </UBadge>
-                  </template>
+              </template>
+              <template v-else>
+                <div class="flex items-center justify-between text-sm font-medium">
+                  <div class="flex items-center gap-2 text-neutral-600">
+                    <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+                    <span>Opportunity Win</span>
+                  </div>
+                  <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
+                      <span class="text-neutral-900">{{ winRateStats ? formatNumber(winRateStats.details.win.value) : 0 }}</span>
+                      <UBadge :color="winRateStats?.details.win.trend === 'down' ? 'error' : 'primary'" variant="soft" size="md" class="rounded-full font-medium">
+                        {{ winRateStats?.details.win.trend === 'down' ? '↓' : '↑' }} {{ winRateStats ? formatPercentage(winRateStats.details.win.percentage) : '0%' }}
+                      </UBadge>
+                  </div>
                 </div>
-              </div>
-              <div class="flex items-center justify-between text-sm font-medium">
-                <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
-                  <span>Opportunity Lose</span>
+                <div class="flex items-center justify-between text-sm font-medium">
+                  <div class="flex items-center gap-2 text-neutral-600">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+                    <span>Opportunity Lose</span>
+                  </div>
+                  <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
+                      <span class="text-neutral-900">{{ winRateStats ? formatNumber(winRateStats.details.lose.value) : 0 }}</span>
+                      <UBadge :color="winRateStats?.details.lose.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
+                        {{ winRateStats?.details.lose.trend === 'down' ? '↓' : '↑' }} {{ winRateStats ? formatPercentage(winRateStats.details.lose.percentage) : '0%' }}
+                      </UBadge>
+                  </div>
                 </div>
-                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <USkeleton v-if="isLoadingWinRate" class="h-4 w-16" />
-                  <template v-else>
-                    <span class="text-neutral-900">{{ winRateStats ? formatNumber(winRateStats.details.lose.value) : 0 }}</span>
-                    <UBadge :color="winRateStats?.details.lose.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
-                      {{ winRateStats?.details.lose.trend === 'down' ? '↓' : '↑' }} {{ winRateStats ? formatPercentage(winRateStats.details.lose.percentage) : '0%' }}
-                    </UBadge>
-                  </template>
-                </div>
-              </div>
+              </template>
             </div>
           </template>
         </MetricCard>
@@ -299,20 +301,16 @@ onMounted(() => {
         >
           <template #details>
             <div class="space-y-2 mt-1">
-              <template v-if="discountStats">
+              <template v-if="isLoadingDiscount">
+                <div class="space-y-3 mt-1">
+                  <USkeleton class="h-5 w-full" />
+                  <USkeleton class="h-5 w-full" />
+                </div>
+              </template>
+              <template v-else-if="discountStats">
                 <div v-for="detail in discountStats.details" :key="detail.serviceGroup" class="flex items-center justify-between text-sm font-medium">
                   <span class="text-neutral-600">{{ detail.serviceGroup || 'Unknown' }}</span>
                   <span class="text-error font-semibold">{{ formatCurrency(detail.discount, true) }}</span>
-                </div>
-              </template>
-              <template v-else>
-                <div class="flex items-center justify-between text-sm font-medium">
-                  <span class="text-neutral-600">Dedicated</span>
-                  <span class="text-error font-semibold">Rp 0</span>
-                </div>
-                <div class="flex items-center justify-between text-sm font-medium">
-                  <span class="text-neutral-600">Broadband</span>
-                  <span class="text-error font-semibold">Rp 0</span>
                 </div>
               </template>
             </div>
