@@ -1,145 +1,3 @@
-<script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
-import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats } from '~/types/growth'
-import { useDashboardFilters } from '~/composables/useDashboardFilters'
-import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
-
-// Page meta to use our executive dashboard layout
-definePageMeta({
-  layout: 'dashboard'
-})
-
-const { selectedTimeframe: globalTimeframe } = useDashboardFilters()
-
-const isLoadingLeads = ref(true)
-const leadsStats = ref<GrowthLeadsStats | null>(null)
-
-const isLoadingOpportunity = ref(true)
-const opportunityStats = ref<GrowthOpportunityStats | null>(null)
-
-const isLoadingWinRate = ref(true)
-const winRateStats = ref<GrowthWinRateStats | null>(null)
-
-const isLoadingActivity = ref(true)
-const activityStats = ref<GrowthActivityStats | null>(null)
-
-const isLoadingPipeline = ref(true)
-const pipelineStats = ref<GrowthPipelineStats | null>(null)
-
-const isLoadingPipelineStage = ref(true)
-const pipelineStageStats = ref<GrowthPipelineStageStats | null>(null)
-
-const formattedPipelineStages = computed(() => {
-  if (!pipelineStageStats.value) return []
-  const stats = pipelineStageStats.value
-  return [
-    {
-      name: stats.qualification.name,
-      value: formatCurrency(stats.qualification.value),
-      rawValue: stats.qualification.value,
-      share: `${stats.qualification.percentage.toFixed(1)}%`,
-      color: 'blue'
-    },
-    {
-      name: stats.proposal.name,
-      value: formatCurrency(stats.proposal.value),
-      rawValue: stats.proposal.value,
-      share: `${stats.proposal.percentage.toFixed(1)}%`,
-      color: 'teal'
-    },
-    {
-      name: stats.negotiation.name,
-      value: formatCurrency(stats.negotiation.value),
-      rawValue: stats.negotiation.value,
-      share: `${stats.negotiation.percentage.toFixed(1)}%`,
-      color: 'green'
-    }
-  ]
-})
-
-const isLoadingCycle = ref(true)
-const cycleStats = ref<GrowthCycleStats | null>(null)
-
-const isLoadingDiscount = ref(true)
-const discountStats = ref<GrowthDiscountStats | null>(null)
-
-const fetchLeads = async () => {
-  isLoadingLeads.value = true
-  const res = await growthService.getLeads(globalTimeframe.value)
-  if (res?.success) leadsStats.value = res.data
-  isLoadingLeads.value = false
-}
-
-const fetchOpportunity = async () => {
-  isLoadingOpportunity.value = true
-  const res = await growthService.getOpportunity(globalTimeframe.value)
-  if (res?.success) opportunityStats.value = res.data
-  isLoadingOpportunity.value = false
-}
-
-const fetchWinRate = async () => {
-  isLoadingWinRate.value = true
-  const res = await growthService.getWinRate(globalTimeframe.value)
-  if (res?.success) winRateStats.value = res.data
-  isLoadingWinRate.value = false
-}
-
-const fetchActivity = async () => {
-  isLoadingActivity.value = true
-  const res = await growthService.getActivity(globalTimeframe.value)
-  if (res?.success) activityStats.value = res.data
-  isLoadingActivity.value = false
-}
-
-const fetchPipelineValue = async () => {
-  isLoadingPipeline.value = true
-  const res = await growthService.getPipelineValue(globalTimeframe.value)
-  if (res?.success) pipelineStats.value = res.data
-  isLoadingPipeline.value = false
-}
-
-const fetchPipelineStage = async () => {
-  isLoadingPipelineStage.value = true
-  const res = await growthService.getPipelineStage(globalTimeframe.value)
-  if (res?.success) pipelineStageStats.value = res.data
-  isLoadingPipelineStage.value = false
-}
-
-const fetchCycle = async () => {
-  isLoadingCycle.value = true
-  const res = await growthService.getCycle(globalTimeframe.value)
-  if (res?.success) cycleStats.value = res.data
-  isLoadingCycle.value = false
-}
-
-const fetchDiscount = async () => {
-  isLoadingDiscount.value = true
-  const res = await growthService.getDiscount(globalTimeframe.value)
-  if (res?.success) discountStats.value = res.data
-  isLoadingDiscount.value = false
-}
-
-const fetchData = () => {
-  fetchLeads()
-  fetchOpportunity()
-  fetchWinRate()
-  fetchActivity()
-  fetchPipelineValue()
-  fetchPipelineStage()
-  fetchCycle()
-  fetchDiscount()
-}
-
-watch([globalTimeframe], () => {
-  fetchData()
-})
-
-onMounted(() => {
-  fetchData()
-})
-</script>
-
 <template>
   <div class="space-y-6">
     
@@ -324,3 +182,145 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+import { growthService } from '~/services/growth-service'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats } from '~/types/growth'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
+
+// Page meta to use our executive dashboard layout
+definePageMeta({
+  layout: 'dashboard'
+})
+
+const { selectedTimeframe: globalTimeframe } = useDashboardFilters()
+
+const isLoadingLeads = ref(true)
+const leadsStats = ref<GrowthLeadsStats | null>(null)
+
+const isLoadingOpportunity = ref(true)
+const opportunityStats = ref<GrowthOpportunityStats | null>(null)
+
+const isLoadingWinRate = ref(true)
+const winRateStats = ref<GrowthWinRateStats | null>(null)
+
+const isLoadingActivity = ref(true)
+const activityStats = ref<GrowthActivityStats | null>(null)
+
+const isLoadingPipeline = ref(true)
+const pipelineStats = ref<GrowthPipelineStats | null>(null)
+
+const isLoadingPipelineStage = ref(true)
+const pipelineStageStats = ref<GrowthPipelineStageStats | null>(null)
+
+const formattedPipelineStages = computed(() => {
+  if (!pipelineStageStats.value) return []
+  const stats = pipelineStageStats.value
+  return [
+    {
+      name: stats.qualification.name,
+      value: formatCurrency(stats.qualification.value),
+      rawValue: stats.qualification.value,
+      share: `${stats.qualification.percentage.toFixed(1)}%`,
+      color: 'blue'
+    },
+    {
+      name: stats.proposal.name,
+      value: formatCurrency(stats.proposal.value),
+      rawValue: stats.proposal.value,
+      share: `${stats.proposal.percentage.toFixed(1)}%`,
+      color: 'teal'
+    },
+    {
+      name: stats.negotiation.name,
+      value: formatCurrency(stats.negotiation.value),
+      rawValue: stats.negotiation.value,
+      share: `${stats.negotiation.percentage.toFixed(1)}%`,
+      color: 'green'
+    }
+  ]
+})
+
+const isLoadingCycle = ref(true)
+const cycleStats = ref<GrowthCycleStats | null>(null)
+
+const isLoadingDiscount = ref(true)
+const discountStats = ref<GrowthDiscountStats | null>(null)
+
+const fetchLeads = async () => {
+  isLoadingLeads.value = true
+  const res = await growthService.getLeads(globalTimeframe.value)
+  if (res?.success) leadsStats.value = res.data
+  isLoadingLeads.value = false
+}
+
+const fetchOpportunity = async () => {
+  isLoadingOpportunity.value = true
+  const res = await growthService.getOpportunity(globalTimeframe.value)
+  if (res?.success) opportunityStats.value = res.data
+  isLoadingOpportunity.value = false
+}
+
+const fetchWinRate = async () => {
+  isLoadingWinRate.value = true
+  const res = await growthService.getWinRate(globalTimeframe.value)
+  if (res?.success) winRateStats.value = res.data
+  isLoadingWinRate.value = false
+}
+
+const fetchActivity = async () => {
+  isLoadingActivity.value = true
+  const res = await growthService.getActivity(globalTimeframe.value)
+  if (res?.success) activityStats.value = res.data
+  isLoadingActivity.value = false
+}
+
+const fetchPipelineValue = async () => {
+  isLoadingPipeline.value = true
+  const res = await growthService.getPipelineValue(globalTimeframe.value)
+  if (res?.success) pipelineStats.value = res.data
+  isLoadingPipeline.value = false
+}
+
+const fetchPipelineStage = async () => {
+  isLoadingPipelineStage.value = true
+  const res = await growthService.getPipelineStage(globalTimeframe.value)
+  if (res?.success) pipelineStageStats.value = res.data
+  isLoadingPipelineStage.value = false
+}
+
+const fetchCycle = async () => {
+  isLoadingCycle.value = true
+  const res = await growthService.getCycle(globalTimeframe.value)
+  if (res?.success) cycleStats.value = res.data
+  isLoadingCycle.value = false
+}
+
+const fetchDiscount = async () => {
+  isLoadingDiscount.value = true
+  const res = await growthService.getDiscount(globalTimeframe.value)
+  if (res?.success) discountStats.value = res.data
+  isLoadingDiscount.value = false
+}
+
+const fetchData = () => {
+  fetchLeads()
+  fetchOpportunity()
+  fetchWinRate()
+  fetchActivity()
+  fetchPipelineValue()
+  fetchPipelineStage()
+  fetchCycle()
+  fetchDiscount()
+}
+
+watch([globalTimeframe], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
+})
+</script>

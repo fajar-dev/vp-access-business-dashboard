@@ -1,18 +1,3 @@
-<script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { useDashboardFilters } from '~/composables/useDashboardFilters';
-
-const route = useRoute()
-
-// Scoped to the main default dashboard shell layout
-definePageMeta({
-  layout: 'dashboard'
-})
-
-// Retrieve global dashboard filters
-const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
-</script>
-
 <template>
   <div class="space-y-6">
     <!-- Growth Metric Executive Header using reusable custom slots -->
@@ -67,3 +52,18 @@ const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = u
     <NuxtPage />
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { useDashboardFilters } from '~/composables/useDashboardFilters';
+
+const route = useRoute()
+
+// Scoped to the main default dashboard shell layout
+definePageMeta({
+  layout: 'dashboard'
+})
+
+// Retrieve global dashboard filters
+const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
+</script>

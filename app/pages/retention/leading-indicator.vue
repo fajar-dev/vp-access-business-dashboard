@@ -1,69 +1,3 @@
-<script setup lang="ts">
-import { retentionService } from '~/services/retention-service'
-import type { ContractExpiringStats, TicketStats, UsageStats, PaymentStats } from '~/types/retention'
-import { useDashboardFilters } from '~/composables/useDashboardFilters'
-import { formatPercentage } from '~/utils/format'
-
-// Page meta to use our default layout container
-definePageMeta({
-  layout: 'dashboard'
-})
-
-const { selectedBranch, selectedTimeframe } = useDashboardFilters()
-const contractExpiringStats = ref<ContractExpiringStats | null>(null)
-const ticketStats = ref<TicketStats | null>(null)
-const usageStats = ref<UsageStats | null>(null)
-const paymentStats = ref<PaymentStats | null>(null)
-const isLoadingExpiring = ref(false)
-const isLoadingTicket = ref(false)
-const isLoadingUsage = ref(false)
-const isLoadingPayment = ref(false)
-
-const fetchContractExpiring = async () => {
-  isLoadingExpiring.value = true
-  const res = await retentionService.getContractExpiring(selectedBranch.value)
-  if (res?.success) contractExpiringStats.value = res.data
-  isLoadingExpiring.value = false
-}
-
-const fetchTicket = async () => {
-  isLoadingTicket.value = true
-  const res = await retentionService.getTicket(selectedBranch.value, selectedTimeframe.value)
-  if (res?.success) ticketStats.value = res.data
-  isLoadingTicket.value = false
-}
-
-const fetchUsage = async () => {
-  isLoadingUsage.value = true
-  const res = await retentionService.getUsage(selectedBranch.value, selectedTimeframe.value)
-  if (res?.success) usageStats.value = res.data
-  isLoadingUsage.value = false
-}
-
-const fetchPayment = async () => {
-  isLoadingPayment.value = true
-  const res = await retentionService.getPayment(selectedBranch.value)
-  if (res?.success) paymentStats.value = res.data
-  isLoadingPayment.value = false
-}
-
-const fetchData = () => {
-  fetchContractExpiring()
-  fetchTicket()
-  fetchUsage()
-  fetchPayment()
-}
-
-// Watchers to trigger re-fetch when branch changes
-watch([selectedBranch, selectedTimeframe], () => {
-  fetchData()
-})
-
-onMounted(() => {
-  fetchData()
-})
-</script>
-
 <template>
   <div class="space-y-6">
     <!-- Top Grid: Left Column spans 2 columns, Right Column spans 1 column -->
@@ -153,3 +87,69 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { retentionService } from '~/services/retention-service'
+import type { ContractExpiringStats, TicketStats, UsageStats, PaymentStats } from '~/types/retention'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { formatPercentage } from '~/utils/format'
+
+// Page meta to use our default layout container
+definePageMeta({
+  layout: 'dashboard'
+})
+
+const { selectedBranch, selectedTimeframe } = useDashboardFilters()
+const contractExpiringStats = ref<ContractExpiringStats | null>(null)
+const ticketStats = ref<TicketStats | null>(null)
+const usageStats = ref<UsageStats | null>(null)
+const paymentStats = ref<PaymentStats | null>(null)
+const isLoadingExpiring = ref(false)
+const isLoadingTicket = ref(false)
+const isLoadingUsage = ref(false)
+const isLoadingPayment = ref(false)
+
+const fetchContractExpiring = async () => {
+  isLoadingExpiring.value = true
+  const res = await retentionService.getContractExpiring(selectedBranch.value)
+  if (res?.success) contractExpiringStats.value = res.data
+  isLoadingExpiring.value = false
+}
+
+const fetchTicket = async () => {
+  isLoadingTicket.value = true
+  const res = await retentionService.getTicket(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) ticketStats.value = res.data
+  isLoadingTicket.value = false
+}
+
+const fetchUsage = async () => {
+  isLoadingUsage.value = true
+  const res = await retentionService.getUsage(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) usageStats.value = res.data
+  isLoadingUsage.value = false
+}
+
+const fetchPayment = async () => {
+  isLoadingPayment.value = true
+  const res = await retentionService.getPayment(selectedBranch.value)
+  if (res?.success) paymentStats.value = res.data
+  isLoadingPayment.value = false
+}
+
+const fetchData = () => {
+  fetchContractExpiring()
+  fetchTicket()
+  fetchUsage()
+  fetchPayment()
+}
+
+// Watchers to trigger re-fetch when branch changes
+watch([selectedBranch, selectedTimeframe], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
+})
+</script>

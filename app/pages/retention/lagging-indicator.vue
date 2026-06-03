@@ -1,69 +1,3 @@
-<script setup lang="ts">
-import { useDashboardFilters } from '~/composables/useDashboardFilters'
-import { retentionService } from '~/services/retention-service'
-import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from '~/types/retention'
-import { formatCurrency, formatPercentage } from '~/utils/format'
-
-// Page meta to use our default layout container
-definePageMeta({
-  layout: 'dashboard'
-})
-
-const { selectedBranch, selectedTimeframe } = useDashboardFilters()
-
-const churnStats = ref<ChurnStats | null>(null)
-const customerLoseStats = ref<CustomerLoseStats | null>(null)
-const wirelessMigrationStats = ref<WirelessMigrationStats | null>(null)
-const churnRateData = ref<ChurnRateData[] | null>(null)
-const isLoadingChurn = ref(false)
-const isLoadingLose = ref(false)
-const isLoadingMigration = ref(false)
-const isLoadingRate = ref(false)
-
-const fetchChurnStats = async () => {
-  isLoadingChurn.value = true
-  const res = await retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value)
-  if (res?.success) churnStats.value = res.data
-  isLoadingChurn.value = false
-}
-
-const fetchCustomerLose = async () => {
-  isLoadingLose.value = true
-  const res = await retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value)
-  if (res?.success) customerLoseStats.value = res.data
-  isLoadingLose.value = false
-}
-
-const fetchWirelessMigration = async () => {
-  isLoadingMigration.value = true
-  const res = await retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value)
-  if (res?.success) wirelessMigrationStats.value = res.data
-  isLoadingMigration.value = false
-}
-
-const fetchChurnRate = async () => {
-  isLoadingRate.value = true
-  const res = await retentionService.getChurnRate(selectedBranch.value)
-  if (res?.success) churnRateData.value = res.data
-  isLoadingRate.value = false
-}
-
-const fetchData = () => {
-  fetchChurnStats()
-  fetchCustomerLose()
-  fetchWirelessMigration()
-  fetchChurnRate()
-}
-
-watch([selectedBranch, selectedTimeframe], () => {
-  fetchData()
-})
-
-onMounted(() => {
-  fetchData()
-})
-</script>
-
 <template>
   <div class="space-y-6">
     <!-- Top Grid: Left KPI cards stack next to Churn Rate Chart -->
@@ -233,3 +167,69 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { retentionService } from '~/services/retention-service'
+import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from '~/types/retention'
+import { formatCurrency, formatPercentage } from '~/utils/format'
+
+// Page meta to use our default layout container
+definePageMeta({
+  layout: 'dashboard'
+})
+
+const { selectedBranch, selectedTimeframe } = useDashboardFilters()
+
+const churnStats = ref<ChurnStats | null>(null)
+const customerLoseStats = ref<CustomerLoseStats | null>(null)
+const wirelessMigrationStats = ref<WirelessMigrationStats | null>(null)
+const churnRateData = ref<ChurnRateData[] | null>(null)
+const isLoadingChurn = ref(false)
+const isLoadingLose = ref(false)
+const isLoadingMigration = ref(false)
+const isLoadingRate = ref(false)
+
+const fetchChurnStats = async () => {
+  isLoadingChurn.value = true
+  const res = await retentionService.getChurnStats(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) churnStats.value = res.data
+  isLoadingChurn.value = false
+}
+
+const fetchCustomerLose = async () => {
+  isLoadingLose.value = true
+  const res = await retentionService.getCustomerLose(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) customerLoseStats.value = res.data
+  isLoadingLose.value = false
+}
+
+const fetchWirelessMigration = async () => {
+  isLoadingMigration.value = true
+  const res = await retentionService.getWirelessMigration(selectedBranch.value, selectedTimeframe.value)
+  if (res?.success) wirelessMigrationStats.value = res.data
+  isLoadingMigration.value = false
+}
+
+const fetchChurnRate = async () => {
+  isLoadingRate.value = true
+  const res = await retentionService.getChurnRate(selectedBranch.value)
+  if (res?.success) churnRateData.value = res.data
+  isLoadingRate.value = false
+}
+
+const fetchData = () => {
+  fetchChurnStats()
+  fetchCustomerLose()
+  fetchWirelessMigration()
+  fetchChurnRate()
+}
+
+watch([selectedBranch, selectedTimeframe], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
+})
+</script>

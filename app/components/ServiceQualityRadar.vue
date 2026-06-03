@@ -1,114 +1,3 @@
-<script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { TicketStats } from '~/types/service-quality'
-import { formatPercentage } from '~/utils/format'
-
-const props = defineProps<{
-  ticketStats: TicketStats | null
-  complaintStats: TicketStats | null
-  solvedStats: TicketStats | null
-  solvedPercentageStats: TicketStats | null
-  isLoading: boolean
-}>()
-
-// Radar Chart Normalized Scores & Overall Calculation
-const radarScores = computed(() => {
-  /*
-   CATATAN PERHITUNGAN SKOR RADAR (Skala 0 - 100):
-   Agar tampilan hijau pada radar chart semakin meluas ketika performa baik,
-   semua nilai mentah (raw) dari endpoint harus dikonversi ke skor 0-100 di mana 100 = Sempurna.
-  */
-
-  // 1. Solved Customers: Sudah dalam bentuk persentase, jadi nilainya langsung digunakan.
-  const solvedCustomersScore = props.solvedPercentageStats?.value || 0
-  
-  // 2. Total Solved: Nilainya adalah jumlah numerik. 
-  // Kita melonggarkan batas, berasumsi 40 kasus terselesaikan sudah mendapat skor sempurna (100).
-  const rawTotalSolved = props.solvedStats?.value || 0
-  const totalSolvedScore = Math.min(100, Math.round((rawTotalSolved / 40) * 100))
-  
-  // 3. Total Komplain: Semakin sedikit komplain, skornya semakin mendekati 100.
-  // Untuk memperlunak penalti (agar area hijau tidak langsung habis), nilai mentah dibagi 2.
-  const rawComplaint = props.complaintStats?.value || 0
-  const complaintScore = Math.max(0, 100 - Math.round(rawComplaint / 2))
-  
-  // 4. Total Tiket: Sama seperti komplain, semakin sedikit semakin baik (skor 100).
-  // Nilai mentah juga dibagi 2 agar pengurangan skor tidak terlalu ekstrem.
-  const rawTicket = props.ticketStats?.value || 0
-  const ticketScore = Math.max(0, 100 - Math.round(rawTicket / 2))
-
-  return [solvedCustomersScore, totalSolvedScore, complaintScore, ticketScore]
-})
-
-const radarSeries = computed(() => [{
-  name: 'Performance Score',
-  data: radarScores.value
-}])
-
-const overallScore = computed(() => {
-  const scores = radarScores.value
-  if (scores.length === 0) return 0
-  const sum = scores.reduce((a, b) => a + b, 0)
-  return Math.round(sum / scores.length)
-})
-
-const overallBadgeColor = computed(() => {
-  const score = overallScore.value
-  if (score >= 75) return 'primary'
-  if (score >= 50) return 'warning'
-  return 'error'
-})
-
-const overallBadgeLabel = computed(() => {
-  const score = overallScore.value
-  if (score >= 75) return 'Baik'
-  if (score >= 50) return 'Cukup'
-  return 'Perlu Perbaikan'
-})
-
-const radarChartOptions = {
-  chart: {
-    type: 'radar',
-    toolbar: { show: false },
-    zoom: { enabled: false },
-    fontFamily: 'Geist, sans-serif'
-  },
-  colors: ['#009838'], // Brand primary green
-  stroke: {
-    width: 2,
-    colors: ['#009838']
-  },
-  fill: {
-    opacity: 0.1,
-    colors: ['#009838'] // Elegant light green area
-  },
-  markers: {
-    size: 4,
-    colors: ['#009838'],
-    strokeColors: '#ffffff',
-    strokeWidth: 1
-  },
-  xaxis: {
-    categories: ['', '', '', ''], // Blank out since we overlay premium HTML custom labels!
-    labels: {
-      show: false
-    }
-  },
-  yaxis: {
-    show: false,
-    min: 0,
-    max: 100,
-    tickAmount: 4
-  },
-  grid: {
-    circular: true
-  },
-  tooltip: {
-    enabled: false
-  }
-}
-</script>
-
 <template>
   <div class="space-y-6">
     <!-- Middle Section: Radar Chart and Insight Panel -->
@@ -294,3 +183,114 @@ const radarChartOptions = {
     />
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import type { TicketStats } from '~/types/service-quality'
+import { formatPercentage } from '~/utils/format'
+
+const props = defineProps<{
+  ticketStats: TicketStats | null
+  complaintStats: TicketStats | null
+  solvedStats: TicketStats | null
+  solvedPercentageStats: TicketStats | null
+  isLoading: boolean
+}>()
+
+// Radar Chart Normalized Scores & Overall Calculation
+const radarScores = computed(() => {
+  /*
+   CATATAN PERHITUNGAN SKOR RADAR (Skala 0 - 100):
+   Agar tampilan hijau pada radar chart semakin meluas ketika performa baik,
+   semua nilai mentah (raw) dari endpoint harus dikonversi ke skor 0-100 di mana 100 = Sempurna.
+  */
+
+  // 1. Solved Customers: Sudah dalam bentuk persentase, jadi nilainya langsung digunakan.
+  const solvedCustomersScore = props.solvedPercentageStats?.value || 0
+  
+  // 2. Total Solved: Nilainya adalah jumlah numerik. 
+  // Kita melonggarkan batas, berasumsi 40 kasus terselesaikan sudah mendapat skor sempurna (100).
+  const rawTotalSolved = props.solvedStats?.value || 0
+  const totalSolvedScore = Math.min(100, Math.round((rawTotalSolved / 40) * 100))
+  
+  // 3. Total Komplain: Semakin sedikit komplain, skornya semakin mendekati 100.
+  // Untuk memperlunak penalti (agar area hijau tidak langsung habis), nilai mentah dibagi 2.
+  const rawComplaint = props.complaintStats?.value || 0
+  const complaintScore = Math.max(0, 100 - Math.round(rawComplaint / 2))
+  
+  // 4. Total Tiket: Sama seperti komplain, semakin sedikit semakin baik (skor 100).
+  // Nilai mentah juga dibagi 2 agar pengurangan skor tidak terlalu ekstrem.
+  const rawTicket = props.ticketStats?.value || 0
+  const ticketScore = Math.max(0, 100 - Math.round(rawTicket / 2))
+
+  return [solvedCustomersScore, totalSolvedScore, complaintScore, ticketScore]
+})
+
+const radarSeries = computed(() => [{
+  name: 'Performance Score',
+  data: radarScores.value
+}])
+
+const overallScore = computed(() => {
+  const scores = radarScores.value
+  if (scores.length === 0) return 0
+  const sum = scores.reduce((a, b) => a + b, 0)
+  return Math.round(sum / scores.length)
+})
+
+const overallBadgeColor = computed(() => {
+  const score = overallScore.value
+  if (score >= 75) return 'primary'
+  if (score >= 50) return 'warning'
+  return 'error'
+})
+
+const overallBadgeLabel = computed(() => {
+  const score = overallScore.value
+  if (score >= 75) return 'Baik'
+  if (score >= 50) return 'Cukup'
+  return 'Perlu Perbaikan'
+})
+
+const radarChartOptions = {
+  chart: {
+    type: 'radar',
+    toolbar: { show: false },
+    zoom: { enabled: false },
+    fontFamily: 'Geist, sans-serif'
+  },
+  colors: ['#009838'], // Brand primary green
+  stroke: {
+    width: 2,
+    colors: ['#009838']
+  },
+  fill: {
+    opacity: 0.1,
+    colors: ['#009838'] // Elegant light green area
+  },
+  markers: {
+    size: 4,
+    colors: ['#009838'],
+    strokeColors: '#ffffff',
+    strokeWidth: 1
+  },
+  xaxis: {
+    categories: ['', '', '', ''], // Blank out since we overlay premium HTML custom labels!
+    labels: {
+      show: false
+    }
+  },
+  yaxis: {
+    show: false,
+    min: 0,
+    max: 100,
+    tickAmount: 4
+  },
+  grid: {
+    circular: true
+  },
+  tooltip: {
+    enabled: false
+  }
+}
+</script>

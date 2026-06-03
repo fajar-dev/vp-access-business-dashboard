@@ -1,106 +1,3 @@
-<script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
-import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthTotalMrcYtdStats, GrowthForecastRevenueStats } from '~/types/growth'
-import { useDashboardFilters } from '~/composables/useDashboardFilters'
-import { formatCurrency, formatPercentage } from '~/utils/format'
-
-// Page meta to use our executive dashboard layout
-definePageMeta({
-  layout: 'dashboard'
-})
-
-const { selectedBranch, selectedTimeframe: globalTimeframe } = useDashboardFilters()
-
-const isLoadingNewMrc = ref(true)
-const newMrcStats = ref<GrowthMrcStats | null>(null)
-
-const isLoadingRevenueAchievement = ref(true)
-const revenueAchievementStats = ref<GrowthRevenueAchievementStats | null>(null)
-
-const isLoadingNewCustomer = ref(true)
-const newCustomerStats = ref<GrowthNewCustomerStats | null>(null)
-
-const isLoadingArpu = ref(true)
-const arpuStats = ref<GrowthArpuStats | null>(null)
-
-const isLoadingTotalMrcYtd = ref(true)
-const totalMrcYtdStats = ref<GrowthTotalMrcYtdStats | null>(null)
-
-const isLoadingForecastRevenue = ref(true)
-const forecastRevenueStats = ref<GrowthForecastRevenueStats | null>(null)
-
-const fetchNewMrc = async () => {
-  isLoadingNewMrc.value = true
-  const res = await growthService.getNewMrc(selectedBranch.value, globalTimeframe.value)
-  if (res?.success) newMrcStats.value = res.data
-  isLoadingNewMrc.value = false
-}
-
-const fetchRevenueAchievement = async () => {
-  isLoadingRevenueAchievement.value = true
-  const res = await growthService.getRevenueAchievement(selectedBranch.value, globalTimeframe.value)
-  if (res?.success) revenueAchievementStats.value = res.data
-  isLoadingRevenueAchievement.value = false
-}
-
-const fetchNewCustomer = async () => {
-  isLoadingNewCustomer.value = true
-  const res = await growthService.getNewCustomer(selectedBranch.value, globalTimeframe.value)
-  if (res?.success) newCustomerStats.value = res.data
-  isLoadingNewCustomer.value = false
-}
-
-const fetchArpu = async () => {
-  isLoadingArpu.value = true
-  const res = await growthService.getArpu(selectedBranch.value, globalTimeframe.value)
-  if (res?.success) arpuStats.value = res.data
-  isLoadingArpu.value = false
-}
-
-const fetchTotalMrcYtd = async () => {
-  isLoadingTotalMrcYtd.value = true
-  const res = await growthService.getTotalMrcYtd(selectedBranch.value)
-  if (res?.success) totalMrcYtdStats.value = res.data
-  isLoadingTotalMrcYtd.value = false
-}
-
-const fetchForecastRevenue = async () => {
-  isLoadingForecastRevenue.value = true
-  const res = await growthService.getForecastRevenue(globalTimeframe.value)
-  if (res?.success) forecastRevenueStats.value = res.data
-  isLoadingForecastRevenue.value = false
-}
-
-const isLoadingRevenue = ref(true)
-const revenueData = ref<GrowthRevenueData[] | null>(null)
-
-const fetchRevenue = async () => {
-  isLoadingRevenue.value = true
-  const res = await growthService.getRevenue(selectedBranch.value)
-  if (res?.success) revenueData.value = res.data
-  isLoadingRevenue.value = false
-}
-
-const fetchData = () => {
-  fetchNewMrc()
-  fetchRevenueAchievement()
-  fetchNewCustomer()
-  fetchArpu()
-  fetchTotalMrcYtd()
-  fetchForecastRevenue()
-  fetchRevenue()
-}
-
-watch([selectedBranch, globalTimeframe], () => {
-  fetchData()
-})
-
-onMounted(() => {
-  fetchData()
-})
-</script>
-
 <template>
   <div class="space-y-6">
     
@@ -248,3 +145,106 @@ onMounted(() => {
 
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+import { growthService } from '~/services/growth-service'
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthTotalMrcYtdStats, GrowthForecastRevenueStats } from '~/types/growth'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+import { formatCurrency, formatPercentage } from '~/utils/format'
+
+// Page meta to use our executive dashboard layout
+definePageMeta({
+  layout: 'dashboard'
+})
+
+const { selectedBranch, selectedTimeframe: globalTimeframe } = useDashboardFilters()
+
+const isLoadingNewMrc = ref(true)
+const newMrcStats = ref<GrowthMrcStats | null>(null)
+
+const isLoadingRevenueAchievement = ref(true)
+const revenueAchievementStats = ref<GrowthRevenueAchievementStats | null>(null)
+
+const isLoadingNewCustomer = ref(true)
+const newCustomerStats = ref<GrowthNewCustomerStats | null>(null)
+
+const isLoadingArpu = ref(true)
+const arpuStats = ref<GrowthArpuStats | null>(null)
+
+const isLoadingTotalMrcYtd = ref(true)
+const totalMrcYtdStats = ref<GrowthTotalMrcYtdStats | null>(null)
+
+const isLoadingForecastRevenue = ref(true)
+const forecastRevenueStats = ref<GrowthForecastRevenueStats | null>(null)
+
+const fetchNewMrc = async () => {
+  isLoadingNewMrc.value = true
+  const res = await growthService.getNewMrc(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) newMrcStats.value = res.data
+  isLoadingNewMrc.value = false
+}
+
+const fetchRevenueAchievement = async () => {
+  isLoadingRevenueAchievement.value = true
+  const res = await growthService.getRevenueAchievement(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) revenueAchievementStats.value = res.data
+  isLoadingRevenueAchievement.value = false
+}
+
+const fetchNewCustomer = async () => {
+  isLoadingNewCustomer.value = true
+  const res = await growthService.getNewCustomer(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) newCustomerStats.value = res.data
+  isLoadingNewCustomer.value = false
+}
+
+const fetchArpu = async () => {
+  isLoadingArpu.value = true
+  const res = await growthService.getArpu(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) arpuStats.value = res.data
+  isLoadingArpu.value = false
+}
+
+const fetchTotalMrcYtd = async () => {
+  isLoadingTotalMrcYtd.value = true
+  const res = await growthService.getTotalMrcYtd(selectedBranch.value)
+  if (res?.success) totalMrcYtdStats.value = res.data
+  isLoadingTotalMrcYtd.value = false
+}
+
+const fetchForecastRevenue = async () => {
+  isLoadingForecastRevenue.value = true
+  const res = await growthService.getForecastRevenue(globalTimeframe.value)
+  if (res?.success) forecastRevenueStats.value = res.data
+  isLoadingForecastRevenue.value = false
+}
+
+const isLoadingRevenue = ref(true)
+const revenueData = ref<GrowthRevenueData[] | null>(null)
+
+const fetchRevenue = async () => {
+  isLoadingRevenue.value = true
+  const res = await growthService.getRevenue(selectedBranch.value)
+  if (res?.success) revenueData.value = res.data
+  isLoadingRevenue.value = false
+}
+
+const fetchData = () => {
+  fetchNewMrc()
+  fetchRevenueAchievement()
+  fetchNewCustomer()
+  fetchArpu()
+  fetchTotalMrcYtd()
+  fetchForecastRevenue()
+  fetchRevenue()
+}
+
+watch([selectedBranch, globalTimeframe], () => {
+  fetchData()
+})
+
+onMounted(() => {
+  fetchData()
+})
+</script>

@@ -1,24 +1,3 @@
-<script setup lang="ts">
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-
-// Scoped to the main default dashboard shell layout
-definePageMeta({
-  layout: 'dashboard',
-  middleware: [
-    function (to) {
-      if (to.path === '/service-quality' || to.path === '/service-quality/') {
-        return navigateTo('/service-quality/lagging-indicator')
-      }
-    }
-  ]
-})
-
-// Retrieve global dashboard filters
-const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
-</script>
-
 <template>
   <div class="space-y-6">
     <!-- Service Quality Metric Header using reusable custom slots -->
@@ -73,3 +52,24 @@ const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = u
     <NuxtPage />
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// Scoped to the main default dashboard shell layout
+definePageMeta({
+  layout: 'dashboard',
+  middleware: [
+    function (to) {
+      if (to.path === '/service-quality' || to.path === '/service-quality/') {
+        return navigateTo('/service-quality/lagging-indicator')
+      }
+    }
+  ]
+})
+
+// Retrieve global dashboard filters
+const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
+</script>

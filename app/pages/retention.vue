@@ -1,25 +1,3 @@
-<script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { useDashboardFilters } from '~/composables/useDashboardFilters'
-
-const route = useRoute()
-
-// Scoped to the main default dashboard shell layout
-definePageMeta({
-  layout: 'dashboard',
-  middleware: [
-    function (to) {
-      if (to.path === '/retention' || to.path === '/retention/') {
-        return navigateTo('/retention/lagging-indicator')
-      }
-    }
-  ]
-})
-
-// Retrieve global dashboard filters
-const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
-</script>
-
 <template>
   <div class="space-y-6">
     <!-- Retention Metric Executive Header using reusable custom slots -->
@@ -74,3 +52,25 @@ const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = u
     <NuxtPage />
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { useDashboardFilters } from '~/composables/useDashboardFilters'
+
+// Retrieve global dashboard filters
+const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
+const route = useRoute()
+
+// Scoped to the main default dashboard shell layout
+definePageMeta({
+  layout: 'dashboard',
+  middleware: [
+    function (to) {
+      if (to.path === '/retention' || to.path === '/retention/') {
+        return navigateTo('/retention/lagging-indicator')
+      }
+    }
+  ]
+})
+
+</script>
