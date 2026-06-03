@@ -19,6 +19,21 @@ export interface GrowthNewCustomerStats {
   period: string;
 }
 
+export interface GrowthArpuDetails {
+  serviceGroup: string;
+  jumlahService: number;
+  totalRevenue: number;
+  avgPerService: number;
+}
+
+export interface GrowthArpuStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+  details: GrowthArpuDetails[];
+}
+
 export interface GrowthRevenueMonthData {
   revenue: number;
 }

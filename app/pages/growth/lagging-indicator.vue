@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats } from '~/types/growth'
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
@@ -20,6 +20,9 @@ const revenueAchievementStats = ref<GrowthRevenueAchievementStats | null>(null)
 
 const isLoadingNewCustomer = ref(true)
 const newCustomerStats = ref<GrowthNewCustomerStats | null>(null)
+
+const isLoadingArpu = ref(true)
+const arpuStats = ref<GrowthArpuStats | null>(null)
 
 const fetchNewMrc = async () => {
   isLoadingNewMrc.value = true
@@ -42,6 +45,13 @@ const fetchNewCustomer = async () => {
   isLoadingNewCustomer.value = false
 }
 
+const fetchArpu = async () => {
+  isLoadingArpu.value = true
+  const res = await growthService.getArpu(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) arpuStats.value = res.data
+  isLoadingArpu.value = false
+}
+
 const isLoadingRevenue = ref(true)
 const revenueData = ref<GrowthRevenueData[] | null>(null)
 
@@ -56,6 +66,7 @@ const fetchData = () => {
   fetchNewMrc()
   fetchRevenueAchievement()
   fetchNewCustomer()
+  fetchArpu()
   fetchRevenue()
 }
 
@@ -177,29 +188,50 @@ onMounted(() => {
       <!-- ARPU Card with Breakdown details -->
       <MetricCard
         title="ARPU"
-        value="Rp 3.9 Jt"
-        subtext="per pelanggan/ bulan"
-        trend="2.8%"
-        trend-direction="up"
+        :value="arpuStats ? formatCurrency(arpuStats.value, true) : 'Rp 0'"
+        :subtext="arpuStats ? `per pelanggan / ${arpuStats.period}` : 'per pelanggan / bulan'"
+        :trend="arpuStats ? formatPercentage(arpuStats.percentage) : '0%'"
+        :trend-direction="arpuStats?.trend === 'down' ? 'down' : 'up'"
         icon="i-lucide-activity"
         icon-color="text-violet-500"
+        :is-loading="isLoadingArpu"
       >
         <template #details>
           <div class="space-y-2 mt-1">
-            <div class="flex items-center justify-between text-sm font-medium">
-              <div class="flex items-center gap-2 text-neutral-600">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
-                <span>Dedicated</span>
+            <template v-if="isLoadingArpu">
+              <div class="space-y-3 mt-1">
+                <USkeleton class="h-5 w-full" />
+                <USkeleton class="h-5 w-full" />
               </div>
-              <span class="text-neutral-900">Rp. 8.4 Jt</span>
-            </div>
-            <div class="flex items-center justify-between text-sm font-medium">
-              <div class="flex items-center gap-2 text-neutral-600">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                <span>Broadband</span>
+            </template>
+            <template v-else-if="arpuStats">
+              <div v-for="(detail, index) in arpuStats.details" :key="detail.serviceGroup" class="flex items-center justify-between text-sm font-medium">
+                <div class="flex items-center gap-2 text-neutral-600">
+                  <span 
+                    class="w-2.5 h-2.5 rounded-full inline-block" 
+                    :class="index === 0 ? 'bg-blue-500' : (index === 1 ? 'bg-emerald-500' : 'bg-amber-500')"
+                  ></span>
+                  <span>{{ detail.serviceGroup || 'Unknown' }}</span>
+                </div>
+                <span class="text-neutral-900">{{ formatCurrency(detail.avgPerService, true) }}</span>
               </div>
-              <span class="text-neutral-900">Rp. 2.7 Jt</span>
-            </div>
+            </template>
+            <template v-else>
+              <div class="flex items-center justify-between text-sm font-medium">
+                <div class="flex items-center gap-2 text-neutral-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
+                  <span>Dedicated</span>
+                </div>
+                <span class="text-neutral-900">Rp 0</span>
+              </div>
+              <div class="flex items-center justify-between text-sm font-medium">
+                <div class="flex items-center gap-2 text-neutral-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                  <span>Broadband</span>
+                </div>
+                <span class="text-neutral-900">Rp 0</span>
+              </div>
+            </template>
           </div>
         </template>
       </MetricCard>
