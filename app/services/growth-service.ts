@@ -64,7 +64,7 @@ export class GrowthService {
 
     async getPipeline(period: string): Promise<ApiResponse<GrowthPipelineStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthPipelineStats>>(`/vp-access-business/growth/pipeline?period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthPipelineStats>>(`/vp-access-business/growth/pipeline-value?period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
