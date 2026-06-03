@@ -61,9 +61,9 @@ const fetchActivity = async () => {
   isLoadingActivity.value = false
 }
 
-const fetchPipeline = async () => {
+const fetchPipelineValue = async () => {
   isLoadingPipeline.value = true
-  const res = await growthService.getPipeline(globalTimeframe.value)
+  const res = await growthService.getPipelineValue(globalTimeframe.value)
   if (res?.success) pipelineStats.value = res.data
   isLoadingPipeline.value = false
 }
@@ -87,7 +87,7 @@ const fetchData = () => {
   fetchOpportunity()
   fetchWinRate()
   fetchActivity()
-  fetchPipeline()
+  fetchPipelineValue()
   fetchCycle()
   fetchDiscount()
 }
