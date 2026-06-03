@@ -19,6 +19,13 @@ export interface GrowthNewCustomerStats {
   period: string;
 }
 
+export interface GrowthTotalMrcYtdStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
 export interface GrowthArpuDetails {
   serviceGroup: string;
   jumlahService: number;

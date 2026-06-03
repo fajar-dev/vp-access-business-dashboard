@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats } from '~/types/growth'
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthTotalMrcYtdStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
@@ -23,6 +23,9 @@ const newCustomerStats = ref<GrowthNewCustomerStats | null>(null)
 
 const isLoadingArpu = ref(true)
 const arpuStats = ref<GrowthArpuStats | null>(null)
+
+const isLoadingTotalMrcYtd = ref(true)
+const totalMrcYtdStats = ref<GrowthTotalMrcYtdStats | null>(null)
 
 const fetchNewMrc = async () => {
   isLoadingNewMrc.value = true
@@ -52,6 +55,13 @@ const fetchArpu = async () => {
   isLoadingArpu.value = false
 }
 
+const fetchTotalMrcYtd = async () => {
+  isLoadingTotalMrcYtd.value = true
+  const res = await growthService.getTotalMrcYtd(selectedBranch.value)
+  if (res?.success) totalMrcYtdStats.value = res.data
+  isLoadingTotalMrcYtd.value = false
+}
+
 const isLoadingRevenue = ref(true)
 const revenueData = ref<GrowthRevenueData[] | null>(null)
 
@@ -67,6 +77,7 @@ const fetchData = () => {
   fetchRevenueAchievement()
   fetchNewCustomer()
   fetchArpu()
+  fetchTotalMrcYtd()
   fetchRevenue()
 }
 
@@ -177,12 +188,13 @@ onMounted(() => {
       <!-- Total MRC (YTD) -->
       <MetricCard
         title="Total MRC (YTD)"
-        value="Rp 99.8 Jt"
-        subtext="Year to Date sampai 24 April 2026"
-        trend="15.2%"
-        trend-direction="up"
+        :value="totalMrcYtdStats ? formatCurrency(totalMrcYtdStats.value, true) : 'Rp 0'"
+        :subtext="totalMrcYtdStats ? totalMrcYtdStats.period : 'Year to Date'"
+        :trend="totalMrcYtdStats ? formatPercentage(totalMrcYtdStats.percentage) : '0%'"
+        :trend-direction="totalMrcYtdStats?.trend === 'down' ? 'down' : 'up'"
         icon="i-lucide-dollar-sign"
         icon-color="text-primary"
+        :is-loading="isLoadingTotalMrcYtd"
       />
 
       <!-- ARPU Card with Breakdown details -->
