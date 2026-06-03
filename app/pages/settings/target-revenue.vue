@@ -218,6 +218,16 @@
 
       <!-- Monthly Target Nested Table using Nuxt UI -->
       <div class="overflow-x-auto">
+        <!-- Warning Alert for Invalid Allocation -->
+        <UAlert
+          v-if="!isLocked && totalFormAllocated !== annualTarget"
+          icon="i-lucide-alert-triangle"
+          class="mb-4"
+          color="error"
+          variant="soft"
+          title="Alokasi Belum Valid"
+          description="Total alokasi target per bulan harus sama persis dengan Target Revenue Tahunan (100%) sebelum dapat dikunci."
+        />
         <UTable
           :data="tableRows"
           :loading="isLoading"
@@ -256,7 +266,7 @@
                 @focus="focusedMonths[row.original.idx] = true"
                 @blur="focusedMonths[row.original.idx] = false"
                 @update:model-value="val => setMonthFormatted(row.original.idx as number, val)"
-                :disabled="isLocked"
+                :disabled="isLocked || isLoading"
                 placeholder="0"
                 size="lg"
                 class="w-full"
@@ -307,17 +317,6 @@
       </div>
     </UCard>
 
-    <!-- Warning Alert for Invalid Allocation -->
-    <UAlert
-      v-if="!isLocked && totalFormAllocated !== annualTarget"
-      icon="i-lucide-alert-triangle"
-      color="error"
-      variant="soft"
-      title="Alokasi Belum Valid"
-      description="Total alokasi target per bulan harus sama persis dengan Target Revenue Tahunan (100%) sebelum dapat dikunci."
-      class="mt-4"
-    />
-
     <!-- 5. Bottom Action & Footer Buttons bar -->
     <div class="flex flex-row justify-between items-center gap-4 pt-4">
       <!-- Change Log Trigger -->
@@ -331,7 +330,7 @@
       />
 
       <!-- Primary Action triggers -->
-      <div class="flex items-center gap-3 w-full sm:w-auto">
+      <div class="flex items-center gap-3 w-full sm:w-auto" :class="isLoading ? 'hidden' : 'block'">
         <!-- Ubah Target (Only visible when locked) -->
         <UButton
           v-if="isLocked"
@@ -821,18 +820,23 @@ const buildPayload = (locked: boolean, reason?: string) => ({
 
 const saveDraft = async () => {
   const payload = buildPayload(false)
-  const res = await settingService.saveTarget(Number(selectedYear.value), payload)
-  if (res?.success) {
-    toast.add({ title: 'Draf berhasil disimpan!', color: 'primary', icon: 'i-lucide-check-circle' })
-    await fetchTarget()
-  } else {
-    toast.add({ title: 'Gagal menyimpan draf.', color: 'error', icon: 'i-lucide-alert-circle' })
-  }
+  await settingService.saveTarget(Number(selectedYear.value), payload)
+  toast.add({
+    title: 'Draf berhasil disimpan!',
+    color: 'primary',
+    icon: 'i-lucide-check-circle'
+  })
+  await fetchTarget()
 }
 
 const lockTarget = () => {
   if (totalFormAllocated.value !== annualTarget.value) {
-    toast.add({ title: 'Gagal mengunci target.', description: 'Total alokasi harus persis 100% dari Target Revenue Tahunan.', color: 'error', icon: 'i-lucide-alert-circle' })
+    toast.add({ 
+      title: 'Gagal mengunci target.', 
+      description: 'Total alokasi harus persis 100% dari Target Revenue Tahunan.', 
+      color: 'error', 
+      icon: 'i-lucide-alert-circle' 
+    })
     return
   }
   isLockModalOpen.value = true
@@ -840,26 +844,26 @@ const lockTarget = () => {
 
 const confirmLock = async () => {
   const payload = buildPayload(true)
-  const res = await settingService.saveTarget(Number(selectedYear.value), payload)
-  if (res?.success) {
-    isLocked.value = true
-    toast.add({ title: 'Target Revenue berhasil dikunci!', color: 'primary', icon: 'i-lucide-lock' })
-    await fetchTarget()
-  } else {
-    toast.add({ title: 'Gagal mengunci target.', color: 'error', icon: 'i-lucide-alert-circle' })
-  }
+  await settingService.saveTarget(Number(selectedYear.value), payload)
+  isLocked.value = true
+  toast.add({
+    title: 'Target Revenue berhasil dikunci!',
+    color: 'primary',
+    icon: 'i-lucide-lock'
+  })
+  await fetchTarget()
 }
 
 const confirmUnlock = async (reason: string) => {
   // Pass reason for logging purpose
   const payload = buildPayload(false, reason)
-  const res = await settingService.saveTarget(Number(selectedYear.value), payload)
-  if (res?.success) {
-    isLocked.value = false
-    toast.add({ title: 'Target Revenue dibuka kunci untuk diedit.', description: `Alasan: ${reason}`, color: 'primary', icon: 'i-lucide-unlock' })
-    await fetchTarget()
-  } else {
-    toast.add({ title: 'Gagal membuka kunci.', color: 'error', icon: 'i-lucide-alert-circle' })
-  }
+  await settingService.saveTarget(Number(selectedYear.value), payload)
+  isLocked.value = false
+  toast.add({
+    title: 'Target Revenue dibuka kunci untuk diedit.',
+    color: 'primary',
+    icon: 'i-lucide-unlock'
+  })
+  await fetchTarget()
 }
 </script>
