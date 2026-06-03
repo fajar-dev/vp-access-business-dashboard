@@ -6,7 +6,6 @@ export const useDashboardFilters = () => {
   const selectedYear = useState<string>('selected-year', () => currentYear.toString())
 
   const yearOptions = [
-    (currentYear + 1).toString(),
     currentYear.toString(),
     (currentYear - 1).toString(),
     (currentYear - 2).toString()

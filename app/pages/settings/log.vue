@@ -12,9 +12,9 @@
       <div class="flex items-center gap-3">
         <span class="text-sm font-semibold text-neutral-700">Tahun:</span>
         <USelect
-          :model-value="selectedYear"
+          :model-value="logSelectedYear"
           @update:model-value="handleYearChange"
-          :items="yearOptions"
+          :items="logYearOptions"
           class="w-32"
           aria-label="Select Year"
         />
@@ -135,8 +135,14 @@ const logData = ref<TargetLogResponse[]>([])
 
 const { selectedYear, yearOptions } = useDashboardFilters()
 
+const logSelectedYear = ref(selectedYear.value)
+const logYearOptions = [
+  { label: 'all', value: 'all' },
+  ...yearOptions.map(y => ({ label: y, value: y }))
+]
+
 const handleYearChange = async (year: string) => {
-  selectedYear.value = year
+  logSelectedYear.value = year
   await fetchLogs()
 }
 
@@ -204,7 +210,8 @@ const buildComparisonRows = (oldVal: any, newVal: any) => {
 // Fetch logs
 const fetchLogs = async () => {
   isLoading.value = true
-  const res = await settingService.getTargetLog(Number(selectedYear.value))
+  const yearParam = logSelectedYear.value === 'all' ? undefined : Number(logSelectedYear.value)
+  const res = await settingService.getTargetLog(yearParam)
   if (res?.success) {
     logData.value = res.data
   }
