@@ -12,6 +12,13 @@ export interface GrowthMrcStats {
   details: GrowthMrcDetails;
 }
 
+export interface GrowthNewCustomerStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
 export interface GrowthRevenueMonthData {
   revenue: number;
 }
