@@ -196,7 +196,7 @@
         <h3 class="text-base font-semibold text-neutral-900 select-none">Target Per Bulan</h3>
         <div class="flex gap-2">
           <UButton
-            v-if="!isLocked"
+            v-if="!isLocked && !isLoading"
             icon="i-lucide-layout-grid"
             color="neutral"
             variant="outline"
@@ -205,7 +205,7 @@
             @click="fillSameRataAction"
           />
           <UButton
-            v-if="!isLocked"
+            v-if="!isLocked && !isLoading"
             icon="i-lucide-refresh-cw"
             color="neutral"
             variant="outline"
@@ -321,6 +321,7 @@
     <div class="flex flex-row justify-between items-center gap-4 pt-4">
       <!-- Change Log Trigger -->
       <UButton
+        to="/settings/log"
         icon="i-lucide-history"
         color="neutral"
         variant="ghost"
@@ -390,8 +391,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const selectedYear = ref('2026')
-const yearOptions = ['2026', '2025', '2024']
+const { selectedYear, yearOptions } = useDashboardFilters()
 
 // Core Page State
 const annualTarget = ref(0)

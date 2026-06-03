@@ -28,6 +28,18 @@ export interface TargetRevenuePayload {
   updated_by_name?: string;
 }
 
+export interface TargetLogResponse {
+  id: number;
+  year: number;
+  reason: string | null;
+  oldValue: any;
+  newValue: any;
+  createdAt: string;
+  updatedAt: string | null;
+  createdByName: string;
+  updatedByName: string | null;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
