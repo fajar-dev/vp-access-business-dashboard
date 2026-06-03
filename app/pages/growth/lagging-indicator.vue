@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthTotalMrcYtdStats } from '~/types/growth'
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthTotalMrcYtdStats, GrowthForecastRevenueStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
@@ -26,6 +26,9 @@ const arpuStats = ref<GrowthArpuStats | null>(null)
 
 const isLoadingTotalMrcYtd = ref(true)
 const totalMrcYtdStats = ref<GrowthTotalMrcYtdStats | null>(null)
+
+const isLoadingForecastRevenue = ref(true)
+const forecastRevenueStats = ref<GrowthForecastRevenueStats | null>(null)
 
 const fetchNewMrc = async () => {
   isLoadingNewMrc.value = true
@@ -62,6 +65,13 @@ const fetchTotalMrcYtd = async () => {
   isLoadingTotalMrcYtd.value = false
 }
 
+const fetchForecastRevenue = async () => {
+  isLoadingForecastRevenue.value = true
+  const res = await growthService.getForecastRevenue(globalTimeframe.value)
+  if (res?.success) forecastRevenueStats.value = res.data
+  isLoadingForecastRevenue.value = false
+}
+
 const isLoadingRevenue = ref(true)
 const revenueData = ref<GrowthRevenueData[] | null>(null)
 
@@ -78,6 +88,7 @@ const fetchData = () => {
   fetchNewCustomer()
   fetchArpu()
   fetchTotalMrcYtd()
+  fetchForecastRevenue()
   fetchRevenue()
 }
 
@@ -121,13 +132,14 @@ onMounted(() => {
         />
         
         <MetricCard
-          title="Forcast Revenue Next Month"
-          value="Rp 185 Jt"
-          subtext="Mei 2026 (Negotiation 90%)"
-          trend="8.2%"
-          trend-direction="up"
+          title="Forecast Revenue Next Month"
+          :value="forecastRevenueStats ? formatCurrency(forecastRevenueStats.value, true) : 'Rp 0'"
+          :subtext="forecastRevenueStats ? `Opportunity Stage Negotiation (${forecastRevenueStats.period})` : 'Negotiation stage'"
+          :trend="forecastRevenueStats ? formatPercentage(forecastRevenueStats.percentage) : '0%'"
+          :trend-direction="forecastRevenueStats?.trend === 'down' ? 'down' : 'up'"
           icon="i-lucide-trending-up"
           icon-color="text-purple-500"
+          :is-loading="isLoadingForecastRevenue"
         />
       </div>
 
