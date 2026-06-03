@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
 
@@ -26,6 +26,34 @@ const activityStats = ref<GrowthActivityStats | null>(null)
 
 const isLoadingPipeline = ref(true)
 const pipelineStats = ref<GrowthPipelineStats | null>(null)
+
+const isLoadingPipelineStage = ref(true)
+const pipelineStageStats = ref<GrowthPipelineStageStats | null>(null)
+
+const formattedPipelineStages = computed(() => {
+  if (!pipelineStageStats.value) return []
+  const stats = pipelineStageStats.value
+  return [
+    {
+      name: stats.qualification.name,
+      value: formatCurrency(stats.qualification.value),
+      share: `${stats.qualification.percentage.toFixed(1)}%`,
+      color: 'blue'
+    },
+    {
+      name: stats.proposal.name,
+      value: formatCurrency(stats.proposal.value),
+      share: `${stats.proposal.percentage.toFixed(1)}%`,
+      color: 'teal'
+    },
+    {
+      name: stats.negotiation.name,
+      value: formatCurrency(stats.negotiation.value),
+      share: `${stats.negotiation.percentage.toFixed(1)}%`,
+      color: 'green'
+    }
+  ]
+})
 
 const isLoadingCycle = ref(true)
 const cycleStats = ref<GrowthCycleStats | null>(null)
@@ -68,6 +96,13 @@ const fetchPipelineValue = async () => {
   isLoadingPipeline.value = false
 }
 
+const fetchPipelineStage = async () => {
+  isLoadingPipelineStage.value = true
+  const res = await growthService.getPipelineStage(globalTimeframe.value)
+  if (res?.success) pipelineStageStats.value = res.data
+  isLoadingPipelineStage.value = false
+}
+
 const fetchCycle = async () => {
   isLoadingCycle.value = true
   const res = await growthService.getCycle(globalTimeframe.value)
@@ -88,6 +123,7 @@ const fetchData = () => {
   fetchWinRate()
   fetchActivity()
   fetchPipelineValue()
+  fetchPipelineStage()
   fetchCycle()
   fetchDiscount()
 }
@@ -110,7 +146,8 @@ onMounted(() => {
       <!-- Left Column Area (Spans 2 Columns) -->
       <div class="lg:col-span-2 flex flex-col gap-6">
         <!-- Top: Pipeline by Stage wave chart -->
-        <PipelineStageChart />
+        <PipelineStageChart v-if="!isLoadingPipelineStage" :stages="formattedPipelineStages" />
+        <USkeleton v-else class="h-[340px] w-full rounded-xl" />
 
         <!-- Bottom: 2-Column Grid for Metrics -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -48,6 +48,17 @@ export interface GrowthPipelineStats {
   percentage: number;
   period: string;
 }
+export interface GrowthPipelineStageDetail {
+  name: string;
+  value: number;
+  percentage: number;
+}
+
+export interface GrowthPipelineStageStats {
+  qualification: GrowthPipelineStageDetail;
+  proposal: GrowthPipelineStageDetail;
+  negotiation: GrowthPipelineStageDetail;
+}
 
 export interface GrowthCycleStats {
   value: number;
