@@ -180,7 +180,7 @@
             <div class="flex justify-between font-medium">
               <span>Diperbarui oleh</span>
               <USkeleton v-if="isLoading" class="h-4 w-36" />
-              <span v-else class="text-neutral-900">{{ updatedBy || '-' }}</span>
+              <span v-else class="text-neutral-900">{{ updatedBy?.name || '-' }} ({{ updatedBy?.jobPosition || '-' }})</span>
             </div>
           </div>
         </div>
@@ -393,11 +393,12 @@ definePageMeta({
 
 const { selectedYear, yearOptions } = useDashboardFilters()
 
-// Core Page State
+import type { UserReference } from '~/types/setting'
+
 const annualTarget = ref(0)
 const distributionMethod = ref<'same_rata' | 'manual'>('manual')
 const updatedAt = ref<string | undefined>('')
-const updatedBy = ref<string | undefined>('')
+const updatedBy = ref<UserReference | undefined>()
 const isLoading = ref(false)
 const toast = useToast()
 const prevMonthlyTargets = ref<number[]>(Array(12).fill(0))
@@ -430,7 +431,7 @@ const fetchTarget = async () => {
 
   if (res?.success && res.data) {
     const data = res.data
-    annualTarget.value = data.yearly_target
+    annualTarget.value = data.yearlyTarget
     monthlyTargets.value[0]!.value = data.jan
     monthlyTargets.value[1]!.value = data.feb
     monthlyTargets.value[2]!.value = data.mar
@@ -443,9 +444,9 @@ const fetchTarget = async () => {
     monthlyTargets.value[9]!.value = data.oct
     monthlyTargets.value[10]!.value = data.nov
     monthlyTargets.value[11]!.value = data.dec
-    isLocked.value = data.is_locked
-    updatedAt.value = data.updated_at
-    updatedBy.value = data.updated_by_name
+    isLocked.value = data.isLocked
+    updatedAt.value = data.updatedAt
+    updatedBy.value = data.updatedBy ?? undefined
   } else {
     // Reset to 0 if no data found
     annualTarget.value = 0
@@ -638,7 +639,7 @@ const columns: any[] = [
     header: 'Alokasi (%)',
     meta: {
       class: {
-        th: 'py-3 px-6 w-[300px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
+        th: 'py-3 px-6 w-[250px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
         td: (cell: any) => {
           if (cell.row.original.type === 'quarter') {
             return 'hidden'
@@ -661,7 +662,7 @@ const columns: any[] = [
     header: 'Pertumbuhan Target',
     meta: {
       class: {
-        th: 'py-3 px-6 bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
+        th: 'py-3 px-6  w-[300px] bg-neutral-50 text-sm font-medium text-neutral-700 border-b border-neutral-200 select-none',
         td: (cell: any) => {
           if (cell.row.original.type === 'quarter') {
             return 'hidden'

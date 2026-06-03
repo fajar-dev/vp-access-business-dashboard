@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { SettingRevenueData, ApiResponse, TargetRevenuePayload, TargetLogResponse } from "../types/setting"
+import type { SettingRevenueData, ApiResponse, TargetRevenuePayload, TargetLogResponse, TargetRevenueResponse } from "../types/setting"
 
 export class SettingService {
     private get authHeaders() {
@@ -20,9 +20,9 @@ export class SettingService {
         }
     }
 
-    async getTarget(year: number): Promise<ApiResponse<TargetRevenuePayload | null>> {
+    async getTarget(year: number): Promise<ApiResponse<TargetRevenueResponse | null>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TargetRevenuePayload | null>>(`/vp-access-business/setting/target?year=${year}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TargetRevenueResponse | null>>(`/vp-access-business/setting/target?year=${year}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

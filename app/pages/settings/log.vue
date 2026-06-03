@@ -31,7 +31,7 @@
             tr: (row: any) => row.original.type === 'month' ? 'border-b-0 border-transparent' : 'border-b border-neutral-100'
           }
         }"
-        class="w-full text-left text-sm text-neutral-800 min-w-[700px] border border-neutral-200 rounded-lg bg-white"
+        class="w-full text-left text-sm text-neutral-900 min-w-[700px] border border-neutral-200 rounded-lg bg-white"
       >
         <!-- Custom Date Formats -->
         <template #createdAt-cell="{ row }: any">
@@ -43,13 +43,25 @@
           <span v-else class="text-neutral-400 italic">Belum Dikunci</span>
         </template>
 
-        <template #createdByName-cell="{ row }: any">
-          <span v-if="row.original.createdByName">{{ row.original.createdByName }}</span>
+        <template #createdBy-cell="{ row }: any">
+          <div v-if="row.original.createdBy" class="flex items-center gap-2">
+            <UAvatar :src="row.original.createdBy.photo" :alt="row.original.createdBy.name" size="sm" />
+            <div class="flex flex-col">
+              <span class="text-sm font-medium">{{ row.original.createdBy.name }}</span>
+              <span v-if="row.original.createdBy.jobPosition" class="text-xs text-neutral-600 mt-0.5">{{ row.original.createdBy.jobPosition }}</span>
+            </div>
+          </div>
           <span v-else class="text-neutral-400 italic">-</span>
         </template>
         
-        <template #updatedByName-cell="{ row }: any">
-          <span v-if="row.original.updatedByName">{{ row.original.updatedByName }}</span>
+        <template #updatedBy-cell="{ row }: any">
+          <div v-if="row.original.updatedBy" class="flex items-center gap-2">
+            <UAvatar :src="row.original.updatedBy.photo" :alt="row.original.updatedBy.name" size="sm" />
+            <div class="flex flex-col">
+              <span class="text-sm font-medium">{{ row.original.updatedBy.name }}</span>
+              <span v-if="row.original.updatedBy.jobPosition" class="text-xs text-neutral-600 mt-0.5">{{ row.original.updatedBy.jobPosition }}</span>
+            </div>
+          </div>
           <span v-else class="text-neutral-400 italic">-</span>
         </template>
 
@@ -151,11 +163,11 @@ const handleYearChange = async (year: string) => {
 const columns: any[] = [
   { accessorKey: 'expand', header: '' },
   { accessorKey: 'createdAt', header: 'Waktu Dibuat', meta: { sortable: true } },
-  { accessorKey: 'createdByName', header: 'Dibuat Oleh' },
+  { accessorKey: 'createdBy', header: 'Dibuat Oleh' },
   { accessorKey: 'year', header: 'Tahun Target' },
   { accessorKey: 'reason', header: 'Aksi / Alasan' },
   { accessorKey: 'updatedAt', header: 'Waktu Dikunci', meta: { sortable: true } },
-  { accessorKey: 'updatedByName', header: 'Dikunci Oleh' },
+  { accessorKey: 'updatedBy', header: 'Dikunci Oleh' },
 ]
 
 const buildComparisonRows = (oldVal: any, newVal: any) => {

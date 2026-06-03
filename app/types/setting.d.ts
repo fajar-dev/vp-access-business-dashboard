@@ -24,8 +24,35 @@ export interface TargetRevenuePayload {
   nov: number;
   dec: number;
   is_locked: boolean;
-  updated_at?: string;
-  updated_by_name?: string;
+  reason?: string;
+}
+
+export interface TargetRevenueResponse {
+  year: number;
+  yearlyTarget: number;
+  jan: number;
+  feb: number;
+  mar: number;
+  apr: number;
+  may: number;
+  jun: number;
+  jul: number;
+  aug: number;
+  sep: number;
+  oct: number;
+  nov: number;
+  dec: number;
+  isLocked: boolean;
+  updatedAt?: string;
+  updatedBy?: UserReference | null;
+}
+
+export interface UserReference {
+  id: number;
+  name: string;
+  email: string;
+  photo: string | null;
+  jobPosition: string | null;
 }
 
 export interface TargetLogResponse {
@@ -36,8 +63,8 @@ export interface TargetLogResponse {
   newValue: any;
   createdAt: string;
   updatedAt: string | null;
-  createdByName: string;
-  updatedByName: string | null;
+  createdBy: UserReference | null;
+  updatedBy: UserReference | null;
 }
 
 export interface ApiResponse<T> {
