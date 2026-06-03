@@ -33,6 +33,13 @@ export interface GrowthForecastRevenueStats {
   period: string;
 }
 
+export interface GrowthForecastMrcStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
 export interface GrowthArpuDetails {
   serviceGroup: string;
   jumlahService: number;

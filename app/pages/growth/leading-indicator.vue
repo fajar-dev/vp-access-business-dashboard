@@ -15,13 +15,14 @@
           <!-- Left Metric Stack -->
           <div class="flex flex-col gap-6">
             <MetricCard
-              title="Forcast MRC"
-              value="Rp 185 Jt"
+              title="Forecast MRC"
+              :value="forecastMrcStats ? formatCurrency(forecastMrcStats.value, true) : 'Rp 0'"
               subtext="All MRC Pipeline Negotiation"
-              trend="8.2%"
-              trend-direction="up"
+              :trend="forecastMrcStats ? formatPercentage(forecastMrcStats.percentage) : '0%'"
+              :trend-direction="forecastMrcStats?.trend === 'down' ? 'down' : 'up'"
               icon="i-lucide-trending-up"
               icon-color="text-purple-500"
+              :is-loading="isLoadingForecastMrc"
             />
 
             <MetricCard
@@ -186,7 +187,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats, GrowthForecastMrcStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
 
@@ -199,6 +200,9 @@ const { selectedTimeframe: globalTimeframe } = useDashboardFilters()
 
 const isLoadingLeads = ref(true)
 const leadsStats = ref<GrowthLeadsStats | null>(null)
+
+const isLoadingForecastMrc = ref(true)
+const forecastMrcStats = ref<GrowthForecastMrcStats | null>(null)
 
 const isLoadingOpportunity = ref(true)
 const opportunityStats = ref<GrowthOpportunityStats | null>(null)
@@ -256,6 +260,13 @@ const fetchLeads = async () => {
   isLoadingLeads.value = false
 }
 
+const fetchForecastMrc = async () => {
+  isLoadingForecastMrc.value = true
+  const res = await growthService.getForecastMrc(globalTimeframe.value)
+  if (res?.success) forecastMrcStats.value = res.data
+  isLoadingForecastMrc.value = false
+}
+
 const fetchOpportunity = async () => {
   isLoadingOpportunity.value = true
   const res = await growthService.getOpportunity(globalTimeframe.value)
@@ -307,6 +318,7 @@ const fetchDiscount = async () => {
 
 const fetchData = () => {
   fetchLeads()
+  fetchForecastMrc()
   fetchOpportunity()
   fetchWinRate()
   fetchActivity()
