@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats } from '~/types/growth'
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
@@ -18,6 +18,9 @@ const newMrcStats = ref<GrowthMrcStats | null>(null)
 const isLoadingRevenueAchievement = ref(true)
 const revenueAchievementStats = ref<GrowthRevenueAchievementStats | null>(null)
 
+const isLoadingNewCustomer = ref(true)
+const newCustomerStats = ref<GrowthNewCustomerStats | null>(null)
+
 const fetchNewMrc = async () => {
   isLoadingNewMrc.value = true
   const res = await growthService.getNewMrc(selectedBranch.value, globalTimeframe.value)
@@ -30,6 +33,13 @@ const fetchRevenueAchievement = async () => {
   const res = await growthService.getRevenueAchievement(selectedBranch.value, globalTimeframe.value)
   if (res?.success) revenueAchievementStats.value = res.data
   isLoadingRevenueAchievement.value = false
+}
+
+const fetchNewCustomer = async () => {
+  isLoadingNewCustomer.value = true
+  const res = await growthService.getNewCustomer(selectedBranch.value, globalTimeframe.value)
+  if (res?.success) newCustomerStats.value = res.data
+  isLoadingNewCustomer.value = false
 }
 
 const isLoadingRevenue = ref(true)
@@ -45,6 +55,7 @@ const fetchRevenue = async () => {
 const fetchData = () => {
   fetchNewMrc()
   fetchRevenueAchievement()
+  fetchNewCustomer()
   fetchRevenue()
 }
 
@@ -78,12 +89,13 @@ onMounted(() => {
         
         <MetricCard
           title="New Customer"
-          value="Rp 42 Jt"
-          subtext="Deal baru bulan ini"
-          trend="12.5%"
-          trend-direction="up"
+          :value="newCustomerStats ? formatCurrency(newCustomerStats.value, true) : 'Rp 0'"
+          :subtext="newCustomerStats ? `Deal baru ${newCustomerStats.period}` : 'Deal baru bulan ini'"
+          :trend="newCustomerStats ? formatPercentage(newCustomerStats.percentage) : '0%'"
+          :trend-direction="newCustomerStats?.trend === 'down' ? 'down' : 'up'"
           icon="i-lucide-dollar-sign"
           icon-color="text-warning"
+          :is-loading="isLoadingNewCustomer"
         />
         
         <MetricCard
