@@ -133,26 +133,32 @@ onMounted(() => {
       >
         <template #details>
           <div class="space-y-2 mt-1">
-            <div class="flex items-center justify-between text-sm font-medium">
-              <div class="flex items-center gap-2 text-neutral-600">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                <span>Paid</span>
+            <template v-if="isLoadingNewMrc">
+              <div class="space-y-3 mt-1">
+                <USkeleton class="h-5 w-full" />
+                <USkeleton class="h-5 w-full" />
               </div>
-              <span class="text-neutral-900">
-                <USkeleton v-if="isLoadingNewMrc" class="h-4 w-16" />
-                <span v-else>{{ newMrcStats ? formatCurrency(newMrcStats.details.mrc_paid) : 'Rp 0' }}</span>
-              </span>
-            </div>
-            <div class="flex items-center justify-between text-sm font-medium">
-              <div class="flex items-center gap-2 text-neutral-600">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-                <span>Unpaid</span>
+            </template>
+            <template v-else>
+              <div  class="flex items-center justify-between text-sm font-medium">
+                <div class="flex items-center gap-2 text-neutral-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                  <span>Paid</span>
+                </div>
+                <span class="text-neutral-900">
+                  {{ newMrcStats ? formatCurrency(newMrcStats.details.mrc_paid) : 'Rp 0' }}
+                </span>
               </div>
-              <span class="text-neutral-900">
-                <USkeleton v-if="isLoadingNewMrc" class="h-4 w-16" />
-                <span v-else>{{ newMrcStats ? formatCurrency(newMrcStats.details.mrc_unpaid) : 'Rp 0' }}</span>
-              </span>
-            </div>
+              <div class="flex items-center justify-between text-sm font-medium">
+                <div class="flex items-center gap-2 text-neutral-600">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                  <span>Unpaid</span>
+                </div>
+                <span class="text-neutral-900">
+                  {{ newMrcStats ? formatCurrency(newMrcStats.details.mrc_unpaid) : 'Rp 0' }}
+                </span>
+              </div>
+            </template>
           </div>
         </template>
       </MetricCard>

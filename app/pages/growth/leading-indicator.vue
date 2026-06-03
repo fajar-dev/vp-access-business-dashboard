@@ -37,18 +37,21 @@ const formattedPipelineStages = computed(() => {
     {
       name: stats.qualification.name,
       value: formatCurrency(stats.qualification.value),
+      rawValue: stats.qualification.value,
       share: `${stats.qualification.percentage.toFixed(1)}%`,
       color: 'blue'
     },
     {
       name: stats.proposal.name,
       value: formatCurrency(stats.proposal.value),
+      rawValue: stats.proposal.value,
       share: `${stats.proposal.percentage.toFixed(1)}%`,
       color: 'teal'
     },
     {
       name: stats.negotiation.name,
       value: formatCurrency(stats.negotiation.value),
+      rawValue: stats.negotiation.value,
       share: `${stats.negotiation.percentage.toFixed(1)}%`,
       color: 'green'
     }

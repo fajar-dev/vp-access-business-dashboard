@@ -3,6 +3,13 @@
     class="border border-neutral-100 h-full flex flex-col justify-between overflow-hidden relative shadow-xs"
     :ui="{ body: 'p-0 flex-1 flex flex-col justify-between' }"
   >
+
+    <div class="flex items-center gap-2">
+      <h3 class="text-md font-semibold text-neutral-900">
+        Pipeline by Stage (Rp)
+      </h3>
+    </div>
+
     <!-- Main Content Area (Header-free, content occupies entire height) -->
     <div class="relative flex-1 min-h-[340px] flex flex-col justify-between">
       
@@ -137,6 +144,7 @@
 export interface PipelineStage {
   name: string
   value: string
+  rawValue?: number
   share: string
   color: string
 }
@@ -173,7 +181,7 @@ const activeStage = ref<number | null>(null)
 
 // Parse numerical values dynamically and calculate reactive SVG S-curve paths
 const wavePaths = computed(() => {
-  const parsed = props.stages.map(s => parseNumericValue(s.value))
+  const parsed = props.stages.map(s => s.rawValue !== undefined ? s.rawValue : parseNumericValue(s.value))
   
   const maxVal = Math.max(...parsed, 1)
   
