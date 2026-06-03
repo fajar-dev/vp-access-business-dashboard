@@ -382,7 +382,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { formatIDR, parseIDR } from '~/utils/format'
+import { formatIDR, parseIDR, formatDateTime } from '~/utils/format'
 import { settingService } from '~/services/setting-service'
 import AllocationDonutChart from '~/components/AllocationDonutChart.vue'
 
@@ -401,20 +401,6 @@ const updatedBy = ref<string | undefined>('')
 const isLoading = ref(false)
 const toast = useToast()
 const prevMonthlyTargets = ref<number[]>(Array(12).fill(0))
-
-const formatDateTime = (dateString: string | undefined) => {
-  if (!dateString) return '-'
-  const d = new Date(dateString)
-  return d.toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }) + ' - ' + d.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).replace('.', ':')
-}
 
 // Handle Year Change
 const handleYearChange = async (year: string) => {

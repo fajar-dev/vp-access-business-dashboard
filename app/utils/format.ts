@@ -53,3 +53,29 @@ export const formatRevenue = formatCompact
 export function formatPercentage(value: number): string {
   return `${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(Math.abs(value))}%`
 }
+
+export const formatDateTime = (dateString?: string | null) => {
+  if (!dateString) return '-'
+  const d = new Date(dateString)
+  return d.toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }) + ' - ' + d.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit'
+  }).replace('.', ':')
+}
+
+export const formatDateTimeShort = (dateString?: string | null) => {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date)
+}

@@ -124,6 +124,7 @@
 import { ref, onMounted } from 'vue'
 import { settingService } from '~/services/setting-service'
 import type { TargetLogResponse } from '~/types/setting'
+import { formatIDR, formatDateTimeShort as formatDateTime } from '~/utils/format'
 
 definePageMeta({
   layout: 'dashboard'
@@ -156,23 +157,6 @@ const columns: any[] = [
   { accessorKey: 'updatedAt', header: 'Waktu Dikunci', meta: { sortable: true } },
   { accessorKey: 'updatedByName', header: 'Dikunci Oleh' },
 ]
-
-// Helpers
-const formatIDR = (value: number) => {
-  return new Intl.NumberFormat('id-ID').format(value)
-}
-
-const formatDateTime = (dateString?: string | null) => {
-  if (!dateString) return '-'
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
-}
 
 const buildComparisonRows = (oldVal: any, newVal: any) => {
   const labels = [
