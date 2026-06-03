@@ -321,7 +321,7 @@
     <div class="flex flex-row justify-between items-center gap-4 pt-4">
       <!-- Change Log Trigger -->
       <UButton
-        to="/settings/log"
+        to="/target-revenue/log"
         icon="i-lucide-history"
         color="neutral"
         variant="ghost"
@@ -383,7 +383,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { formatIDR, parseIDR, formatDateTime } from '~/utils/format'
-import { settingService } from '~/services/setting-service'
+import { targetRevenueService } from '~/services/target-revenue'
 import AllocationDonutChart from '~/components/AllocationDonutChart.vue'
 
 // Set page metadata to use default sidebar layout
@@ -393,7 +393,7 @@ definePageMeta({
 
 const { selectedYear, yearOptions } = useDashboardFilters()
 
-import type { UserReference } from '~/types/setting'
+import type { UserReference } from '~/types/target-revenue'
 
 const annualTarget = ref(0)
 const distributionMethod = ref<'same_rata' | 'manual'>('manual')
@@ -415,8 +415,8 @@ const handleYearChange = async (year: string) => {
 const fetchTarget = async () => {
   const currentYear = Number(selectedYear.value)
   const [res, prevRes] = await Promise.all([
-    settingService.getTarget(currentYear),
-    settingService.getTarget(currentYear - 1)
+    targetRevenueService.getTarget(currentYear),
+    targetRevenueService.getTarget(currentYear - 1)
   ])
 
   if (prevRes?.success && prevRes.data) {
@@ -729,7 +729,7 @@ const totalAllocated = ref(0)
 const actualMonthlyRevenues = ref<Record<number, number>>({})
 
 const fetchTotalAllocated = async () => {
-  const res = await settingService.getRevenue(Number(selectedYear.value))
+  const res = await targetRevenueService.getRevenue(Number(selectedYear.value))
   if (res?.success) {
     totalAllocated.value = res.data.total
     const revenues: Record<number, number> = {}
@@ -807,7 +807,7 @@ const buildPayload = (locked: boolean, reason?: string) => ({
 
 const saveDraft = async () => {
   const payload = buildPayload(false)
-  await settingService.saveTarget(Number(selectedYear.value), payload)
+  await targetRevenueService.saveTarget(Number(selectedYear.value), payload)
   toast.add({
     title: 'Draf berhasil disimpan!',
     color: 'primary',
@@ -831,7 +831,7 @@ const lockTarget = () => {
 
 const confirmLock = async () => {
   const payload = buildPayload(true)
-  await settingService.saveTarget(Number(selectedYear.value), payload)
+  await targetRevenueService.saveTarget(Number(selectedYear.value), payload)
   isLocked.value = true
   toast.add({
     title: 'Target Revenue berhasil dikunci!',
@@ -844,7 +844,7 @@ const confirmLock = async () => {
 const confirmUnlock = async (reason: string) => {
   // Pass reason for logging purpose
   const payload = buildPayload(false, reason)
-  await settingService.saveTarget(Number(selectedYear.value), payload)
+  await targetRevenueService.saveTarget(Number(selectedYear.value), payload)
   isLocked.value = false
   toast.add({
     title: 'Target Revenue dibuka kunci untuk diedit.',

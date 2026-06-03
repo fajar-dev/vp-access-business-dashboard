@@ -1,11 +1,11 @@
-export interface SettingRevenueDetail {
+export interface TargetRevenueDetail {
   month: number;
   total: number;
 }
 
-export interface SettingRevenueData {
+export interface TargetRevenueData {
   total: number;
-  details: SettingRevenueDetail[];
+  details: TargetRevenueDetail[];
 }
 
 export interface TargetRevenuePayload {

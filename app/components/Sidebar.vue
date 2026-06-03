@@ -218,7 +218,7 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: 'Target Revenue',
-        to: '/settings/target-revenue',
+        to: '/target-revenue',
         icon: 'i-lucide-target'
       }
     ]
@@ -236,6 +236,9 @@ const isItemActive = (item: NavItem) => {
   }
   if (item.label === 'Service Quality') {
     return route.path.startsWith('/service-quality')
+  }
+  if (item.label === 'Target Revenue') {
+    return route.path.startsWith('/target-revenue')
   }
   return route.path === item.to
 }

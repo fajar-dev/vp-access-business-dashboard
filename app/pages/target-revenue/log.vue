@@ -134,8 +134,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { settingService } from '~/services/setting-service'
-import type { TargetLogResponse } from '~/types/setting'
+import { targetRevenueService } from '~/services/target-revenue'
+import type { TargetLogResponse } from '~/types/target-revenue'
 import { formatIDR, formatDateTimeShort as formatDateTime } from '~/utils/format'
 
 definePageMeta({
@@ -207,7 +207,7 @@ const buildComparisonRows = (oldVal: any, newVal: any) => {
 const fetchLogs = async () => {
   isLoading.value = true
   const yearParam = logSelectedYear.value === 'all' ? undefined : Number(logSelectedYear.value)
-  const res = await settingService.getTargetLog(yearParam)
+  const res = await targetRevenueService.getTargetLog(yearParam)
   if (res?.success) {
     logData.value = res.data
   }
