@@ -197,7 +197,7 @@ onMounted(() => {
         :is-loading="isLoadingArpu"
       >
         <template #details>
-          <div class="space-y-2 mt-1">
+          <div class="space-y-2 mt-1 max-h-[70px] overflow-y-auto pr-1">
             <template v-if="isLoadingArpu">
               <div class="space-y-3 mt-1">
                 <USkeleton class="h-5 w-full" />
@@ -209,27 +209,11 @@ onMounted(() => {
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span 
                     class="w-2.5 h-2.5 rounded-full inline-block" 
-                    :class="index === 0 ? 'bg-blue-500' : (index === 1 ? 'bg-emerald-500' : 'bg-amber-500')"
+                    :style="{ backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#06b6d4', '#d946ef', '#84cc16'][index % 8] }"
                   ></span>
                   <span>{{ detail.serviceGroup || 'Unknown' }}</span>
                 </div>
                 <span class="text-neutral-900">{{ formatCurrency(detail.avgPerService, true) }}</span>
-              </div>
-            </template>
-            <template v-else>
-              <div class="flex items-center justify-between text-sm font-medium">
-                <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
-                  <span>Dedicated</span>
-                </div>
-                <span class="text-neutral-900">Rp 0</span>
-              </div>
-              <div class="flex items-center justify-between text-sm font-medium">
-                <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                  <span>Broadband</span>
-                </div>
-                <span class="text-neutral-900">Rp 0</span>
               </div>
             </template>
           </div>
