@@ -4,6 +4,56 @@ export interface ApiResponse<T = any> {
     message: string
     data: T
 }
+export interface ForecastPaymentStats {
+    trend: 'up' | 'down'
+    percentage: number
+    revenue: number
+    period: string
+}
+
+export interface RetentionForecastChurnStats {
+  forecastMrc: {
+    value: number;
+    trend: 'up' | 'down';
+    percentage: number;
+    period: string;
+  };
+  details: {
+    blocked: number;
+    contractEnd: number;
+    ticketIssues: number;
+    lowUsage: number;
+  };
+  customerLose: {
+    service_group: string;
+    total_churn: number;
+  }[];
+}
+
+export interface RetentionForecastNetMrcStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
+export interface RetentionNetMrcStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+  newMrc: {
+    value: number;
+    trend: 'up' | 'down';
+    percentage: number;
+  };
+  churnMrc: {
+    value: number;
+    trend: 'up' | 'down';
+    percentage: number;
+  };
+}
+
 export interface ChurnStats {
     trend: 'up' | 'down'
     percentage: number

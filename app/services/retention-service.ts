@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { ApiResponse, ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData, ContractExpiringStats, TicketStats, UsageStats, PaymentStats } from "../types/retention"
+import type { ApiResponse, ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData, ContractExpiringStats, TicketStats, UsageStats, PaymentStats, RetentionForecastChurnStats, RetentionForecastNetMrcStats, RetentionNetMrcStats } from "../types/retention"
 
 export class RetentionService {
 
@@ -73,6 +73,33 @@ export class RetentionService {
     async getPayment(branchId: string): Promise<ApiResponse<PaymentStats>> {
         try {
             const response = await apiService.client.get<ApiResponse<PaymentStats>>(`/vp-access-business/retention/payment?branchId=${branchId}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getForecastChurn(period: string): Promise<ApiResponse<RetentionForecastChurnStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<RetentionForecastChurnStats>>(`/vp-access-business/retention/forecast-churn?period=${period}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getForecastNetMrc(period: string): Promise<ApiResponse<RetentionForecastNetMrcStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<RetentionForecastNetMrcStats>>(`/vp-access-business/retention/forecast-net-mrc?period=${period}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getNetMrc(branchId: string, period: string): Promise<ApiResponse<RetentionNetMrcStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<RetentionNetMrcStats>>(`/vp-access-business/retention/net-mrc?branchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

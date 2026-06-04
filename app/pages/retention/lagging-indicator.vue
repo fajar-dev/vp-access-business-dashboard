@@ -9,7 +9,7 @@
         <!-- Net MRC Growth Card with Detailed Breakdowns -->
         <MetricCard
           title="Net MRC Growth"
-          :value="netMrcStats ? formatCurrency(netMrcStats.value) : 'Rp 0'"
+          :value="netMrcStats ? formatCurrency(netMrcStats.value, true) : 'Rp 0'"
           :trend="netMrcStats ? formatPercentage(netMrcStats.percentage) : '0%'"
           :trend-direction="netMrcStats?.trend === 'down' ? 'down' : 'up'"
           :trend-color="netMrcStats?.trend === 'down' ? 'error' : 'primary'"
@@ -18,14 +18,18 @@
           :is-loading="isLoadingNetMrc"
         >
           <template #details>
-            <div class="space-y-2 mt-1">
+            <div v-if="isLoadingNetMrc" class="space-y-3 mt-1">
+              <USkeleton class="h-5 w-full" />
+              <USkeleton class="h-5 w-full" />
+            </div>
+            <div v-else class="space-y-2 mt-1">
               <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                   <span>Net MRC</span>
                 </div>
                 <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.newMrc.value) : 'Rp 0' }}</span>
+                  <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.newMrc.value, true) : 'Rp 0' }}</span>
                   <UBadge :color="netMrcStats?.newMrc.trend === 'down' ? 'error' : 'primary'" variant="soft" size="md" class="rounded-full font-medium">
                     {{ netMrcStats?.newMrc.trend === 'up' ? '↑' : '↓' }} {{ netMrcStats ? formatPercentage(netMrcStats.newMrc.percentage) : '0%' }}
                   </UBadge>
@@ -37,7 +41,7 @@
                   <span>Churn MRC</span>
                 </div>
                 <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.churnMrc.value) : 'Rp 0' }}</span>
+                  <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.churnMrc.value, true) : 'Rp 0' }}</span>
                   <UBadge :color="netMrcStats?.churnMrc.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
                     {{ netMrcStats?.churnMrc.trend === 'up' ? '↑' : '↓' }} {{ netMrcStats ? formatPercentage(netMrcStats.churnMrc.percentage) : '0%' }}
                   </UBadge>
@@ -178,9 +182,8 @@
 <script setup lang="ts">
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
-import { growthService } from '~/services/growth-service'
-import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from '~/types/retention'
-import type { GrowthForecastChurnStats, GrowthForecastNetMrcStats, GrowthNetMrcStats } from '~/types/growth'
+
+import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData, RetentionForecastChurnStats, RetentionForecastNetMrcStats, RetentionNetMrcStats } from '~/types/retention'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
@@ -200,13 +203,13 @@ const isLoadingMigration = ref(false)
 const isLoadingRate = ref(false)
 
 const isLoadingForecastChurn = ref(true)
-const forecastChurnStats = ref<GrowthForecastChurnStats | null>(null)
+const forecastChurnStats = ref<RetentionForecastChurnStats | null>(null)
 
 const isLoadingForecastNetMrc = ref(true)
-const forecastNetMrcStats = ref<GrowthForecastNetMrcStats | null>(null)
+const forecastNetMrcStats = ref<RetentionForecastNetMrcStats | null>(null)
 
 const isLoadingNetMrc = ref(true)
-const netMrcStats = ref<GrowthNetMrcStats | null>(null)
+const netMrcStats = ref<RetentionNetMrcStats | null>(null)
 
 const fetchChurnStats = async () => {
   isLoadingChurn.value = true
@@ -238,21 +241,21 @@ const fetchChurnRate = async () => {
 
 const fetchForecastChurn = async () => {
   isLoadingForecastChurn.value = true
-  const res = await growthService.getForecastChurn(selectedTimeframe.value)
+  const res = await retentionService.getForecastChurn(selectedTimeframe.value)
   if (res?.success) forecastChurnStats.value = res.data
   isLoadingForecastChurn.value = false
 }
 
 const fetchForecastNetMrc = async () => {
   isLoadingForecastNetMrc.value = true
-  const res = await growthService.getForecastNetMrc(selectedTimeframe.value)
+  const res = await retentionService.getForecastNetMrc(selectedTimeframe.value)
   if (res?.success) forecastNetMrcStats.value = res.data
   isLoadingForecastNetMrc.value = false
 }
 
 const fetchNetMrc = async () => {
   isLoadingNetMrc.value = true
-  const res = await growthService.getNetMrc(selectedTimeframe.value)
+  const res = await retentionService.getNetMrc(selectedBranch.value, selectedTimeframe.value)
   if (res?.success) netMrcStats.value = res.data
   isLoadingNetMrc.value = false
 }

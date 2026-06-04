@@ -40,48 +40,6 @@ export interface GrowthForecastMrcStats {
   period: string;
 }
 
-export interface GrowthForecastChurnStats {
-  forecastMrc: {
-    value: number;
-    trend: 'up' | 'down';
-    percentage: number;
-    period: string;
-  };
-  details: {
-    blocked: number;
-    contractEnd: number;
-    ticketIssues: number;
-    lowUsage: number;
-  };
-  customerLose: {
-    service_group: string;
-    total_churn: number;
-  }[];
-}
-
-export interface GrowthForecastNetMrcStats {
-  value: number;
-  trend: 'up' | 'down';
-  percentage: number;
-  period: string;
-}
-
-export interface GrowthNetMrcStats {
-  value: number;
-  trend: 'up' | 'down';
-  percentage: number;
-  period: string;
-  newMrc: {
-    value: number;
-    trend: 'up' | 'down';
-    percentage: number;
-  };
-  churnMrc: {
-    value: number;
-    trend: 'up' | 'down';
-    percentage: number;
-  };
-}
 
 export interface GrowthArpuDetails {
   serviceGroup: string;
