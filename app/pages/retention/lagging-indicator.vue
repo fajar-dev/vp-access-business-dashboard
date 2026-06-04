@@ -9,12 +9,13 @@
         <!-- Net MRC Growth Card with Detailed Breakdowns -->
         <MetricCard
           title="Net MRC Growth"
-          value="Rp 65 Jt"
-          trend="18.5%"
-          trend-direction="up"
-          trend-color="primary"
+          :value="netMrcStats ? formatCurrency(netMrcStats.value) : 'Rp 0'"
+          :trend="netMrcStats ? formatPercentage(netMrcStats.percentage) : '0%'"
+          :trend-direction="netMrcStats?.trend === 'down' ? 'down' : 'up'"
+          :trend-color="netMrcStats?.trend === 'down' ? 'error' : 'primary'"
           icon="i-lucide-sprout"
           icon-color="text-primary"
+          :is-loading="isLoadingNetMrc"
         >
           <template #details>
             <div class="space-y-2 mt-1">
@@ -24,8 +25,10 @@
                   <span>Net MRC</span>
                 </div>
                 <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <span class="text-neutral-900">Rp 190 Jt</span>
-                  <UBadge color="primary" variant="soft" size="md" class="rounded-full font-medium">↑ 10%</UBadge>
+                  <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.newMrc.value) : 'Rp 0' }}</span>
+                  <UBadge :color="netMrcStats?.newMrc.trend === 'down' ? 'error' : 'primary'" variant="soft" size="md" class="rounded-full font-medium">
+                    {{ netMrcStats?.newMrc.trend === 'up' ? '↑' : '↓' }} {{ netMrcStats ? formatPercentage(netMrcStats.newMrc.percentage) : '0%' }}
+                  </UBadge>
                 </div>
               </div>
               <div class="flex items-center justify-between text-sm font-medium">
@@ -34,8 +37,10 @@
                   <span>Churn MRC</span>
                 </div>
                 <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
-                  <span class="text-neutral-900">Rp 125 Jt</span>
-                  <UBadge color="error" variant="soft" size="md" class="rounded-full font-medium">↑ 8.3%</UBadge>
+                  <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.churnMrc.value) : 'Rp 0' }}</span>
+                  <UBadge :color="netMrcStats?.churnMrc.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
+                    {{ netMrcStats?.churnMrc.trend === 'up' ? '↑' : '↓' }} {{ netMrcStats ? formatPercentage(netMrcStats.churnMrc.percentage) : '0%' }}
+                  </UBadge>
                 </div>
               </div>
             </div>
@@ -115,13 +120,14 @@
           <!-- Forecast Net MRC -->
           <MetricCard
             title="Forecast Net MRC"
-            value="Rp 72M"
-            trend="15.2%"
-            trend-direction="up"
-            trend-color="primary"
-            subtext="Proyeksi bulan depan"
+            :value="forecastNetMrcStats ? formatCurrency(forecastNetMrcStats.value, true) : 'Rp 0'"
+            :trend="forecastNetMrcStats ? formatPercentage(forecastNetMrcStats.percentage) : '0%'"
+            :trend-direction="forecastNetMrcStats?.trend === 'down' ? 'down' : 'up'"
+            :trend-color="forecastNetMrcStats?.trend === 'down' ? 'error' : 'primary'"
+            :subtext="forecastNetMrcStats ? forecastNetMrcStats.period : 'Proyeksi bulan depan'"
             icon="i-lucide-line-chart"
             icon-color="text-primary"
+            :is-loading="isLoadingForecastNetMrc"
           />
 
           <!-- Forecast Churn Next Month -->
@@ -174,7 +180,7 @@ import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
 import { growthService } from '~/services/growth-service'
 import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from '~/types/retention'
-import type { GrowthForecastChurnStats } from '~/types/growth'
+import type { GrowthForecastChurnStats, GrowthForecastNetMrcStats, GrowthNetMrcStats } from '~/types/growth'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
@@ -195,6 +201,12 @@ const isLoadingRate = ref(false)
 
 const isLoadingForecastChurn = ref(true)
 const forecastChurnStats = ref<GrowthForecastChurnStats | null>(null)
+
+const isLoadingForecastNetMrc = ref(true)
+const forecastNetMrcStats = ref<GrowthForecastNetMrcStats | null>(null)
+
+const isLoadingNetMrc = ref(true)
+const netMrcStats = ref<GrowthNetMrcStats | null>(null)
 
 const fetchChurnStats = async () => {
   isLoadingChurn.value = true
@@ -231,12 +243,28 @@ const fetchForecastChurn = async () => {
   isLoadingForecastChurn.value = false
 }
 
+const fetchForecastNetMrc = async () => {
+  isLoadingForecastNetMrc.value = true
+  const res = await growthService.getForecastNetMrc(selectedTimeframe.value)
+  if (res?.success) forecastNetMrcStats.value = res.data
+  isLoadingForecastNetMrc.value = false
+}
+
+const fetchNetMrc = async () => {
+  isLoadingNetMrc.value = true
+  const res = await growthService.getNetMrc(selectedTimeframe.value)
+  if (res?.success) netMrcStats.value = res.data
+  isLoadingNetMrc.value = false
+}
+
 const fetchData = () => {
   fetchChurnStats()
   fetchCustomerLose()
   fetchWirelessMigration()
   fetchChurnRate()
   fetchForecastChurn()
+  fetchForecastNetMrc()
+  fetchNetMrc()
 }
 
 watch([selectedBranch, selectedTimeframe], () => {

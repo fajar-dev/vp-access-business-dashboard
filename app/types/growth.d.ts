@@ -66,6 +66,23 @@ export interface GrowthForecastNetMrcStats {
   period: string;
 }
 
+export interface GrowthNetMrcStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+  newMrc: {
+    value: number;
+    trend: 'up' | 'down';
+    percentage: number;
+  };
+  churnMrc: {
+    value: number;
+    trend: 'up' | 'down';
+    percentage: number;
+  };
+}
+
 export interface GrowthArpuDetails {
   serviceGroup: string;
   jumlahService: number;
