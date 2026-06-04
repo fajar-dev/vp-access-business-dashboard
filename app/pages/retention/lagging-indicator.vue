@@ -127,13 +127,14 @@
           <!-- Forecast Churn Next Month -->
           <MetricCard
             title="Forecast Churn Next Month"
-            value="Rp 98 Jt"
-            trend="12.5%"
-            trend-direction="up"
-            trend-color="error"
+            :value="forecastChurnStats ? formatCurrency(forecastChurnStats.forecastMrc.value, true) : 'Rp 0'"
+            :trend="forecastChurnStats ? formatPercentage(forecastChurnStats.forecastMrc.percentage) : '0%'"
+            :trend-direction="forecastChurnStats?.forecastMrc.trend === 'down' ? 'down' : 'up'"
+            :trend-color="forecastChurnStats?.forecastMrc.trend === 'up' ? 'error' : 'primary'"
             subtext="Perlu tindakan preventif"
             icon="i-lucide-shield-alert"
             icon-color="text-error"
+            :is-loading="isLoadingForecastChurn"
           />
 
           <!-- Customer Wireless Termigrasi -->
@@ -171,7 +172,9 @@
 <script setup lang="ts">
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { retentionService } from '~/services/retention-service'
+import { growthService } from '~/services/growth-service'
 import type { ChurnStats, CustomerLoseStats, WirelessMigrationStats, ChurnRateData } from '~/types/retention'
+import type { GrowthForecastChurnStats } from '~/types/growth'
 import { formatCurrency, formatPercentage } from '~/utils/format'
 
 // Page meta to use our default layout container
@@ -189,6 +192,9 @@ const isLoadingChurn = ref(false)
 const isLoadingLose = ref(false)
 const isLoadingMigration = ref(false)
 const isLoadingRate = ref(false)
+
+const isLoadingForecastChurn = ref(true)
+const forecastChurnStats = ref<GrowthForecastChurnStats | null>(null)
 
 const fetchChurnStats = async () => {
   isLoadingChurn.value = true
@@ -218,11 +224,19 @@ const fetchChurnRate = async () => {
   isLoadingRate.value = false
 }
 
+const fetchForecastChurn = async () => {
+  isLoadingForecastChurn.value = true
+  const res = await growthService.getForecastChurn(selectedTimeframe.value)
+  if (res?.success) forecastChurnStats.value = res.data
+  isLoadingForecastChurn.value = false
+}
+
 const fetchData = () => {
   fetchChurnStats()
   fetchCustomerLose()
   fetchWirelessMigration()
   fetchChurnRate()
+  fetchForecastChurn()
 }
 
 watch([selectedBranch, selectedTimeframe], () => {
