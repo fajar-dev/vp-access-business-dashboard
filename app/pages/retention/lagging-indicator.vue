@@ -28,7 +28,7 @@
                   <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                   <span>Net MRC</span>
                 </div>
-                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
+                <div class="flex items-center justify-between w-1/2 shrink-0">
                   <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.newMrc.value, true) : 'Rp 0' }}</span>
                   <UBadge :color="netMrcStats?.newMrc.trend === 'down' ? 'error' : 'primary'" variant="soft" size="md" class="rounded-full font-medium">
                     {{ netMrcStats?.newMrc.trend === 'up' ? '↑' : '↓' }} {{ netMrcStats ? formatPercentage(netMrcStats.newMrc.percentage) : '0%' }}
@@ -40,7 +40,7 @@
                   <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                   <span>Churn MRC</span>
                 </div>
-                <div class="flex items-center justify-between md:w-1/3 w-1/2 shrink-0">
+                <div class="flex items-center justify-between w-1/2 shrink-0">
                   <span class="text-neutral-900">{{ netMrcStats ? formatCurrency(netMrcStats.churnMrc.value, true) : 'Rp 0' }}</span>
                   <UBadge :color="netMrcStats?.churnMrc.trend === 'down' ? 'primary' : 'error'" variant="soft" size="md" class="rounded-full font-medium">
                     {{ netMrcStats?.churnMrc.trend === 'up' ? '↑' : '↓' }} {{ netMrcStats ? formatPercentage(netMrcStats.churnMrc.percentage) : '0%' }}
