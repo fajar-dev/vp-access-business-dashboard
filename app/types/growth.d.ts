@@ -40,6 +40,25 @@ export interface GrowthForecastMrcStats {
   period: string;
 }
 
+export interface GrowthForecastChurnStats {
+  forecastMrc: {
+    value: number;
+    trend: 'up' | 'down';
+    percentage: number;
+    period: string;
+  };
+  details: {
+    blocked: number;
+    contractEnd: number;
+    ticketIssues: number;
+    lowUsage: number;
+  };
+  customerLose: {
+    service_group: string;
+    total_churn: number;
+  }[];
+}
+
 export interface GrowthArpuDetails {
   serviceGroup: string;
   jumlahService: number;

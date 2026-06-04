@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthPipelineStageStats, GrowthCycleStats, GrowthDiscountStats, GrowthTotalMrcYtdStats, GrowthForecastRevenueStats, GrowthForecastMrcStats, ApiResponse } from "../types/growth"
+import type { GrowthMrcStats, GrowthRevenueData, GrowthRevenueAchievementStats, GrowthNewCustomerStats, GrowthArpuStats, GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthPipelineStageStats, GrowthCycleStats, GrowthDiscountStats, GrowthTotalMrcYtdStats, GrowthForecastRevenueStats, GrowthForecastMrcStats, GrowthForecastChurnStats, ApiResponse } from "../types/growth"
 
 export class GrowthService {
 
@@ -128,6 +128,15 @@ export class GrowthService {
     async getForecastMrc(period: string): Promise<ApiResponse<GrowthForecastMrcStats>> {
         try {
             const response = await apiService.client.get<ApiResponse<GrowthForecastMrcStats>>(`/vp-access-business/growth/forecast-mrc?period=${period}`, this.authHeaders)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getForecastChurn(period: string): Promise<ApiResponse<GrowthForecastChurnStats>> {
+        try {
+            const response = await apiService.client.get<ApiResponse<GrowthForecastChurnStats>>(`/vp-access-business/growth/forecast-churn?period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
