@@ -1,4 +1,10 @@
+import axios from 'axios'
+
 export const handleServiceError = (error: any): never => {
+    if (axios.isCancel(error)) {
+        throw error
+    }
+
     const toast = useToast()
     const responseData = error.response?.data
     

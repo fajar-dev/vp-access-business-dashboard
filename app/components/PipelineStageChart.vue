@@ -4,10 +4,13 @@
     :ui="{ body: 'p-0 flex-1 flex flex-col justify-between' }"
   >
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center justify-between p-0 md:p-2">
       <h3 class="text-md font-semibold text-neutral-900">
         Pipeline by Stage (Rp)
       </h3>
+      <!-- <UBadge color="primary" variant="soft" size="md">
+        10%
+      </UBadge> -->
     </div>
 
     <!-- Main Content Area (Header-free, content occupies entire height) -->

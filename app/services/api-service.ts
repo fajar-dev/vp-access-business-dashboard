@@ -3,6 +3,12 @@ import type { AxiosInstance } from 'axios'
 
 export class ApiService {
     private refreshHandler: (() => Promise<string | null>) | null = null
+    private abortControllers = new Set<AbortController>()
+
+    public cancelPendingRequests() {
+        this.abortControllers.forEach(controller => controller.abort())
+        this.abortControllers.clear()
+    }
 
     public setRefreshHandler(handler: () => Promise<string | null>) {
         this.refreshHandler = handler
@@ -19,9 +25,24 @@ export class ApiService {
         }
         })
 
+        instance.interceptors.request.use((config) => {
+            const controller = new AbortController()
+            config.signal = controller.signal
+            this.abortControllers.add(controller)
+            ;(config as any)._abortController = controller
+            return config
+        })
+
         instance.interceptors.response.use(
-        (response) => response,
+        (response) => {
+            const controller = (response.config as any)._abortController
+            if (controller) this.abortControllers.delete(controller)
+            return response
+        },
         async (error) => {
+            const controller = (error.config as any)?._abortController
+            if (controller) this.abortControllers.delete(controller)
+
             const originalRequest = error.config
 
             if (error.response?.status === 403) {
