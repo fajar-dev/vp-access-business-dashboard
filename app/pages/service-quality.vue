@@ -3,7 +3,7 @@
     <!-- Service Quality Metric Header using reusable custom slots -->
     <Header
       title="Dashboard - Service Quality Metric"
-      description="Rekap dari pertumbuhan penjualan • Senin, 4 Mei 2026"
+      :description="`Rekap dari pertumbuhan penjualan • ${todayFormatted}`"
     >
       <!-- Dropdown selectors injected in the actions slot placed BELOW the tabs -->
       <template #actions>
@@ -69,6 +69,9 @@ definePageMeta({
     }
   ]
 })
+
+// Format today's date in Indonesian locale (e.g. "Senin, 8 Juni 2026")
+const todayFormatted = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
 // Retrieve global dashboard filters
 const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()

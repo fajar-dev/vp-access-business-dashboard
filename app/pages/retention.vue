@@ -3,7 +3,7 @@
     <!-- Retention Metric Executive Header using reusable custom slots -->
     <Header
       title="Dashboard - Retention Metric"
-      :description="route.path === '/retention/leading-indicator' ? 'Rekap performa retensi pelanggan • Senin, 4 Mei 2026' : 'Rekap dari pertumbuhan penjualan • Senin, 4 Mei 2026'"
+      :description="route.path === '/retention/leading-indicator' ? `Rekap performa retensi pelanggan • ${todayFormatted}` : `Rekap dari pertumbuhan penjualan • ${todayFormatted}`"
     >
       <!-- Dropdown selectors injected in the actions slot -->
       <template #actions>
@@ -56,6 +56,9 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
+
+// Format today's date in Indonesian locale (e.g. "Senin, 8 Juni 2026")
+const todayFormatted = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
 // Retrieve global dashboard filters
 const { selectedBranch, selectedTimeframe, branchOptions, timeframeOptions } = useDashboardFilters()
