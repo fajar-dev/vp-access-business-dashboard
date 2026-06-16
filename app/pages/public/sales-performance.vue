@@ -56,12 +56,12 @@
                             <UAvatar 
                                 :src="row.original.photoProfile"
                                 :alt="row.original.name" 
-                                size="sm" 
+                                size="lg" 
                                 class="font-bold text-neutral-700 bg-neutral-100 border border-neutral-200"
                             />
-                            <div class="flex flex-col">
-                                <span class="font-bold text-neutral-900 leading-tight whitespace-nowrap">{{ row.original.name }}</span>
-                                <span class="text-neutral-500 text-xs leading-tight whitespace-nowrap">{{ row.original.organizationName }}</span>
+                            <div class="flex flex-col min-w-0 max-w-[220px]">
+                                <span class="text-base font-bold text-neutral-900 leading-tight truncate">{{ row.original.name }}</span>
+                                <span class="text-neutral-500 text-sm leading-tight truncate">{{ row.original.organizationName }}</span>
                             </div>
                         </div>
                     </template>
@@ -77,7 +77,7 @@ import { salesPerformanceService } from '~/services/sales-performance-service'
 import type { Manager, SalesPerformanceData } from '~/types/sales-performance'
 
 // Format today's date in Indonesian locale to show only Month and Year (e.g. "Juni 2026")
-const todayFormatted = ref(new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }))
+const todayFormatted = ref(new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))
 
 definePageMeta({
   layout: 'public'
@@ -89,7 +89,7 @@ const selectedRefresh = ref('1h')
 
 // Loading & timing states
 const isRefreshing = ref(false)
-const lastUpdated = ref(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
+const lastUpdated = ref(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
 
 const managers = ref<Manager[]>([])
 const teamOptions = computed(() => [
@@ -139,8 +139,8 @@ const tableData = computed(() => {
 
 
 // Build columns dynamically — same styling as target-revenue
-const thClass = 'py-2.5 px-2 text-sm font-bold'
-const tdClass = 'py-2 px-2 font-medium text-neutral-800 align-middle'
+const thClass = 'py-2.5 px-3 text-base font-bold'
+const tdClass = 'py-2 px-3 text-base font-medium text-neutral-800 align-middle'
 
 const columns: any[] = [
   {
@@ -148,7 +148,7 @@ const columns: any[] = [
     header: 'Name',
     meta: {
       class: {
-        th: `${thClass} w-[200px]`,
+        th: `${thClass} w-[240px]`,
         td: `${tdClass}`
       }
     },
@@ -196,8 +196,8 @@ const triggerRefresh = async () => {
   isRefreshing.value = true
 
   await fetchSalesData()
-  lastUpdated.value = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-  todayFormatted.value = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  lastUpdated.value = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  todayFormatted.value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   isRefreshing.value = false
 }
 
