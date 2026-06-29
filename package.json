@@ -13,10 +13,12 @@
   "dependencies": {
     "@iconify-json/lucide": "^1.2.108",
     "@iconify-json/simple-icons": "^1.2.83",
+    "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.7.1",
     "@types/node": "^25.9.1",
     "apexcharts": "^3.46.0",
     "axios": "^1.16.1",
+    "modern-screenshot": "^4.7.0",
     "nuxt": "^4.4.6",
     "nuxt-vue3-google-signin": "0.0.13",
     "tailwindcss": "^4.3.0",

@@ -27,12 +27,18 @@
 
       <!-- User Profile Card -->
       <div class="flex pb-3" :class="[isCollapsed ? 'justify-center' : 'items-center gap-3']">
-        <UAvatar
-          :src="authState.user?.photo"
-          :alt="authState.user?.name"
-          size="md"
-          class="ring-2 ring-primary/10 shrink-0"
-        />
+        <UTooltip
+          :text="authState.user?.name || 'User'"
+          :disabled="!isCollapsed"
+          :content="{ align: 'center', side: 'right', sideOffset: 8 }"
+        >
+          <UAvatar
+            :src="authState.user?.photo"
+            :alt="authState.user?.name"
+            size="md"
+            class="ring-2 ring-primary/10 shrink-0"
+          />
+        </UTooltip>
         <div v-if="!isCollapsed" class="min-w-0 flex-1">
           <h2 class="text-sm font-medium truncate">
             {{ authState.user?.name }}
@@ -57,14 +63,11 @@
           <!-- Group Items -->
           <div class="space-y-1">
             <template v-for="item in group.items" :key="item.label">
-              <!-- Reusable NavLink with conditional tooltip wrapping -->
-              <component
-                :is="isCollapsed ? 'UTooltip' : 'div'"
-                v-bind="isCollapsed ? {
-                  delayDuration: 0,
-                  text: item.label,
-                  content: { align: 'center', side: 'right', sideOffset: 8 }
-                } : {}"
+              <!-- Reusable NavLink with tooltip -->
+              <UTooltip
+                :text="item.label"
+                :disabled="!isCollapsed"
+                :content="{ align: 'center', side: 'right', sideOffset: 8 }"
               >
                 <NuxtLink
                   :to="item.to"
@@ -87,7 +90,7 @@
                   />
                   <span v-if="!isCollapsed" class="truncate">{{ item.label }}</span>
                 </NuxtLink>
-              </component>
+              </UTooltip>
             </template>
           </div>
         </div>
@@ -97,13 +100,35 @@
     <!-- Bottom Section (Actions & Logout) -->
     <div class="pt-4 border-t border-neutral-200 space-y-1">
       <!-- Download Button with conditional tooltip wrapper -->
-      <component
-        :is="isCollapsed ? 'UTooltip' : 'div'"
-        v-bind="isCollapsed ? {
-          delayDuration: 0,
-          text: 'Download as PDF',
-          content: { align: 'center', side: 'right', sideOffset: 8 }
-        } : {}"
+      <UTooltip
+        text="Feedback"
+        :disabled="!isCollapsed"
+        :content="{ align: 'center', side: 'right', sideOffset: 8 }"
+      >
+        <button
+          type="button"
+          class="flex items-center transition-colors group cursor-pointer text-left w-full focus:outline-none"
+          :class="[
+            isCollapsed ? 'w-10 h-10 mx-auto justify-center rounded-md' : 'w-full gap-3 px-3 py-2 text-sm rounded-md font-medium',
+            'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900',
+            isCapturing ? 'opacity-60 cursor-not-allowed' : ''
+          ]"
+          :disabled="isCapturing"
+          @click="triggerFeedback()"
+        >
+          <UIcon
+            :name="isCapturing ? 'i-lucide-loader-2' : 'i-lucide-message-square-warning'"
+            class="w-5 h-5 shrink-0 transition-colors"
+          />
+          <span v-if="!isCollapsed" class="truncate">
+            {{ isCapturing ? 'Capturing' : 'Feedback' }}
+          </span>
+        </button>
+      </UTooltip>
+      <UTooltip
+        text="Download as PDF"
+        :disabled="!isCollapsed"
+        :content="{ align: 'center', side: 'right', sideOffset: 8 }"
       >
         <UButton
           color="neutral"
@@ -116,16 +141,13 @@
         >
           <span v-if="!isCollapsed">Download as PDF</span>
         </UButton>
-      </component>
+      </UTooltip>
 
-      <!-- Logout Button with conditional tooltip wrapper -->
-      <component
-        :is="isCollapsed ? 'UTooltip' : 'div'"
-        v-bind="isCollapsed ? {
-          delayDuration: 0,
-          text: 'Logout',
-          content: { align: 'center', side: 'right', sideOffset: 8 }
-        } : {}"
+      <!-- Logout Button with tooltip -->
+      <UTooltip
+        text="Logout"
+        :disabled="!isCollapsed"
+        :content="{ align: 'center', side: 'right', sideOffset: 8 }"
       >
         <UButton
           color="error"
@@ -138,22 +160,27 @@
         >
           <span v-if="!isCollapsed">Logout</span>
         </UButton>
-      </component>
+      </UTooltip>
     </div>
     </aside>
 
     <!-- Floating Toggle Sidebar Button on the Border (visible only when collapsed) -->
-    <button
-      v-if="isCollapsed"
-      class="hidden lg:flex absolute top-4.5 -right-3 z-30 w-7 h-7 rounded-full border border-neutral-200 bg-white shadow-sm items-center justify-center text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer focus:outline-none"
-      @click="isCollapsed = false"
-      aria-label="Expand sidebar"
+    <UTooltip
+      text="Expand sidebar"
+      :content="{ align: 'center', side: 'right', sideOffset: 8 }"
     >
-      <UIcon
-        name="i-lucide-panel-left-open"
-        class="w-4 h-4"
-      />
-    </button>
+      <button
+        v-if="isCollapsed"
+        class="hidden lg:flex absolute top-4.5 -right-3 z-30 w-7 h-7 rounded-full border border-neutral-200 bg-white shadow-sm items-center justify-center text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer focus:outline-none"
+        @click="isCollapsed = false"
+        aria-label="Expand sidebar"
+      >
+        <UIcon
+          name="i-lucide-panel-left-open"
+          class="w-4 h-4"
+        />
+      </button>
+    </UTooltip>
 
     <!-- Download Period Selection Modal -->
     <DownloadModal v-model="isModalOpen" />
@@ -161,7 +188,11 @@
 </template>
 
 <script setup lang="ts">
+import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
 import { useRoute } from 'vue-router'
+import { useFeedback } from '~/composables/useFeedback'
+
+const { triggerFeedback, isCapturing } = useFeedback()
 
 const { state: authState, service: authService } = useAuth()
 const toast = useToast()
