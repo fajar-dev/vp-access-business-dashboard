@@ -3,7 +3,7 @@
     <!-- Growth Metric Executive Header using reusable custom slots -->
     <Header
       title="Dashboard - Growth Metric"
-      :description="`Rekap dari pertumbuhan penjualan • ${todayFormatted}`"
+      :description="`Hari ini:  ${todayFormatted}`"
     >
       <!-- Dropdown selectors injected in the actions slot -->
       <template #actions>

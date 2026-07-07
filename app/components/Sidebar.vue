@@ -20,7 +20,7 @@
             variant="ghost"
             icon="i-lucide-panel-left-close"
             class="hidden lg:inline-flex text-neutral-400 hover:text-neutral-700"
-            @click="isCollapsed = true"
+            @click="() => { isCollapsed = true }"
             aria-label="Collapse sidebar"
           />
         </div>
@@ -137,7 +137,7 @@
           class="w-full text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 cursor-pointer"
           :class="[isCollapsed ? 'text-sm flex justify-center p-2.5 rounded-lg' : 'justify-start text-sm px-3']"
           aria-label="Download as PDF"
-          @click="isModalOpen = true"
+          @click="() => { isModalOpen = true }"
         >
           <span v-if="!isCollapsed">Download as PDF</span>
         </UButton>
@@ -172,7 +172,7 @@
       <button
         v-if="isCollapsed"
         class="hidden lg:flex absolute top-4.5 -right-3 z-30 w-7 h-7 rounded-full border border-neutral-200 bg-white shadow-sm items-center justify-center text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer focus:outline-none"
-        @click="isCollapsed = false"
+        @click="() => { isCollapsed = false }"
         aria-label="Expand sidebar"
       >
         <UIcon

@@ -150,6 +150,13 @@ export interface GrowthWinRateStats {
   };
 }
 
+export interface GrowthAmSnapshotStats {
+  value: number;
+  trend: 'up' | 'down';
+  percentage: number;
+  period: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;

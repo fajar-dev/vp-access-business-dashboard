@@ -39,7 +39,7 @@
 
             <MetricCard
               title="Avg. Sales Cycle"
-              :value="cycleStats ? formatNumber(cycleStats.value) + ' Days' : '0 Days'"
+              :value="cycleStats ? formatNumberRounded(cycleStats.value) + ' Days' : '0 Days'"
               subtext="-"
               :trend="cycleStats ? formatPercentage(cycleStats.percentage) : '0%'"
               :trend-direction="cycleStats?.trend === 'down' ? 'down' : 'up'"
@@ -64,7 +64,7 @@
 
             <MetricCard
               title="Total Leads"
-              :value="leadsStats ? formatNumber(leadsStats.value) : '0'"
+              :value="leadsStats ? formatNumberRounded(leadsStats.value) : '0'"
               :subtext="leadsStats ? 'Semua prospect ' + leadsStats.period : 'Semua prospect bulan ini'"
               :trend="leadsStats ? formatPercentage(leadsStats.percentage) : '0%'"
               :trend-direction="leadsStats?.trend === 'down' ? 'down' : 'up'"
@@ -76,7 +76,7 @@
 
             <MetricCard
               title="Avg. Activity per Sales"
-              :value="activityStats ? formatNumber(activityStats.value) : '0'"
+              :value="activityStats ? formatNumberRounded(activityStats.value) : '0'"
               subtext="Dari semua sales"
               :trend="activityStats ? formatPercentage(activityStats.percentage) : '0%'"
               :trend-direction="activityStats?.trend === 'down' ? 'down' : 'up'"
@@ -91,6 +91,18 @@
 
       <!-- Right Column Area (Spans 1 Column) - Standardized Vertical Stack of 3 Cards -->
       <div class="lg:col-span-1 flex flex-col gap-6">
+        <MetricCard
+          title="Account Manager"
+          :value="amSnapshotStats ? formatNumber(amSnapshotStats.value) : '0'"
+          :subtext="amSnapshotStats ? amSnapshotStats.period : 'Bulan ini'"
+          :trend="amSnapshotStats ? formatPercentage(amSnapshotStats.percentage) : '0%'"
+          :trend-direction="amSnapshotStats?.trend === 'down' ? 'down' : 'up'"
+          :trend-color="amSnapshotStats?.trend === 'down' ? 'error' : 'primary'"
+          icon="i-lucide-users"
+          icon-color="text-info"
+          :is-loading="isLoadingAmSnapshot"
+        />
+
         <MetricCard
           title="Pipeline Value"
           :value="pipelineStats ? formatCurrency(pipelineStats.value) : '0'"
@@ -187,7 +199,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { growthService } from '~/services/growth-service'
-import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats, GrowthForecastMrcStats } from '~/types/growth'
+import type { GrowthLeadsStats, GrowthOpportunityStats, GrowthWinRateStats, GrowthActivityStats, GrowthPipelineStats, GrowthCycleStats, GrowthDiscountStats, GrowthPipelineStageStats, GrowthForecastMrcStats, GrowthAmSnapshotStats } from '~/types/growth'
 import { useDashboardFilters } from '~/composables/useDashboardFilters'
 import { formatPercentage, formatNumber, formatCurrency } from '~/utils/format'
 
@@ -253,6 +265,9 @@ const cycleStats = ref<GrowthCycleStats | null>(null)
 const isLoadingDiscount = ref(true)
 const discountStats = ref<GrowthDiscountStats | null>(null)
 
+const isLoadingAmSnapshot = ref(true)
+const amSnapshotStats = ref<GrowthAmSnapshotStats | null>(null)
+
 const fetchLeads = async () => {
   isLoadingLeads.value = true
   const res = await growthService.getLeads(globalTimeframe.value)
@@ -316,6 +331,13 @@ const fetchDiscount = async () => {
   isLoadingDiscount.value = false
 }
 
+const fetchAmSnapshot = async () => {
+  isLoadingAmSnapshot.value = true
+  const res = await growthService.getAmSnapshot(globalTimeframe.value)
+  if (res?.success) amSnapshotStats.value = res.data
+  isLoadingAmSnapshot.value = false
+}
+
 const fetchData = () => {
   fetchLeads()
   fetchForecastMrc()
@@ -326,6 +348,7 @@ const fetchData = () => {
   fetchPipelineStage()
   fetchCycle()
   fetchDiscount()
+  fetchAmSnapshot()
 }
 
 watch([globalTimeframe], () => {

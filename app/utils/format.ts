@@ -26,6 +26,10 @@ export function formatNumber(value: number, options?: Intl.NumberFormatOptions):
   return value.toLocaleString('id-ID', options)
 }
 
+export function formatNumberRounded(value: number): string {
+  return value.toLocaleString('id-ID', { maximumFractionDigits: 0 })
+}
+
 
 export function formatCompact(value: number): string {
   if (value >= 1_000_000_000) {
@@ -52,6 +56,10 @@ export const formatRevenue = formatCompact
 
 export function formatPercentage(value: number): string {
   return `${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(Math.abs(value))}%`
+}
+
+export function formatPercentageRounded(value: number): string {
+  return `${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Math.abs(value))}%`
 }
 
 export const formatDateTime = (dateString?: string | null) => {

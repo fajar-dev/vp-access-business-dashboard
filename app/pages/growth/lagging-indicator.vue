@@ -18,7 +18,7 @@
         />
         
         <MetricCard
-          title="New Customer"
+          title="New Revenue"
           :value="newCustomerStats ? formatCurrency(newCustomerStats.value, true) : 'Rp 0'"
           :subtext="newCustomerStats ? `Deal baru ${newCustomerStats.period}` : 'Deal baru bulan ini'"
           :trend="newCustomerStats ? formatPercentage(newCustomerStats.percentage) : '0%'"
@@ -118,7 +118,7 @@
         :is-loading="isLoadingArpu"
       >
         <template #details>
-          <div class="space-y-2 mt-1 max-h-[70px] overflow-y-auto pr-1">
+          <div class="space-y-2 mt-1 overflow-y-auto pr-1">
             <template v-if="isLoadingArpu">
               <div class="space-y-3 mt-1">
                 <USkeleton class="h-5 w-full" />

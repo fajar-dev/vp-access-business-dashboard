@@ -3,7 +3,7 @@
     <!-- 1. Page Title Header (matching Growth page styling) -->
     <Header
       title="Target Revenue Tahunan"
-      description="Baseline untuk performa dashboard • Senin, 4 Mei 2026"
+      :description="`Hari ini:  ${todayFormatted}`"
     >
     </Header>
 
@@ -80,7 +80,7 @@
               </div>
               <USkeleton v-if="isLoading" class="h-5 w-24" />
               <span v-else class="text-sm font-semibold text-neutral-900">
-                Rp. {{ formatIDR(Math.round(annualTarget / 12)) }}
+                Rp. {{ formatIDR(monthlyRunRateIDR) }}
               </span>
             </div>
 
@@ -93,7 +93,9 @@
                 <span class="text-sm text-neutral-900 font-medium">Kenaikan dari tahun lalu</span>
               </div>
               <USkeleton v-if="isLoading" class="h-5 w-16" />
-              <span v-else class="text-sm font-semibold text-neutral-900">+ 9 %</span>
+              <span v-else class="text-sm font-semibold text-neutral-900">
+                {{ yoyGrowthPercentage >= 0 ? '+' : '' }} {{ yoyGrowthPercentage.toFixed(1).replace('.', ',') }} %
+              </span>
             </div>
 
             <!-- Target Run rate percentage -->
@@ -105,7 +107,7 @@
                 <span class="text-sm text-neutral-900 font-medium">Kebutuhan Pencapaian per bulan</span>
               </div>
               <USkeleton v-if="isLoading" class="h-5 w-12" />
-              <span v-else class="text-sm font-semibold text-neutral-900">8,3 %</span>
+              <span v-else class="text-sm font-semibold text-neutral-900">{{ monthlyRunRatePercentage.toFixed(1).replace('.', ',') }} %</span>
             </div>
           </div>
       </UCard>
@@ -340,7 +342,7 @@
           size="md"
           label="Ubah Target"
           icon="i-lucide-lock-keyhole-open"
-          @click="isEditModalOpen = true"
+          @click="() => { isEditModalOpen = true }"
           class="cursor-pointer"
         />
 
@@ -402,6 +404,10 @@ const updatedBy = ref<UserReference | undefined>()
 const isLoading = ref(false)
 const toast = useToast()
 const prevMonthlyTargets = ref<number[]>(Array(12).fill(0))
+
+// Format today's date in Indonesian locale (e.g. "Senin, 8 Juni 2026")
+const todayFormatted = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
 
 // Handle Year Change
 const handleYearChange = async (year: string) => {
@@ -723,6 +729,36 @@ const columns: any[] = [
 // Compute allocations
 const totalFormAllocated = computed(() => {
   return monthlyTargets.value.reduce((sum, item) => sum + item.value, 0)
+})
+
+const totalPrevYearTarget = computed(() => {
+  return prevMonthlyTargets.value.reduce((sum, val) => sum + val, 0)
+})
+
+const yoyGrowthPercentage = computed(() => {
+  if (totalPrevYearTarget.value === 0) return 0
+  return ((annualTarget.value - totalPrevYearTarget.value) / totalPrevYearTarget.value) * 100
+})
+
+const monthlyRunRateIDR = computed(() => {
+  const now = new Date()
+  const selYear = Number(selectedYear.value)
+  const currentYear = now.getFullYear()
+  
+  let monthsLeft = 12
+  if (selYear === currentYear) {
+    monthsLeft = 12 - now.getMonth()
+  } else if (selYear < currentYear) {
+    monthsLeft = 1
+  }
+  
+  const remaining = Math.max(0, annualTarget.value - totalAllocated.value)
+  return Math.round(remaining / (monthsLeft || 1))
+})
+
+const monthlyRunRatePercentage = computed(() => {
+  if (annualTarget.value <= 0) return 0
+  return (monthlyRunRateIDR.value / annualTarget.value) * 100
 })
 
 const totalAllocated = ref(0)

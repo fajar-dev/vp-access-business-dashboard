@@ -3,7 +3,7 @@
     <!-- Service Quality Metric Header using reusable custom slots -->
     <Header
       title="Dashboard - Service Quality Metric"
-      :description="`Rekap dari pertumbuhan penjualan • ${todayFormatted}`"
+      :description="`Hari ini: ${todayFormatted}`"
     >
       <!-- Dropdown selectors injected in the actions slot placed BELOW the tabs -->
       <template #actions>

@@ -34,9 +34,6 @@
       <MetricCard
         title="Solved Customers"
         :value="solvedPercentageStats ? formatPercentage(solvedPercentageStats.value) : '0%'"
-        :trend="solvedPercentageStats ? formatPercentage(solvedPercentageStats.percentage) : '0%'"
-        :trend-direction="solvedPercentageStats?.trend === 'down' ? 'down' : 'up'"
-        :trend-color="solvedPercentageStats?.trend === 'down' ? 'error' : 'primary'"
         :subtext="`${solvedPercentageStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-thumbs-up"
         icon-color="text-info"
@@ -47,9 +44,6 @@
       <MetricCard
         title="Total Solved"
         :value="solvedStats ? String(solvedStats.value) : '0'"
-        :trend="solvedStats ? formatPercentage(solvedStats.percentage) : '0%'"
-        :trend-direction="solvedStats?.trend === 'down' ? 'down' : 'up'"
-        :trend-color="solvedStats?.trend === 'down' ? 'error' : 'primary'"
         :subtext="`${solvedStats?.period || 'Bulan Ini'}`"
         icon="i-lucide-square-check-big"
         icon-color="text-info"
