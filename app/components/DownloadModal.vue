@@ -18,7 +18,7 @@
           variant="ghost"
           icon="i-lucide-x"
           class="text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 p-1 rounded-md shrink-0 cursor-pointer"
-          @click="open = false"
+          @click="() => { open = false }"
           aria-label="Close"
         />
       </div>

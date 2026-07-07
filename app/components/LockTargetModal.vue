@@ -11,7 +11,7 @@
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
-            @click="open = false"
+            @click="() => { open = false }"
             aria-label="Close"
           />
         </div>
@@ -28,7 +28,7 @@
             variant="subtle"
             size="md"
             label="Batal"
-            @click="open = false"
+            @click="() => { open = false }"
           />
           <UButton
             color="success"
