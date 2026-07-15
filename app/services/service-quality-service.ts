@@ -10,7 +10,7 @@ export class ServiceQualityService {
 
     async getTicket(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/ticket?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/ticket?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -19,7 +19,7 @@ export class ServiceQualityService {
 
     async getComplaint(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/complaint?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/complaint?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -28,7 +28,7 @@ export class ServiceQualityService {
 
     async getSolved(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/solved?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/solved?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -37,7 +37,7 @@ export class ServiceQualityService {
 
     async getSolvedPercentage(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/solved-percentage?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/solved-percentage?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -46,7 +46,7 @@ export class ServiceQualityService {
 
     async getIssue(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/issue?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/issue?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -55,7 +55,7 @@ export class ServiceQualityService {
 
     async getIncident(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/incident?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/service-quality/incident?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

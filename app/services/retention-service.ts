@@ -10,7 +10,7 @@ export class RetentionService {
 
     async getChurnStats(branchId: string, period: string): Promise<ApiResponse<ChurnStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<ChurnStats>>(`/vp-access-business/retention/churn-revenue?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<ChurnStats>>(`/vp-access-business/retention/churn-revenue?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -19,7 +19,7 @@ export class RetentionService {
 
     async getCustomerLose(branchId: string, period: string): Promise<ApiResponse<CustomerLoseStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<CustomerLoseStats>>(`/vp-access-business/retention/customer-lose?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<CustomerLoseStats>>(`/vp-access-business/retention/customer-lose?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -27,7 +27,7 @@ export class RetentionService {
     }
     async getWirelessMigration(branchId: string, period: string): Promise<ApiResponse<WirelessMigrationStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<WirelessMigrationStats>>(`/vp-access-business/retention/wireless-migration?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<WirelessMigrationStats>>(`/vp-access-business/retention/wireless-migration?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -36,7 +36,7 @@ export class RetentionService {
 
     async getChurnRate(branchId: string): Promise<ApiResponse<ChurnRateData[]>> {
         try {
-            const response = await apiService.client.get<ApiResponse<ChurnRateData[]>>(`/vp-access-business/retention/churn-rate?branchId=${branchId}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<ChurnRateData[]>>(`/vp-access-business/retention/churn-rate?branchId=020&displayBranchId=${branchId}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -45,7 +45,7 @@ export class RetentionService {
 
     async getContractExpiring(branchId: string): Promise<ApiResponse<ContractExpiringStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<ContractExpiringStats>>(`/vp-access-business/retention/contract-expiring?branchId=${branchId}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<ContractExpiringStats>>(`/vp-access-business/retention/contract-expiring?branchId=020&displayBranchId=${branchId}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -54,7 +54,7 @@ export class RetentionService {
 
     async getTicket(branchId: string, period: string): Promise<ApiResponse<TicketStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/retention/ticket?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TicketStats>>(`/vp-access-business/retention/ticket?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -63,7 +63,7 @@ export class RetentionService {
 
     async getUsage(branchId: string, period: string): Promise<ApiResponse<UsageStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<UsageStats>>(`/vp-access-business/retention/usage?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<UsageStats>>(`/vp-access-business/retention/usage?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -72,7 +72,7 @@ export class RetentionService {
 
     async getPayment(branchId: string): Promise<ApiResponse<PaymentStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<PaymentStats>>(`/vp-access-business/retention/payment?branchId=${branchId}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<PaymentStats>>(`/vp-access-business/retention/payment?branchId=020&displayBranchId=${branchId}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -99,7 +99,7 @@ export class RetentionService {
 
     async getNetMrc(branchId: string, period: string): Promise<ApiResponse<RetentionNetMrcStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<RetentionNetMrcStats>>(`/vp-access-business/retention/net-mrc?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<RetentionNetMrcStats>>(`/vp-access-business/retention/net-mrc?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

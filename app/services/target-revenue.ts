@@ -11,27 +11,31 @@ export class TargetRevenueService {
         }
     }
 
-    async getRevenue(year: number): Promise<ApiResponse<TargetRevenueData>> {
+    async getRevenue(branch: string, year: number): Promise<ApiResponse<TargetRevenueData>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TargetRevenueData>>(`/vp-access-business/setting/revenue?year=${year}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TargetRevenueData>>(`/vp-access-business/setting/revenue?year=${year}&displayBranchId=${branch}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
         }
     }
 
-    async getTarget(year: number): Promise<ApiResponse<TargetRevenueResponse | null>> {
+    async getTarget(branch: string, year: number): Promise<ApiResponse<TargetRevenueResponse | null>> {
         try {
-            const response = await apiService.client.get<ApiResponse<TargetRevenueResponse | null>>(`/vp-access-business/setting/target?year=${year}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<TargetRevenueResponse | null>>(`/vp-access-business/setting/target?year=${year}&displayBranchId=${branch}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
         }
     }
 
-    async getTargetLog(year?: number): Promise<ApiResponse<TargetLogResponse[]>> {
+    async getTargetLog(branch?: string, year?: number): Promise<ApiResponse<TargetLogResponse[]>> {
         try {
-            const url = year ? `/vp-access-business/setting/target/log?year=${year}` : '/vp-access-business/setting/target/log'
+            const params = new URLSearchParams()
+            if (year) params.set('year', String(year))
+            if (branch) params.set('displayBranchId', branch)
+            const qs = params.toString()
+            const url = qs ? `/vp-access-business/setting/target/log?${qs}` : '/vp-access-business/setting/target/log'
             const response = await apiService.client.get<ApiResponse<TargetLogResponse[]>>(url, this.authHeaders)
             return response.data
         } catch (error: any) {
@@ -39,9 +43,9 @@ export class TargetRevenueService {
         }
     }
 
-    async saveTarget(year: number, payload: TargetRevenuePayload): Promise<ApiResponse<null>> {
+    async saveTarget(branch: string, year: number, payload: TargetRevenuePayload): Promise<ApiResponse<null>> {
         try {
-            const response = await apiService.client.post<ApiResponse<null>>(`/vp-access-business/setting/target?year=${year}`, payload, this.authHeaders)
+            const response = await apiService.client.post<ApiResponse<null>>(`/vp-access-business/setting/target?year=${year}&displayBranchId=${branch}`, payload, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

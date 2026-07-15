@@ -10,6 +10,7 @@ export interface TargetRevenueData {
 
 export interface TargetRevenuePayload {
   year: number;
+  branch?: string;
   yearly_target: number;
   jan: number;
   feb: number;
@@ -29,6 +30,7 @@ export interface TargetRevenuePayload {
 
 export interface TargetRevenueResponse {
   year: number;
+  branch: string;
   yearlyTarget: number;
   jan: number;
   feb: number;
@@ -58,6 +60,7 @@ export interface UserReference {
 export interface TargetLogResponse {
   id: number;
   year: number;
+  branch: string;
   reason: string | null;
   oldValue: any;
   newValue: any;

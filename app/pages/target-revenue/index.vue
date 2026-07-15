@@ -10,7 +10,15 @@
     <!-- 2. Year & Status Select Bar -->
     <div class="flex flex-row justify-between items-center gap-4">
       <div class="flex items-center gap-3">
-        <span class="text-sm font-semibold text-neutral-700">Tahun:</span>
+        <span class="text-sm font-semibold text-neutral-700">Cabang:</span>
+        <USelect
+          :model-value="selectedBranch"
+          @update:model-value="handleBranchChange"
+          :items="branchOptions"
+          class="w-40"
+          aria-label="Select Branch"
+        />
+        <span class="text-sm font-semibold text-neutral-700 ml-2">Tahun:</span>
         <USelect
           :model-value="selectedYear"
           @update:model-value="handleYearChange"
@@ -51,7 +59,7 @@
                 v-model="annualTargetFormatted"
                 @focus="isAnnualFocused = true"
                 @blur="isAnnualFocused = false"
-                :disabled="isLocked"
+                :disabled="isLocked || selectedBranch === 'all'"
                 size="xl"
                 placeholder="0"
                 class="w-full mt-2 font-semibold "
@@ -198,7 +206,7 @@
         <h3 class="text-base font-semibold text-neutral-900 select-none">Target Per Bulan</h3>
         <div class="flex gap-2">
           <UButton
-            v-if="!isLocked && !isLoading"
+            v-if="!isLocked && !isLoading && selectedBranch !== 'all'"
             icon="i-lucide-layout-grid"
             color="neutral"
             variant="outline"
@@ -207,7 +215,7 @@
             @click="fillSameRataAction"
           />
           <UButton
-            v-if="!isLocked && !isLoading"
+            v-if="!isLocked && !isLoading && selectedBranch !== 'all'"
             icon="i-lucide-refresh-cw"
             color="neutral"
             variant="outline"
@@ -220,9 +228,18 @@
 
       <!-- Monthly Target Nested Table using Nuxt UI -->
       <div class="overflow-x-auto">
+        <div v-if="selectedBranch === 'all'" class="w-full sm:w-auto mb-4">
+        <UAlert
+          icon="i-lucide-info"
+          color="info"
+          variant="subtle"
+          title="Informasi Target Revenue 'All'"
+          description="Target Revenue pada pilihan cabang 'All' adalah gabungan dari seluruh cabang (Medan, Jakarta, Bali, Binjai, Tanjung Morawa). Pilih cabang spesifik untuk mengedit target."
+        />
+      </div>
         <!-- Warning Alert for Invalid Allocation -->
         <UAlert
-          v-if="!isLocked && totalFormAllocated !== annualTarget"
+          v-if="!isLocked && selectedBranch !== 'all' && totalFormAllocated !== annualTarget"
           icon="i-lucide-alert-triangle"
           class="mb-4"
           color="error"
@@ -268,7 +285,7 @@
                 @focus="focusedMonths[row.original.idx] = true"
                 @blur="focusedMonths[row.original.idx] = false"
                 @update:model-value="val => setMonthFormatted(row.original.idx as number, val)"
-                :disabled="isLocked || isLoading"
+                :disabled="isLocked || selectedBranch === 'all' || isLoading"
                 placeholder="0"
                 size="lg"
                 class="w-full"
@@ -333,7 +350,7 @@
       />
 
       <!-- Primary Action triggers -->
-      <div class="flex items-center gap-3 w-full sm:w-auto" :class="isLoading ? 'hidden' : 'block'">
+      <div v-if="selectedBranch !== 'all'" class="flex items-center gap-3 w-full sm:w-auto" :class="isLoading ? 'hidden' : 'block'">
         <!-- Ubah Target (Only visible when locked) -->
         <UButton
           v-if="isLocked"
@@ -393,7 +410,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const { selectedYear, yearOptions } = useDashboardFilters()
+const { selectedYear, yearOptions, selectedBranch, branchOptions } = useDashboardFilters()
 
 import type { UserReference } from '~/types/target-revenue'
 
@@ -418,11 +435,21 @@ const handleYearChange = async (year: string) => {
   isLoading.value = false
 }
 
+// Handle Branch Change
+const handleBranchChange = async (branch: string) => {
+  selectedBranch.value = branch
+  isLoading.value = true
+  await fetchTarget()
+  await fetchTotalAllocated()
+  isLoading.value = false
+}
+
 const fetchTarget = async () => {
   const currentYear = Number(selectedYear.value)
+  const branch = selectedBranch.value
   const [res, prevRes] = await Promise.all([
-    targetRevenueService.getTarget(currentYear),
-    targetRevenueService.getTarget(currentYear - 1)
+    targetRevenueService.getTarget(branch, currentYear),
+    targetRevenueService.getTarget(branch, currentYear - 1)
   ])
 
   if (prevRes?.success && prevRes.data) {
@@ -765,7 +792,7 @@ const totalAllocated = ref(0)
 const actualMonthlyRevenues = ref<Record<number, number>>({})
 
 const fetchTotalAllocated = async () => {
-  const res = await targetRevenueService.getRevenue(Number(selectedYear.value))
+  const res = await targetRevenueService.getRevenue(selectedBranch.value, Number(selectedYear.value))
   if (res?.success) {
     totalAllocated.value = res.data.total
     const revenues: Record<number, number> = {}
@@ -824,6 +851,7 @@ const isEditModalOpen = ref(false)
 
 const buildPayload = (locked: boolean, reason?: string) => ({
   year: Number(selectedYear.value),
+  branch: selectedBranch.value,
   yearly_target: annualTarget.value,
   jan: monthlyTargets.value[0]?.value || 0,
   feb: monthlyTargets.value[1]?.value || 0,
@@ -843,7 +871,7 @@ const buildPayload = (locked: boolean, reason?: string) => ({
 
 const saveDraft = async () => {
   const payload = buildPayload(false)
-  await targetRevenueService.saveTarget(Number(selectedYear.value), payload)
+  await targetRevenueService.saveTarget(selectedBranch.value, Number(selectedYear.value), payload)
   toast.add({
     title: 'Draf berhasil disimpan!',
     color: 'primary',
@@ -867,7 +895,7 @@ const lockTarget = () => {
 
 const confirmLock = async () => {
   const payload = buildPayload(true)
-  await targetRevenueService.saveTarget(Number(selectedYear.value), payload)
+  await targetRevenueService.saveTarget(selectedBranch.value, Number(selectedYear.value), payload)
   isLocked.value = true
   toast.add({
     title: 'Target Revenue berhasil dikunci!',
@@ -880,7 +908,7 @@ const confirmLock = async () => {
 const confirmUnlock = async (reason: string) => {
   // Pass reason for logging purpose
   const payload = buildPayload(false, reason)
-  await targetRevenueService.saveTarget(Number(selectedYear.value), payload)
+  await targetRevenueService.saveTarget(selectedBranch.value, Number(selectedYear.value), payload)
   isLocked.value = false
   toast.add({
     title: 'Target Revenue dibuka kunci untuk diedit.',

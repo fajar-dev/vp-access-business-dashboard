@@ -1,5 +1,9 @@
 export const useDashboardFilters = () => {
-  const selectedBranch = useState<string>('selected-branch', () => '020')
+  // Branch filter value is the DisplayBranchId selector sent to the API:
+  //   'all'  -> BranchId '020', no DisplayBranchId filter (all branches)
+  //   'null' -> BranchId '020', DisplayBranchId IS NULL (Medan / HO)
+  //   '025' | '062' | '027' | '029' -> BranchId '020', DisplayBranchId = value
+  const selectedBranch = useState<string>('selected-branch', () => 'all')
   const selectedTimeframe = useState<string>('selected-timeframe', () => 'month')
   
   const currentYear = new Date().getFullYear()
@@ -12,8 +16,9 @@ export const useDashboardFilters = () => {
   ]
 
   const branchOptions = [
-    { label: 'Medan (HO)', value: '020' },
-    { label: 'Jakarta', value: '003' },
+    { label: 'All', value: 'all' },
+    { label: 'Medan (HO)', value: 'null' },
+    { label: 'Jakarta', value: '025' },
     { label: 'Bali', value: '062' },
     { label: 'Binjai', value: '027' },
     { label: 'Tanjung Morawa', value: '029' }
