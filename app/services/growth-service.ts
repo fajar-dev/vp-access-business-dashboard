@@ -10,7 +10,7 @@ export class GrowthService {
 
     async getNewMrc(branchId: string, period: string): Promise<ApiResponse<GrowthMrcStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthMrcStats>>(`/vp-access-business/growth/new-mrc?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthMrcStats>>(`/vp-access-business/growth/new-mrc?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -19,7 +19,7 @@ export class GrowthService {
 
     async getTotalMrcYtd(branchId: string): Promise<ApiResponse<GrowthTotalMrcYtdStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthTotalMrcYtdStats>>(`/vp-access-business/growth/total-mrc-ytd?branchId=${branchId}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthTotalMrcYtdStats>>(`/vp-access-business/growth/total-mrc-ytd?branchId=020&displayBranchId=${branchId}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -28,7 +28,7 @@ export class GrowthService {
 
     async getArpu(branchId: string, period: string): Promise<ApiResponse<GrowthArpuStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthArpuStats>>(`/vp-access-business/growth/arpu?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthArpuStats>>(`/vp-access-business/growth/arpu?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -37,7 +37,7 @@ export class GrowthService {
 
     async getNewCustomer(branchId: string, period: string): Promise<ApiResponse<GrowthNewCustomerStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthNewCustomerStats>>(`/vp-access-business/growth/new-customer?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthNewCustomerStats>>(`/vp-access-business/growth/new-customer?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -46,7 +46,7 @@ export class GrowthService {
 
     async getRevenue(branchId: string): Promise<ApiResponse<GrowthRevenueData[]>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthRevenueData[]>>(`/vp-access-business/growth/revenue?branchId=${branchId}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthRevenueData[]>>(`/vp-access-business/growth/revenue?branchId=020&displayBranchId=${branchId}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
@@ -55,7 +55,7 @@ export class GrowthService {
 
     async getRevenueAchievement(branchId: string, period: string): Promise<ApiResponse<GrowthRevenueAchievementStats>> {
         try {
-            const response = await apiService.client.get<ApiResponse<GrowthRevenueAchievementStats>>(`/vp-access-business/growth/revenue-achievement?branchId=${branchId}&period=${period}`, this.authHeaders)
+            const response = await apiService.client.get<ApiResponse<GrowthRevenueAchievementStats>>(`/vp-access-business/growth/revenue-achievement?branchId=020&displayBranchId=${branchId}&period=${period}`, this.authHeaders)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

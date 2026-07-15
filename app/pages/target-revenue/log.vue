@@ -10,7 +10,15 @@
     <!-- 2. Year & Status Select Bar -->
     <div class="flex flex-row justify-between items-center gap-4">
       <div class="flex items-center gap-3">
-        <span class="text-sm font-semibold text-neutral-700">Tahun:</span>
+        <span class="text-sm font-semibold text-neutral-700">Cabang:</span>
+        <USelect
+          :model-value="logSelectedBranch"
+          @update:model-value="handleBranchChange"
+          :items="logBranchOptions"
+          class="w-40"
+          aria-label="Select Branch"
+        />
+        <span class="text-sm font-semibold text-neutral-700 ml-2">Tahun:</span>
         <USelect
           :model-value="logSelectedYear"
           @update:model-value="handleYearChange"
@@ -63,6 +71,11 @@
             </div>
           </div>
           <span v-else class="text-neutral-400 italic">-</span>
+        </template>
+
+        <!-- Branch label -->
+        <template #branch-cell="{ row }: any">
+          <UBadge color="neutral" variant="subtle">{{ branchLabel(row.original.branch) }}</UBadge>
         </template>
 
         <!-- Reason styling -->
@@ -146,7 +159,7 @@ definePageMeta({
 const isLoading = ref(true)
 const logData = ref<TargetLogResponse[]>([])
 
-const { selectedYear, yearOptions } = useDashboardFilters()
+const { selectedYear, yearOptions, branchOptions } = useDashboardFilters()
 
 const logSelectedYear = ref(selectedYear.value)
 const logYearOptions = [
@@ -154,8 +167,18 @@ const logYearOptions = [
   ...yearOptions.map(y => ({ label: y, value: y }))
 ]
 
+const logSelectedBranch = ref('all')
+const logBranchOptions = branchOptions
+
+const branchLabel = (value: string) => branchOptions.find(b => b.value === value)?.label ?? value
+
 const handleYearChange = async (year: string) => {
   logSelectedYear.value = year
+  await fetchLogs()
+}
+
+const handleBranchChange = async (branch: string) => {
+  logSelectedBranch.value = branch
   await fetchLogs()
 }
 
@@ -165,6 +188,7 @@ const columns: any[] = [
   { accessorKey: 'createdAt', header: 'Waktu Dibuat', meta: { sortable: true } },
   { accessorKey: 'createdBy', header: 'Dibuat Oleh' },
   { accessorKey: 'year', header: 'Tahun Target' },
+  { accessorKey: 'branch', header: 'Cabang' },
   { accessorKey: 'reason', header: 'Aksi / Alasan' },
   { accessorKey: 'updatedAt', header: 'Waktu Dikunci', meta: { sortable: true } },
   { accessorKey: 'updatedBy', header: 'Dikunci Oleh' },
@@ -207,7 +231,8 @@ const buildComparisonRows = (oldVal: any, newVal: any) => {
 const fetchLogs = async () => {
   isLoading.value = true
   const yearParam = logSelectedYear.value === 'all' ? undefined : Number(logSelectedYear.value)
-  const res = await targetRevenueService.getTargetLog(yearParam)
+  const branchParam = logSelectedBranch.value === 'all' ? undefined : logSelectedBranch.value
+  const res = await targetRevenueService.getTargetLog(branchParam, yearParam)
   if (res?.success) {
     logData.value = res.data
   }
