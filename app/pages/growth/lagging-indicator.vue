@@ -9,7 +9,7 @@
         <MetricCard
           title="Revenue Achievement"
           :value="revenueAchievementStats ? formatPercentage(revenueAchievementStats.percentage) : '0%'"
-          :subtext="revenueAchievementStats ? `target: ${formatCurrency(revenueAchievementStats.target, true)}` : 'target: Rp 0'"
+          :subtext="revenueAchievementStats ? `${formatCurrency(revenueAchievementStats.revenue, true)} dari target ${formatCurrency(revenueAchievementStats.target, true)}` : 'target: Rp 0'"
           :trend="revenueAchievementStats ? formatPercentage(revenueAchievementStats.trendPercentage) : '0%'"
           :trend-direction="revenueAchievementStats?.trend === 'down' ? 'down' : 'up'"
           icon="i-lucide-activity"
