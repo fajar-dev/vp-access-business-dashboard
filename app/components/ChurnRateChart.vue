@@ -14,7 +14,7 @@
       <!-- Controls Switches -->
       <div class="flex items-center gap-6 text-sm font-medium text-neutral-700 select-none shrink-0">
         <div class="flex items-center gap-2">
-          <span>Tampilkan Nama</span>
+          <span>Label</span>
           <USwitch
             v-model="showNames"
             color="primary"
