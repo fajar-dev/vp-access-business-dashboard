@@ -18,5 +18,6 @@ export interface SalesPerformanceData {
     name: string
     photoProfile: string
     organizationName: string
+    type: string
     data: number[]
 }

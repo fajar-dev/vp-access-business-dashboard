@@ -17,6 +17,24 @@
             <!-- Filters -->
             <div class="grid grid-cols-2 gap-3 w-full md:flex md:items-center md:w-auto md:gap-4">
                 <div class="flex flex-col gap-1 w-full md:w-auto">
+                    <span class="text-sm font-semibold text-neutral-700">Type:</span>
+                    <USelect
+                        v-model="selectedType"
+                        :items="typeOptions"
+                        class="w-full md:w-40"
+                        aria-label="Pilih Type"
+                    />
+                </div>
+                <div class="flex flex-col gap-1 w-full md:w-auto">
+                    <span class="text-sm font-semibold text-neutral-700">Cabang:</span>
+                    <USelect
+                        v-model="selectedBranch"
+                        :items="branchOptions"
+                        class="w-full md:w-44"
+                        aria-label="Pilih Cabang"
+                    />
+                </div>
+                <div class="flex flex-col gap-1 w-full md:w-auto">
                     <span class="text-sm font-semibold text-neutral-700">Team:</span>
                     <USelect
                         v-model="selectedTeam"
@@ -84,8 +102,27 @@ definePageMeta({
 })
 
 // Filter choices
+const selectedType = ref('all')
+const selectedBranch = ref('all')
 const selectedTeam = ref('all')
 const selectedRefresh = ref('1h')
+
+// Type options (matches sales.type values)
+const typeOptions = [
+  { label: 'Semua Type', value: 'all' },
+  { label: 'Access Home', value: 'access_home' },
+  { label: 'Access Business', value: 'access_business' }
+]
+
+// Branch options (matches sales_home.branch_id codes)
+const branchOptions = [
+  { label: 'Semua Cabang', value: 'all' },
+  { label: 'Medan (HO)', value: '020-CABANG' },
+  { label: 'Jakarta', value: '025' },
+  { label: 'Bali', value: '062' },
+  { label: 'Binjai', value: '027' },
+  { label: 'Tanjung Morawa', value: '029' }
+]
 
 // Loading & timing states
 const isRefreshing = ref(false)
@@ -97,9 +134,10 @@ const teamOptions = computed(() => [
   ...managers.value.map(m => ({ label: m.name, value: String(m.id) }))
 ])
 
-// Fetch managers from API
+// Fetch managers from API (filtered by selected type)
 const fetchManagers = async () => {
-    const response = await salesPerformanceService.getManagers()
+    const type = selectedType.value !== 'all' ? selectedType.value : undefined
+    const response = await salesPerformanceService.getManagers(type)
     if (response.success) {
         managers.value = response.data
     }
@@ -119,7 +157,9 @@ const salesData = ref<SalesPerformanceData[]>([])
 // Fetch sales data from API
 const fetchSalesData = async () => {
     const managerId = selectedTeam.value !== 'all' ? selectedTeam.value : undefined
-    const response = await salesPerformanceService.getSalesData(managerId)
+    const branchId = selectedBranch.value !== 'all' ? selectedBranch.value : undefined
+    const type = selectedType.value !== 'all' ? selectedType.value : undefined
+    const response = await salesPerformanceService.getSalesData(managerId, branchId, type)
     if (response.success) {
       salesData.value = response.data
     }
@@ -201,8 +241,14 @@ const triggerRefresh = async () => {
   isRefreshing.value = false
 }
 
-// Watchers for Team selection
-watch(selectedTeam, () => {
+// When Type changes, refresh the manager list (home/business only) and reset Team
+watch(selectedType, async () => {
+  selectedTeam.value = 'all'
+  await fetchManagers()
+})
+
+// Watchers for Type, Branch & Team selection
+watch([selectedType, selectedBranch, selectedTeam], () => {
   fetchSalesData()
 })
 
