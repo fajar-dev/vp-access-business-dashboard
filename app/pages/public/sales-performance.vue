@@ -101,11 +101,8 @@ definePageMeta({
   layout: 'public'
 })
 
-// Filter choices
-const selectedType = ref('all')
-const selectedBranch = ref('all')
-const selectedTeam = ref('all')
-const selectedRefresh = ref('1h')
+const route = useRoute()
+const router = useRouter()
 
 // Type options (matches sales.type values)
 const typeOptions = [
@@ -114,7 +111,7 @@ const typeOptions = [
   { label: 'Access Business', value: 'access_business' }
 ]
 
-// Branch options (matches sales_home.branch_id codes)
+// Branch options (matches sales.branch_id codes)
 const branchOptions = [
   { label: 'Semua Cabang', value: 'all' },
   { label: 'Medan (HO)', value: '020-CABANG' },
@@ -123,6 +120,30 @@ const branchOptions = [
   { label: 'Binjai', value: '027' },
   { label: 'Tanjung Morawa', value: '029' }
 ]
+
+const refreshOptions = [
+  { label: 'Nonaktif', value: '0' },
+  { label: '10 Detik', value: '10s' },
+  { label: '1 Menit', value: '1m' },
+  { label: '1 Jam', value: '1h' },
+  { label: '1 Hari', value: '1d' }
+]
+
+// Read a query param and keep it only if it is a known option value.
+const pickQuery = (key: string, allowed: string[], fallback: string) => {
+  const raw = route.query[key]
+  const val = Array.isArray(raw) ? raw[0] : raw
+  return val && allowed.includes(val) ? val : fallback
+}
+
+// Filter choices — initialised from URL query so a TV can be pinned via URL,
+// e.g. /public/sales-performance?type=access_home&branchId=025
+const selectedType = ref(pickQuery('type', typeOptions.map(o => o.value), 'all'))
+const selectedBranch = ref(pickQuery('branchId', branchOptions.map(o => o.value), 'all'))
+const selectedRefresh = ref(pickQuery('refresh', refreshOptions.map(o => o.value), '1h'))
+// Team is a manager id resolved after managers load, so accept the raw value.
+const teamQuery = Array.isArray(route.query.team) ? route.query.team[0] : route.query.team
+const selectedTeam = ref(teamQuery || 'all')
 
 // Loading & timing states
 const isRefreshing = ref(false)
@@ -142,14 +163,6 @@ const fetchManagers = async () => {
         managers.value = response.data
     }
 }
-
-const refreshOptions = [
-  { label: 'Nonaktif', value: '0' },
-  { label: '10 Detik', value: '10s' },
-  { label: '1 Menit', value: '1m' },
-  { label: '1 Jam', value: '1h' },
-  { label: '1 Hari', value: '1d' }
-]
 
 // Sales data from API
 const salesData = ref<SalesPerformanceData[]>([])
@@ -250,6 +263,19 @@ watch(selectedType, async () => {
 // Watchers for Type, Branch & Team selection
 watch([selectedType, selectedBranch, selectedTeam], () => {
   fetchSalesData()
+})
+
+// Keep the URL query in sync so the current filter config is shareable / TV-pinnable.
+// Only non-default values are written to keep the URL clean.
+watch([selectedType, selectedBranch, selectedTeam, selectedRefresh], () => {
+  router.replace({
+    query: {
+      ...(selectedType.value !== 'all' ? { type: selectedType.value } : {}),
+      ...(selectedBranch.value !== 'all' ? { branchId: selectedBranch.value } : {}),
+      ...(selectedTeam.value !== 'all' ? { team: selectedTeam.value } : {}),
+      ...(selectedRefresh.value !== '1h' ? { refresh: selectedRefresh.value } : {})
+    }
+  })
 })
 
 // Auto-Refresh Interval Setup
