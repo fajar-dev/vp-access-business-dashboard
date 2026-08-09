@@ -195,7 +195,10 @@ const tableData = computed(() => {
 const thClass = 'py-2.5 px-3 text-base font-bold'
 const tdClass = 'py-2 px-3 text-base font-medium text-neutral-800 align-middle'
 
-const columns: any[] = [
+// Only show day columns up to today; future days aren't rendered.
+const currentDay = ref(new Date().getDate())
+
+const columns = computed<any[]>(() => [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -207,23 +210,6 @@ const columns: any[] = [
     },
     footer: () => 'Total'
   },
-  ...Array.from({ length: 30 }, (_, i) => ({
-    accessorKey: `d${i + 1}`,
-    header: `${i + 1}`,
-    meta: {
-      class: {
-        th: `${thClass} text-center font-bold`,
-        td: `${tdClass} text-center`
-      }
-    },
-    footer: ({ column }: any) => {
-      const total = column.getFacetedRowModel().rows.reduce(
-        (acc: number, row: any) => acc + (Number(row.getValue(`d${i + 1}`)) || 0),
-        0
-      )
-      return total
-    }
-  })),
   {
     accessorKey: 'total',
     header: 'Total',
@@ -240,8 +226,25 @@ const columns: any[] = [
       )
       return total
     }
-  }
-]
+  },
+  ...Array.from({ length: currentDay.value }, (_, i) => ({
+    accessorKey: `d${i + 1}`,
+    header: `${i + 1}`,
+    meta: {
+      class: {
+        th: `${thClass} text-center font-bold`,
+        td: `${tdClass} text-center`
+      }
+    },
+    footer: ({ column }: any) => {
+      const total = column.getFacetedRowModel().rows.reduce(
+        (acc: number, row: any) => acc + (Number(row.getValue(`d${i + 1}`)) || 0),
+        0
+      )
+      return total
+    }
+  }))
+])
 
 // Refresh: re-fetch data from API
 const triggerRefresh = async () => {
@@ -251,6 +254,7 @@ const triggerRefresh = async () => {
   await fetchSalesData()
   lastUpdated.value = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   todayFormatted.value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  currentDay.value = new Date().getDate()
   isRefreshing.value = false
 }
 
