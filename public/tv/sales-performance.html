@@ -8,11 +8,8 @@
   /* Plain, old-browser-safe CSS only: no oklch/color-mix/@layer/:where/@property. */
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: #ffffff;
-    color: #171717;
+    margin: 0; padding: 0; height: 100%;
+    background: #ffffff; color: #171717;
     font-family: Arial, Helvetica, "Segoe UI", Roboto, sans-serif;
   }
   #app { display: flex; flex-direction: column; height: 100vh; padding: 16px; }
@@ -31,38 +28,43 @@
     background: #ffffff; color: #171717; min-width: 120px;
   }
 
-  .table-wrap {
-    /* min-height:0 lets this flex item shrink below content so it scrolls;
-       an explicit pixel height is also set from JS (fitHeight) for signage. */
-    flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: auto;
-    border: 1px solid #d4d4d4; border-radius: 10px;
+  /* Outer frame: horizontal scroll shared by head/body/foot (kept in sync by equal widths). */
+  .tv-table {
+    border: 1px solid #d4d4d4; border-radius: 10px; overflow: hidden;
+    display: flex; flex-direction: column;
   }
-  table { border-collapse: collapse; width: 100%; text-align: left; }
+  .grid { table-layout: fixed; border-collapse: collapse; }
+  .grid th, .grid td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   thead th {
-    position: sticky; top: 0; z-index: 2;
     background: #f5f5f5; color: #171717; font-weight: bold; font-size: 15px;
-    padding: 10px 12px; border-bottom: 1px solid #d4d4d4; white-space: nowrap;
+    padding: 10px 12px; border-bottom: 1px solid #d4d4d4; text-align: left;
   }
-  tbody td { padding: 8px 12px; font-size: 15px; color: #262626; border-bottom: 1px solid #ededed; white-space: nowrap; }
+  tbody td { padding: 8px 12px; font-size: 15px; color: #262626; border-bottom: 1px solid #ededed; }
   tbody tr:nth-child(even) { background: #fafafa; }
-  .col-num { text-align: center; }
-  .col-total { text-align: center; font-weight: bold; }
   tfoot td {
-    position: sticky; bottom: 0; background: #f5f5f5; font-weight: bold;
-    padding: 10px 12px; border-top: 1px solid #d4d4d4; font-size: 15px; text-align: center;
+    background: #f5f5f5; font-weight: bold; padding: 10px 12px;
+    border-top: 1px solid #d4d4d4; font-size: 15px; text-align: center;
   }
   tfoot td.foot-label { text-align: left; }
+  .col-num { text-align: center; }
+  .col-total { text-align: center; font-weight: bold; }
+
+  /* Body viewport: fixed height (from JS) + hidden overflow; the track is animated. */
+  .body-wrap { overflow: hidden; }
+  .scroll-track { -webkit-transform: translateY(0); transform: translateY(0); will-change: transform; }
 
   .name-cell { display: flex; align-items: center; }
   .avatar {
-    width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; flex: 0 0 auto;
+    width: 36px; height: 36px; border-radius: 50%; margin-right: 10px; flex: 0 0 auto;
     background: #f5f5f5; border: 1px solid #e5e5e5; overflow: hidden;
     display: inline-flex; align-items: center; justify-content: center;
-    font-weight: bold; color: #525252; font-size: 15px;
+    font-weight: bold; color: #525252; font-size: 14px;
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .name-main { font-size: 16px; font-weight: bold; color: #171717; line-height: 1.15; }
-  .name-sub { font-size: 13px; color: #737373; line-height: 1.15; }
+  .name-text { min-width: 0; overflow: hidden; }
+  .name-main { font-size: 15px; font-weight: bold; color: #171717; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; }
+  .name-sub { font-size: 12px; color: #737373; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; }
 
   .state { padding: 24px; text-align: center; color: #737373; font-size: 15px; }
 </style>
@@ -78,28 +80,22 @@
         </div>
       </div>
       <div class="filters">
-        <label class="field"><span>Type</span>
-          <select id="f-type"></select>
-        </label>
-        <label class="field"><span>Cabang</span>
-          <select id="f-branch"></select>
-        </label>
-        <label class="field"><span>Team</span>
-          <select id="f-team"></select>
-        </label>
-        <label class="field"><span>Refresh</span>
-          <select id="f-refresh"></select>
-        </label>
+        <label class="field"><span>Type</span><select id="f-type"></select></label>
+        <label class="field"><span>Cabang</span><select id="f-branch"></select></label>
+        <label class="field"><span>Team</span><select id="f-team"></select></label>
+        <label class="field"><span>Refresh</span><select id="f-refresh"></select></label>
       </div>
     </div>
 
-    <div class="table-wrap" id="table-wrap">
+    <div class="tv-table" id="tv-table" style="flex:1 1 auto; min-height:0;">
       <div class="state" id="state">Memuat data...</div>
-      <table id="table" style="display:none">
-        <thead><tr id="thead-row"></tr></thead>
-        <tbody id="tbody"></tbody>
-        <tfoot><tr id="tfoot-row"></tr></tfoot>
-      </table>
+      <table class="grid" id="head-table" style="display:none"><colgroup id="cg-head"></colgroup><thead><tr id="thead-row"></tr></thead></table>
+      <div class="body-wrap" id="body-wrap" style="display:none">
+        <div class="scroll-track" id="scroll-track">
+          <table class="grid" id="body-table"><colgroup id="cg-body"></colgroup><tbody id="tbody"></tbody></table>
+        </div>
+      </div>
+      <table class="grid" id="foot-table" style="display:none"><colgroup id="cg-foot"></colgroup><tfoot><tr id="tfoot-row"></tr></tfoot></table>
     </div>
   </div>
 
@@ -111,6 +107,11 @@
   var DEFAULT_API_BASE = '/api';
   var query = new URLSearchParams(window.location.search);
   var API_BASE = (query.get('api') || DEFAULT_API_BASE).replace(/\/+$/, '');
+  var SPEED = Number(query.get('speed')) || 40; // px per second
+
+  // Column widths (px) — fixed layout keeps head/body/foot aligned.
+  // Name column is auto (no width) so it absorbs remaining space => full width.
+  var W_TOTAL = 90, W_DAY = 46;
 
   // ---- Options ----
   var typeOptions = [
@@ -154,30 +155,32 @@
   var elTeam = document.getElementById('f-team');
   var elRefresh = document.getElementById('f-refresh');
   var elState = document.getElementById('state');
-  var elTable = document.getElementById('table');
+  var elHeadTable = document.getElementById('head-table');
+  var elFootTable = document.getElementById('foot-table');
+  var elBodyWrap = document.getElementById('body-wrap');
+  var elTrack = document.getElementById('scroll-track');
+  var elBodyTable = document.getElementById('body-table');
+  var elCgHead = document.getElementById('cg-head');
+  var elCgBody = document.getElementById('cg-body');
+  var elCgFoot = document.getElementById('cg-foot');
   var elTheadRow = document.getElementById('thead-row');
   var elTbody = document.getElementById('tbody');
   var elTfootRow = document.getElementById('tfoot-row');
   var elSubtitle = document.getElementById('subtitle');
-  var elWrap = document.getElementById('table-wrap');
 
   function fillSelect(el, options, value) {
     el.innerHTML = '';
     options.forEach(function (o) {
       var opt = document.createElement('option');
-      opt.value = o.value;
-      opt.textContent = o.label;
-      el.appendChild(opt);
+      opt.value = o.value; opt.textContent = o.label; el.appendChild(opt);
     });
     el.value = value;
   }
-
   function teamOptions() {
     var opts = [{ label: 'Semua Tim', value: 'all' }];
     managers.forEach(function (m) { opts.push({ label: m.name, value: String(m.id) }); });
     return opts;
   }
-
   function syncUrl() {
     var q = new URLSearchParams();
     if (state.type !== 'all') q.set('type', state.type);
@@ -185,17 +188,16 @@
     if (state.team !== 'all') q.set('team', state.team);
     if (state.refresh !== '1h') q.set('refresh', state.refresh);
     if (query.get('api')) q.set('api', query.get('api'));
+    if (query.get('speed')) q.set('speed', query.get('speed'));
     var s = q.toString();
     history.replaceState(null, '', s ? ('?' + s) : window.location.pathname);
   }
-
   function getJSON(url) {
     return fetch(url, { headers: { 'Accept': 'application/json' } }).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     });
   }
-
   function fetchManagers() {
     var url = API_BASE + '/public/sales-performance/manager';
     if (state.type !== 'all') url += '?type=' + encodeURIComponent(state.type);
@@ -203,7 +205,6 @@
       managers = (res && res.success && res.data) ? res.data : [];
     }).catch(function () { managers = []; });
   }
-
   function fetchData() {
     var q = new URLSearchParams();
     if (state.team !== 'all') q.set('managerId', state.team);
@@ -215,38 +216,52 @@
       return (res && res.success && res.data) ? res.data : [];
     });
   }
-
   function escapeHtml(s) {
     return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
-
   function initials(name) {
     var n = (name || '').trim();
     return n ? n.charAt(0).toUpperCase() : '?';
+  }
+  function colgroupHtml(day) {
+    var h = '<col><col style="width:' + W_TOTAL + 'px">'; // Name auto, Total fixed
+    for (var d = 1; d <= day; d++) h += '<col style="width:' + W_DAY + 'px">';
+    return h;
   }
 
   function render(rows) {
     var day = new Date().getDate();
 
-    // Header: Name, Total, day 1..today
+    if (!rows.length) {
+      elHeadTable.style.display = 'none';
+      elBodyWrap.style.display = 'none';
+      elFootTable.style.display = 'none';
+      elState.style.display = 'block';
+      elState.textContent = 'Tidak ada data.';
+      stopScroll();
+      return;
+    }
+    elState.style.display = 'none';
+    elHeadTable.style.display = 'table';
+    elBodyWrap.style.display = 'block';
+    elFootTable.style.display = 'table';
+
+    // widths — full width; Name column (auto) absorbs the remaining space
+    elHeadTable.style.width = '100%';
+    elBodyTable.style.width = '100%';
+    elFootTable.style.width = '100%';
+    elCgHead.innerHTML = colgroupHtml(day);
+    elCgBody.innerHTML = colgroupHtml(day);
+    elCgFoot.innerHTML = colgroupHtml(day);
+
+    // header
     var head = '<th>Name</th><th class="col-total">Total</th>';
     for (var d = 1; d <= day; d++) head += '<th class="col-num">' + d + '</th>';
     elTheadRow.innerHTML = head;
 
-    if (!rows.length) {
-      elTable.style.display = 'none';
-      elState.style.display = 'block';
-      elState.textContent = 'Tidak ada data.';
-      return;
-    }
-    elState.style.display = 'none';
-    elTable.style.display = 'table';
-
-    var colTotals = [];
-    for (var i = 0; i <= day; i++) colTotals[i] = 0; // index 0 = grand total
-
+    // body + column totals
+    var colTotals = []; for (var i = 0; i <= day; i++) colTotals[i] = 0;
     var body = '';
     rows.forEach(function (row) {
       var data = row.data || [];
@@ -259,8 +274,8 @@
         : '<span class="avatar">' + escapeHtml(initials(row.name)) + '</span>';
 
       var cells = '<td><div class="name-cell">' + avatar +
-        '<span><span class="name-main">' + escapeHtml(row.name) + '</span><br>' +
-        '<span class="name-sub">' + escapeHtml(row.organizationName || '') + '</span></span></div></td>';
+        '<span class="name-text"><div class="name-main">' + escapeHtml(row.name) + '</div>' +
+        '<div class="name-sub">' + escapeHtml(row.organizationName || '') + '</div></span></div></td>';
       cells += '<td class="col-total">' + rowTotal + '</td>';
       for (var d2 = 1; d2 <= day; d2++) {
         var val = Number(data[d2 - 1]) || 0;
@@ -271,10 +286,13 @@
     });
     elTbody.innerHTML = body;
 
-    // Footer totals
-    var foot = '<td class="foot-label">Total</td><td>' + colTotals[0] + '</td>';
-    for (var f = 1; f <= day; f++) foot += '<td>' + colTotals[f] + '</td>';
+    // footer
+    var foot = '<td class="foot-label">Total</td><td class="col-total">' + colTotals[0] + '</td>';
+    for (var f = 1; f <= day; f++) foot += '<td class="col-num">' + colTotals[f] + '</td>';
     elTfootRow.innerHTML = foot;
+
+    fitHeight();
+    setupScroll();
   }
 
   function updateSubtitle() {
@@ -283,17 +301,63 @@
     elSubtitle.textContent = 'Daily sales performance heatmap - ' + monthYear;
   }
 
+  // ---- Fixed body-viewport height (independent of flex/100vh quirks) ----
+  function fitHeight() {
+    var top = elBodyWrap.getBoundingClientRect().top;
+    var footH = elFootTable.offsetHeight || 0;
+    var h = window.innerHeight - top - footH - 16; // 16 = #app bottom padding
+    if (h < 120) h = 120;
+    elBodyWrap.style.height = h + 'px';
+  }
+
+  // ---- Scroll via JS-driven transform ----
+  // Forced: keeps moving regardless of hover, timer throttling, scrollTop
+  // support, or Page Visibility (setInterval still fires when hidden).
+  // Time-based delta => constant speed even if ticks are throttled.
+  var sDist = 0, sPos = 0, sLast = 0, sPhase = 'pauseTop', sPauseUntil = 0;
+  function applyPos() {
+    var v = 'translateY(-' + sPos + 'px)';
+    elTrack.style.transform = v;
+    elTrack.style.webkitTransform = v;
+  }
+  function stopScroll() { sPos = 0; applyPos(); }
+  function setupScroll() {
+    sDist = elBodyTable.offsetHeight - elBodyWrap.clientHeight;
+    if (sDist < 0) sDist = 0;
+    sPos = 0; applyPos();
+    sLast = 0; sPhase = 'pauseTop'; sPauseUntil = Date.now() + 1000;
+  }
+  function tick() {
+    var now = Date.now();
+    if (!sLast) sLast = now;
+    var dt = (now - sLast) / 1000; sLast = now;
+    if (dt > 1) dt = 1; // cap so a throttled (hidden) tick still advances
+    if (sDist <= 0) return;
+    if (sPhase === 'pauseTop') { if (now >= sPauseUntil) sPhase = 'run'; return; }
+    if (sPhase === 'pauseBottom') {
+      if (now >= sPauseUntil) { sPos = 0; applyPos(); sPhase = 'pauseTop'; sPauseUntil = now + 1000; }
+      return;
+    }
+    sPos += SPEED * dt;
+    if (sPos >= sDist) { sPos = sDist; applyPos(); sPhase = 'pauseBottom'; sPauseUntil = now + 1500; return; }
+    applyPos();
+  }
+  setInterval(tick, 30);
+  window.addEventListener('resize', function () { fitHeight(); setupScroll(); });
+
   var loading = false;
   function reload() {
     if (loading) return Promise.resolve();
     loading = true;
     return fetchData().then(function (rows) {
-      render(rows);
-      updateSubtitle();
+      render(rows); updateSubtitle();
     }).catch(function () {
-      elTable.style.display = 'none';
+      elHeadTable.style.display = 'none';
+      elBodyWrap.style.display = 'none';
+      elFootTable.style.display = 'none';
       elState.style.display = 'block';
       elState.textContent = 'Gagal memuat data. Periksa koneksi / API (' + API_BASE + ').';
+      stopScroll();
     }).then(function () { loading = false; });
   }
 
@@ -309,61 +373,19 @@
     if (ms > 0) refreshTimer = setInterval(reload, ms);
   }
 
-  // ---- Fixed container height (so overflow scrolling works on signage) ----
-  // Flex height calc can be unreliable on old signage browsers, so pin an
-  // explicit pixel height based on the real viewport.
-  function fitHeight() {
-    var top = elWrap.getBoundingClientRect().top;
-    var h = window.innerHeight - top - 16; // 16 = #app bottom padding
-    if (h < 120) h = 120;
-    elWrap.style.height = h + 'px';
-  }
-  window.addEventListener('resize', fitHeight);
-
-  // ---- Auto scroll (infinite) ----
-  var scrollTimer = null;
-  var scrollPaused = false;
-  elWrap.addEventListener('mouseenter', function () { scrollPaused = true; });
-  elWrap.addEventListener('mouseleave', function () { scrollPaused = false; });
-  function startAutoScroll() {
-    if (scrollTimer) clearInterval(scrollTimer);
-    scrollTimer = setInterval(function () {
-      if (scrollPaused) return;
-      var el = elWrap;
-      if (!el || el.scrollHeight <= el.clientHeight) return;
-      el.scrollTop += 1;
-      if (Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight) {
-        scrollPaused = true;
-        setTimeout(function () {
-          el.scrollTop = 0;
-          setTimeout(function () { scrollPaused = false; }, 1000);
-        }, 1500);
-      }
-    }, 30);
-  }
-
   // ---- Wire up filters ----
   fillSelect(elType, typeOptions, state.type);
   fillSelect(elBranch, branchOptions, state.branch);
   fillSelect(elRefresh, refreshOptions, state.refresh);
-
   function refreshTeamSelect() { fillSelect(elTeam, teamOptions(), state.team); }
 
   elType.addEventListener('change', function () {
-    state.type = elType.value;
-    state.team = 'all';
-    syncUrl();
+    state.type = elType.value; state.team = 'all'; syncUrl();
     fetchManagers().then(function () { refreshTeamSelect(); reload(); });
   });
-  elBranch.addEventListener('change', function () {
-    state.branch = elBranch.value; syncUrl(); reload();
-  });
-  elTeam.addEventListener('change', function () {
-    state.team = elTeam.value; syncUrl(); reload();
-  });
-  elRefresh.addEventListener('change', function () {
-    state.refresh = elRefresh.value; syncUrl(); startRefresh();
-  });
+  elBranch.addEventListener('change', function () { state.branch = elBranch.value; syncUrl(); reload(); });
+  elTeam.addEventListener('change', function () { state.team = elTeam.value; syncUrl(); reload(); });
+  elRefresh.addEventListener('change', function () { state.refresh = elRefresh.value; syncUrl(); startRefresh(); });
 
   // ---- Init ----
   fetchManagers().then(function () {
@@ -371,8 +393,8 @@
     return reload();
   }).then(function () {
     startRefresh();
-    fitHeight();
-    setTimeout(function () { fitHeight(); startAutoScroll(); }, 1000);
+    // Re-fit once more after layout settles (fonts/images).
+    setTimeout(function () { fitHeight(); setupScroll(); }, 800);
   });
 })();
 </script>
