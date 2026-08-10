@@ -2,6 +2,23 @@
 export default defineNuxtConfig({
   ssr: false,
 
+  app: {
+    head: {
+      // Polyfills for old signage browsers (e.g. Yodeck / Chromium < 93).
+      // Runs before the app bundle since it's an inline classic script in <head>.
+      script: [
+        {
+          tagPosition: 'head',
+          tagPriority: 'critical',
+          innerHTML: [
+            "if(!Object.hasOwn){Object.defineProperty(Object,'hasOwn',{configurable:true,writable:true,value:function(o,p){if(o==null){throw new TypeError('Cannot convert undefined or null to object')}return Object.prototype.hasOwnProperty.call(Object(o),p)}})}",
+            "if(!Array.prototype.at){Object.defineProperty(Array.prototype,'at',{configurable:true,writable:true,value:function(n){n=Math.trunc(n)||0;if(n<0)n+=this.length;return(n<0||n>=this.length)?undefined:this[n]}})}"
+          ].join('')
+        }
+      ]
+    }
+  },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
