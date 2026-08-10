@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Monitoring Performance</title>
+<style>
+  /* Plain, old-browser-safe CSS only: no oklch/color-mix/@layer/:where/@property. */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #ffffff;
+    color: #171717;
+    font-family: Arial, Helvetica, "Segoe UI", Roboto, sans-serif;
+  }
+  #app { display: flex; flex-direction: column; height: 100vh; padding: 16px; }
+
+  .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
+  .brand { display: flex; align-items: center; }
+  .brand img { width: 44px; height: 44px; object-fit: contain; margin-right: 14px; }
+  .brand h1 { font-size: 22px; font-weight: bold; margin: 0; color: #171717; }
+  .brand p { font-size: 13px; color: #737373; margin: 2px 0 0 0; }
+
+  .filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; }
+  .field span { font-size: 12px; font-weight: bold; color: #404040; margin-bottom: 4px; }
+  .field select {
+    font-size: 14px; padding: 6px 8px; border: 1px solid #d4d4d4; border-radius: 6px;
+    background: #ffffff; color: #171717; min-width: 120px;
+  }
+
+  .table-wrap {
+    flex: 1 1 auto; overflow: auto; border: 1px solid #d4d4d4; border-radius: 10px;
+  }
+  table { border-collapse: collapse; width: 100%; text-align: left; }
+  thead th {
+    position: sticky; top: 0; z-index: 2;
+    background: #f5f5f5; color: #171717; font-weight: bold; font-size: 15px;
+    padding: 10px 12px; border-bottom: 1px solid #d4d4d4; white-space: nowrap;
+  }
+  tbody td { padding: 8px 12px; font-size: 15px; color: #262626; border-bottom: 1px solid #ededed; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafafa; }
+  .col-num { text-align: center; }
+  .col-total { text-align: center; font-weight: bold; }
+  tfoot td {
+    position: sticky; bottom: 0; background: #f5f5f5; font-weight: bold;
+    padding: 10px 12px; border-top: 1px solid #d4d4d4; font-size: 15px; text-align: center;
+  }
+  tfoot td.foot-label { text-align: left; }
+
+  .name-cell { display: flex; align-items: center; }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; flex: 0 0 auto;
+    background: #f5f5f5; border: 1px solid #e5e5e5; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: bold; color: #525252; font-size: 15px;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .name-main { font-size: 16px; font-weight: bold; color: #171717; line-height: 1.15; }
+  .name-sub { font-size: 13px; color: #737373; line-height: 1.15; }
+
+  .state { padding: 24px; text-align: center; color: #737373; font-size: 15px; }
+</style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="brand">
+        <img src="/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <div>
+          <h1>Daily monitoring Performance</h1>
+          <p id="subtitle">Daily sales performance heatmap</p>
+        </div>
+      </div>
+      <div class="filters">
+        <label class="field"><span>Type</span>
+          <select id="f-type"></select>
+        </label>
+        <label class="field"><span>Cabang</span>
+          <select id="f-branch"></select>
+        </label>
+        <label class="field"><span>Team</span>
+          <select id="f-team"></select>
+        </label>
+        <label class="field"><span>Refresh</span>
+          <select id="f-refresh"></select>
+        </label>
+      </div>
+    </div>
+
+    <div class="table-wrap" id="table-wrap">
+      <div class="state" id="state">Memuat data...</div>
+      <table id="table" style="display:none">
+        <thead><tr id="thead-row"></tr></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot><tr id="tfoot-row"></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- API base: ?api=... overrides; otherwise same-origin /api ----
+  var DEFAULT_API_BASE = '/api';
+  var query = new URLSearchParams(window.location.search);
+  var API_BASE = (query.get('api') || DEFAULT_API_BASE).replace(/\/+$/, '');
+
+  // ---- Options ----
+  var typeOptions = [
+    { label: 'Semua Type', value: 'all' },
+    { label: 'Access Home', value: 'access_home' },
+    { label: 'Access Business', value: 'access_business' }
+  ];
+  var branchOptions = [
+    { label: 'Semua Cabang', value: 'all' },
+    { label: 'Medan (HO)', value: '020-CABANG' },
+    { label: 'Jakarta', value: '025' },
+    { label: 'Bali', value: '062' },
+    { label: 'Binjai', value: '027' },
+    { label: 'Tanjung Morawa', value: '029' }
+  ];
+  var refreshOptions = [
+    { label: 'Nonaktif', value: '0' },
+    { label: '10 Detik', value: '10s' },
+    { label: '1 Menit', value: '1m' },
+    { label: '1 Jam', value: '1h' },
+    { label: '1 Hari', value: '1d' }
+  ];
+
+  // ---- State (initial values from URL) ----
+  function pick(key, allowed, fallback) {
+    var v = query.get(key);
+    if (v && allowed.indexOf(v) !== -1) return v;
+    return fallback;
+  }
+  var state = {
+    type: pick('type', typeOptions.map(function (o) { return o.value; }), 'all'),
+    branch: pick('branchId', branchOptions.map(function (o) { return o.value; }), 'all'),
+    team: query.get('team') || 'all',
+    refresh: pick('refresh', refreshOptions.map(function (o) { return o.value; }), '1h')
+  };
+  var managers = [];
+
+  // ---- DOM refs ----
+  var elType = document.getElementById('f-type');
+  var elBranch = document.getElementById('f-branch');
+  var elTeam = document.getElementById('f-team');
+  var elRefresh = document.getElementById('f-refresh');
+  var elState = document.getElementById('state');
+  var elTable = document.getElementById('table');
+  var elTheadRow = document.getElementById('thead-row');
+  var elTbody = document.getElementById('tbody');
+  var elTfootRow = document.getElementById('tfoot-row');
+  var elSubtitle = document.getElementById('subtitle');
+  var elWrap = document.getElementById('table-wrap');
+
+  function fillSelect(el, options, value) {
+    el.innerHTML = '';
+    options.forEach(function (o) {
+      var opt = document.createElement('option');
+      opt.value = o.value;
+      opt.textContent = o.label;
+      el.appendChild(opt);
+    });
+    el.value = value;
+  }
+
+  function teamOptions() {
+    var opts = [{ label: 'Semua Tim', value: 'all' }];
+    managers.forEach(function (m) { opts.push({ label: m.name, value: String(m.id) }); });
+    return opts;
+  }
+
+  function syncUrl() {
+    var q = new URLSearchParams();
+    if (state.type !== 'all') q.set('type', state.type);
+    if (state.branch !== 'all') q.set('branchId', state.branch);
+    if (state.team !== 'all') q.set('team', state.team);
+    if (state.refresh !== '1h') q.set('refresh', state.refresh);
+    if (query.get('api')) q.set('api', query.get('api'));
+    var s = q.toString();
+    history.replaceState(null, '', s ? ('?' + s) : window.location.pathname);
+  }
+
+  function getJSON(url) {
+    return fetch(url, { headers: { 'Accept': 'application/json' } }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  function fetchManagers() {
+    var url = API_BASE + '/public/sales-performance/manager';
+    if (state.type !== 'all') url += '?type=' + encodeURIComponent(state.type);
+    return getJSON(url).then(function (res) {
+      managers = (res && res.success && res.data) ? res.data : [];
+    }).catch(function () { managers = []; });
+  }
+
+  function fetchData() {
+    var q = new URLSearchParams();
+    if (state.team !== 'all') q.set('managerId', state.team);
+    if (state.branch !== 'all') q.set('branchId', state.branch);
+    if (state.type !== 'all') q.set('type', state.type);
+    var qs = q.toString();
+    var url = API_BASE + '/public/sales-performance' + (qs ? ('?' + qs) : '');
+    return getJSON(url).then(function (res) {
+      return (res && res.success && res.data) ? res.data : [];
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function initials(name) {
+    var n = (name || '').trim();
+    return n ? n.charAt(0).toUpperCase() : '?';
+  }
+
+  function render(rows) {
+    var day = new Date().getDate();
+
+    // Header: Name, Total, day 1..today
+    var head = '<th>Name</th><th class="col-total">Total</th>';
+    for (var d = 1; d <= day; d++) head += '<th class="col-num">' + d + '</th>';
+    elTheadRow.innerHTML = head;
+
+    if (!rows.length) {
+      elTable.style.display = 'none';
+      elState.style.display = 'block';
+      elState.textContent = 'Tidak ada data.';
+      return;
+    }
+    elState.style.display = 'none';
+    elTable.style.display = 'table';
+
+    var colTotals = [];
+    for (var i = 0; i <= day; i++) colTotals[i] = 0; // index 0 = grand total
+
+    var body = '';
+    rows.forEach(function (row) {
+      var data = row.data || [];
+      var rowTotal = 0;
+      for (var k = 0; k < data.length; k++) rowTotal += Number(data[k]) || 0;
+      colTotals[0] += rowTotal;
+
+      var avatar = row.photoProfile
+        ? '<span class="avatar"><img src="' + escapeHtml(row.photoProfile) + '" alt="" onerror="this.parentNode.textContent=\'' + escapeHtml(initials(row.name)) + '\'"></span>'
+        : '<span class="avatar">' + escapeHtml(initials(row.name)) + '</span>';
+
+      var cells = '<td><div class="name-cell">' + avatar +
+        '<span><span class="name-main">' + escapeHtml(row.name) + '</span><br>' +
+        '<span class="name-sub">' + escapeHtml(row.organizationName || '') + '</span></span></div></td>';
+      cells += '<td class="col-total">' + rowTotal + '</td>';
+      for (var d2 = 1; d2 <= day; d2++) {
+        var val = Number(data[d2 - 1]) || 0;
+        colTotals[d2] += val;
+        cells += '<td class="col-num">' + val + '</td>';
+      }
+      body += '<tr>' + cells + '</tr>';
+    });
+    elTbody.innerHTML = body;
+
+    // Footer totals
+    var foot = '<td class="foot-label">Total</td><td>' + colTotals[0] + '</td>';
+    for (var f = 1; f <= day; f++) foot += '<td>' + colTotals[f] + '</td>';
+    elTfootRow.innerHTML = foot;
+  }
+
+  function updateSubtitle() {
+    var now = new Date();
+    var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    elSubtitle.textContent = 'Daily sales performance heatmap - ' + monthYear;
+  }
+
+  var loading = false;
+  function reload() {
+    if (loading) return Promise.resolve();
+    loading = true;
+    return fetchData().then(function (rows) {
+      render(rows);
+      updateSubtitle();
+    }).catch(function () {
+      elTable.style.display = 'none';
+      elState.style.display = 'block';
+      elState.textContent = 'Gagal memuat data. Periksa koneksi / API (' + API_BASE + ').';
+    }).then(function () { loading = false; });
+  }
+
+  // ---- Auto refresh ----
+  var refreshTimer = null;
+  function startRefresh() {
+    if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    var ms = 0;
+    if (state.refresh === '10s') ms = 10000;
+    else if (state.refresh === '1m') ms = 60000;
+    else if (state.refresh === '1h') ms = 3600000;
+    else if (state.refresh === '1d') ms = 86400000;
+    if (ms > 0) refreshTimer = setInterval(reload, ms);
+  }
+
+  // ---- Auto scroll (infinite) ----
+  var scrollTimer = null;
+  var scrollPaused = false;
+  elWrap.addEventListener('mouseenter', function () { scrollPaused = true; });
+  elWrap.addEventListener('mouseleave', function () { scrollPaused = false; });
+  function startAutoScroll() {
+    if (scrollTimer) clearInterval(scrollTimer);
+    scrollTimer = setInterval(function () {
+      if (scrollPaused) return;
+      var el = elWrap;
+      if (!el || el.scrollHeight <= el.clientHeight) return;
+      el.scrollTop += 1;
+      if (Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight) {
+        scrollPaused = true;
+        setTimeout(function () {
+          el.scrollTop = 0;
+          setTimeout(function () { scrollPaused = false; }, 1000);
+        }, 1500);
+      }
+    }, 30);
+  }
+
+  // ---- Wire up filters ----
+  fillSelect(elType, typeOptions, state.type);
+  fillSelect(elBranch, branchOptions, state.branch);
+  fillSelect(elRefresh, refreshOptions, state.refresh);
+
+  function refreshTeamSelect() { fillSelect(elTeam, teamOptions(), state.team); }
+
+  elType.addEventListener('change', function () {
+    state.type = elType.value;
+    state.team = 'all';
+    syncUrl();
+    fetchManagers().then(function () { refreshTeamSelect(); reload(); });
+  });
+  elBranch.addEventListener('change', function () {
+    state.branch = elBranch.value; syncUrl(); reload();
+  });
+  elTeam.addEventListener('change', function () {
+    state.team = elTeam.value; syncUrl(); reload();
+  });
+  elRefresh.addEventListener('change', function () {
+    state.refresh = elRefresh.value; syncUrl(); startRefresh();
+  });
+
+  // ---- Init ----
+  fetchManagers().then(function () {
+    refreshTeamSelect();
+    return reload();
+  }).then(function () {
+    startRefresh();
+    setTimeout(startAutoScroll, 1000);
+  });
+})();
+</script>
+</body>
+</html>
