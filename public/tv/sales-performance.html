@@ -10,7 +10,7 @@
   html, body {
     margin: 0; padding: 0; height: 100%;
     background: #ffffff; color: #171717;
-    font-family: Arial, Helvetica, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
   #app { display: flex; flex-direction: column; height: 100vh; padding: 16px; }
 
@@ -37,18 +37,34 @@
   .grid th, .grid td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   thead th {
-    background: #f5f5f5; color: #171717; font-weight: bold; font-size: 15px;
-    padding: 10px 12px; border-bottom: 1px solid #d4d4d4; text-align: left;
+    background: #f8fafc; color: #0f172a; font-weight: 800; font-size: 18px;
+    padding: 12px 8px; border-bottom: 2px solid #e2e8f0; text-align: left;
   }
-  tbody td { padding: 8px 12px; font-size: 15px; color: #262626; border-bottom: 1px solid #ededed; }
-  tbody tr:nth-child(even) { background: #fafafa; }
+  tbody td { padding: 11px 8px; font-size: 16px; color: #1f2937; border-bottom: 1px solid #f1f5f9; }
+  tbody tr:nth-child(even) { background: #fafbfc; }
   tfoot td {
-    background: #f5f5f5; font-weight: bold; padding: 10px 12px;
-    border-top: 1px solid #d4d4d4; font-size: 15px; text-align: center;
+    background: #f8fafc; font-weight: 800; padding: 12px 8px;
+    border-top: 2px solid #e2e8f0; font-size: 20px; text-align: center; color: #0f172a;
   }
   tfoot td.foot-label { text-align: left; }
   .col-num { text-align: center; }
-  .col-total { text-align: center; font-weight: bold; }
+  .col-total { text-align: center; font-weight: 800; }
+  /* Tight horizontal padding so a full month of columns fits without clipping */
+  thead th.col-num, tbody td.col-num, tfoot td.col-num { padding-left: 2px; padding-right: 2px; }
+
+  /* Big, bold, centered numbers for the value cells */
+  tbody td.col-num { font-size: 22px; font-weight: 800; color: #0f172a; }
+  tbody td.col-total { font-size: 24px; font-weight: 800; color: #0f172a; }
+  thead th.col-num, thead th.col-total { font-size: 16px; text-align: center; }
+  tfoot td.col-num { font-size: 20px; }
+
+  /* Holiday (Sunday / listed) columns in red */
+  thead th.holiday { color: #dc2626; }
+  tbody td.holiday, tfoot td.holiday { background: #fef2f2; color: #dc2626; }
+
+  /* Zero values dimmed */
+  tbody td.zero { color: #cbd5e1; font-weight: 700; }
+  tbody td.zero.holiday { color: #fca5a5; }
 
   /* Body viewport: fixed height (from JS) + hidden overflow; the track is animated. */
   .body-wrap { overflow: hidden; }
@@ -56,15 +72,15 @@
 
   .name-cell { display: flex; align-items: center; }
   .avatar {
-    width: 36px; height: 36px; border-radius: 50%; margin-right: 10px; flex: 0 0 auto;
-    background: #f5f5f5; border: 1px solid #e5e5e5; overflow: hidden;
+    width: 42px; height: 42px; border-radius: 50%; margin-right: 12px; flex: 0 0 auto;
+    background: #f1f5f9; border: 1px solid #e2e8f0; overflow: hidden;
     display: inline-flex; align-items: center; justify-content: center;
-    font-weight: bold; color: #525252; font-size: 14px;
+    font-weight: 800; color: #475569; font-size: 16px;
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .name-text { min-width: 0; overflow: hidden; }
-  .name-main { font-size: 15px; font-weight: bold; color: #171717; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; }
-  .name-sub { font-size: 12px; color: #737373; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; }
+  .name-main { font-size: 17px; font-weight: 800; color: #0f172a; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; }
+  .name-sub { font-size: 13px; color: #64748b; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; }
 
   .state { padding: 24px; text-align: center; color: #737373; font-size: 15px; }
 </style>
@@ -109,9 +125,19 @@
   var API_BASE = (query.get('api') || DEFAULT_API_BASE).replace(/\/+$/, '');
   var SPEED = Number(query.get('speed')) || 40; // px per second
 
-  // Column widths (px) — fixed layout keeps head/body/foot aligned.
-  // Name column is auto (no width) so it absorbs remaining space => full width.
-  var W_TOTAL = 90, W_DAY = 46;
+  // Column widths (px) — Name & Total fixed; day columns share the remaining
+  // width equally so a full month (up to 31 days) always fits without scroll.
+  var W_NAME = 220, W_TOTAL = 78;
+
+  // Holidays: Sundays plus any national dates passed as
+  // ?holidays=2026-08-17,2026-12-25 (ISO yyyy-mm-dd).
+  var HOLIDAY_SET = {};
+  (query.get('holidays') || '').split(',').forEach(function (s) { s = s.trim(); if (s) HOLIDAY_SET[s] = true; });
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function isHoliday(year, monthIndex, d) {
+    if (new Date(year, monthIndex, d).getDay() === 0) return true; // Sunday
+    return !!HOLIDAY_SET[year + '-' + pad2(monthIndex + 1) + '-' + pad2(d)];
+  }
 
   // ---- Options ----
   var typeOptions = [
@@ -121,7 +147,7 @@
   ];
   var branchOptions = [
     { label: 'Semua Cabang', value: 'all' },
-    { label: 'Medan (HO)', value: '020-CABANG' },
+    { label: 'Medan', value: '020-CABANG' },
     { label: 'Jakarta', value: '025' },
     { label: 'Bali', value: '062' },
     { label: 'Binjai', value: '027' },
@@ -225,13 +251,15 @@
     return n ? n.charAt(0).toUpperCase() : '?';
   }
   function colgroupHtml(day) {
-    var h = '<col><col style="width:' + W_TOTAL + 'px">'; // Name auto, Total fixed
-    for (var d = 1; d <= day; d++) h += '<col style="width:' + W_DAY + 'px">';
+    var h = '<col style="width:' + W_NAME + 'px"><col style="width:' + W_TOTAL + 'px">'; // Name & Total fixed
+    for (var d = 1; d <= day; d++) h += '<col>'; // day columns share remaining width equally
     return h;
   }
 
   function render(rows) {
-    var day = new Date().getDate();
+    var now = new Date();
+    var Y = now.getFullYear(), M = now.getMonth();
+    var day = now.getDate();
 
     if (!rows.length) {
       elHeadTable.style.display = 'none';
@@ -257,7 +285,9 @@
 
     // header
     var head = '<th>Name</th><th class="col-total">Total</th>';
-    for (var d = 1; d <= day; d++) head += '<th class="col-num">' + d + '</th>';
+    for (var d = 1; d <= day; d++) {
+      head += '<th class="col-num' + (isHoliday(Y, M, d) ? ' holiday' : '') + '">' + d + '</th>';
+    }
     elTheadRow.innerHTML = head;
 
     // body + column totals
@@ -280,7 +310,10 @@
       for (var d2 = 1; d2 <= day; d2++) {
         var val = Number(data[d2 - 1]) || 0;
         colTotals[d2] += val;
-        cells += '<td class="col-num">' + val + '</td>';
+        var cls = 'col-num';
+        if (isHoliday(Y, M, d2)) cls += ' holiday';
+        if (val === 0) cls += ' zero';
+        cells += '<td class="' + cls + '">' + val + '</td>';
       }
       body += '<tr>' + cells + '</tr>';
     });
@@ -288,7 +321,9 @@
 
     // footer
     var foot = '<td class="foot-label">Total</td><td class="col-total">' + colTotals[0] + '</td>';
-    for (var f = 1; f <= day; f++) foot += '<td class="col-num">' + colTotals[f] + '</td>';
+    for (var f = 1; f <= day; f++) {
+      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + '">' + colTotals[f] + '</td>';
+    }
     elTfootRow.innerHTML = foot;
 
     fitHeight();
@@ -298,7 +333,7 @@
   function updateSubtitle() {
     var now = new Date();
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    elSubtitle.textContent = 'Daily sales performance heatmap - ' + monthYear;
+    elSubtitle.textContent = 'Daily sales performance heatmap 🔥 • ' + monthYear;
   }
 
   // ---- Fixed body-viewport height (independent of flex/100vh quirks) ----
