@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, h } from 'vue'
 import { salesPerformanceService } from '~/services/sales-performance-service'
 import type { Manager, SalesPerformanceData } from '~/types/sales-performance'
 
@@ -114,7 +114,7 @@ const typeOptions = [
 // Branch options (matches sales.branch_id codes)
 const branchOptions = [
   { label: 'Semua Cabang', value: 'all' },
-  { label: 'Medan (HO)', value: '020-CABANG' },
+  { label: 'Medan', value: '020-CABANG' },
   { label: 'Jakarta', value: '025' },
   { label: 'Bali', value: '062' },
   { label: 'Binjai', value: '027' },
@@ -194,57 +194,85 @@ const tableData = computed(() => {
 // Build columns dynamically — same styling as target-revenue
 const thClass = 'py-2.5 px-3 text-base font-bold'
 const tdClass = 'py-2 px-3 text-base font-medium text-neutral-800 align-middle'
+// Bigger font for the numeric value cells
+const tdNumClass = 'py-2 px-3 text-2xl font-bold text-neutral-800 align-middle'
 
 // Only show day columns up to today; future days aren't rendered.
 const currentDay = ref(new Date().getDate())
 
-const columns = computed<any[]>(() => [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    meta: {
-      class: {
-        th: `${thClass} w-[240px]`,
-        td: `${tdClass}`
+// Holidays: Sundays plus any dates passed via ?holidays=2026-08-17,...
+const holidaySet = computed(() => {
+  const raw = Array.isArray(route.query.holidays) ? route.query.holidays[0] : route.query.holidays
+  const set = new Set<string>()
+  if (raw) String(raw).split(',').forEach(s => { const t = s.trim(); if (t) set.add(t) })
+  return set
+})
+const pad2 = (n: number) => (n < 10 ? '0' : '') + n
+const isHoliday = (year: number, monthIndex: number, d: number) => {
+  if (new Date(year, monthIndex, d).getDay() === 0) return true // Sunday
+  return holidaySet.value.has(`${year}-${pad2(monthIndex + 1)}-${pad2(d)}`)
+}
+
+const columns = computed<any[]>(() => {
+  const now = new Date()
+  const Y = now.getFullYear()
+  const M = now.getMonth()
+
+  return [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      meta: {
+        class: {
+          th: `${thClass} w-[240px]`,
+          td: `${tdClass}`
+        }
+      },
+      footer: () => 'Total'
+    },
+    {
+      accessorKey: 'total',
+      header: 'Total',
+      meta: {
+        class: {
+          th: `${thClass} text-center font-bold`,
+          td: `${tdNumClass} text-center`
+        }
+      },
+      footer: ({ column }: any) => {
+        const total = column.getFacetedRowModel().rows.reduce(
+          (acc: number, row: any) => acc + (Number(row.getValue('total')) || 0),
+          0
+        )
+        return total
       }
     },
-    footer: () => 'Total'
-  },
-  {
-    accessorKey: 'total',
-    header: 'Total',
-    meta: {
-      class: {
-        th: `${thClass} text-center font-bold`,
-        td: `${tdClass} text-center font-bold`
+    ...Array.from({ length: currentDay.value }, (_, i) => {
+      const holiday = isHoliday(Y, M, i + 1)
+      return {
+        accessorKey: `d${i + 1}`,
+        header: `${i + 1}`,
+        meta: {
+          class: {
+            th: `${thClass} text-center font-bold ${holiday ? 'text-red-600' : ''}`,
+            td: `${tdNumClass} text-center ${holiday ? 'bg-red-50 text-red-600' : ''}`
+          }
+        },
+        cell: ({ getValue }: any) => {
+          const v = Number(getValue()) || 0
+          return h('span', { class: v === 0 ? 'opacity-30' : '' }, String(v))
+        },
+        footer: ({ column }: any) => {
+          const total = column.getFacetedRowModel().rows.reduce(
+            (acc: number, row: any) => acc + (Number(row.getValue(`d${i + 1}`)) || 0),
+            0
+          )
+          return total
+        }
       }
-    },
-    footer: ({ column }: any) => {
-      const total = column.getFacetedRowModel().rows.reduce(
-        (acc: number, row: any) => acc + (Number(row.getValue('total')) || 0),
-        0
-      )
-      return total
-    }
-  },
-  ...Array.from({ length: currentDay.value }, (_, i) => ({
-    accessorKey: `d${i + 1}`,
-    header: `${i + 1}`,
-    meta: {
-      class: {
-        th: `${thClass} text-center font-bold`,
-        td: `${tdClass} text-center`
-      }
-    },
-    footer: ({ column }: any) => {
-      const total = column.getFacetedRowModel().rows.reduce(
-        (acc: number, row: any) => acc + (Number(row.getValue(`d${i + 1}`)) || 0),
-        0
-      )
-      return total
-    }
-  }))
-])
+    })
+  ]
+})
 
 // Refresh: re-fetch data from API
 const triggerRefresh = async () => {
