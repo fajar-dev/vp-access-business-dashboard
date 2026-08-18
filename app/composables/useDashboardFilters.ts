@@ -17,7 +17,7 @@ export const useDashboardFilters = () => {
 
   const branchOptions = [
     { label: 'All', value: 'all' },
-    { label: 'Medan (HO)', value: 'null' },
+    { label: 'Medan', value: 'null' },
     { label: 'Jakarta', value: '025' },
     { label: 'Bali', value: '062' },
     { label: 'Binjai', value: '027' },

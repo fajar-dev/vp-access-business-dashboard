@@ -190,6 +190,20 @@ const tableData = computed(() => {
   })
 })
 
+// Per-day (column) max across all rows, for the green "highest value" highlight.
+const colMaxByDay = computed<Record<number, number>>(() => {
+  const res: Record<number, number> = {}
+  for (let d = 1; d <= currentDay.value; d++) {
+    let m = 0
+    for (const row of tableData.value) {
+      const v = Number((row as any)[`d${d}`]) || 0
+      if (v > m) m = v
+    }
+    res[d] = m
+  }
+  return res
+})
+
 
 // Build columns dynamically — same styling as target-revenue
 const thClass = 'py-2.5 px-3 text-base font-bold'
@@ -260,7 +274,13 @@ const columns = computed<any[]>(() => {
         },
         cell: ({ getValue }: any) => {
           const v = Number(getValue()) || 0
-          return h('span', { class: v === 0 ? 'opacity-30' : '' }, String(v))
+          // Highest value of its column (per day) -> green; ties highlight all
+          const isMax = v > 0 && v === colMaxByDay.value[i + 1]
+          const cls = [
+            v === 0 ? 'opacity-30' : '',
+            isMax ? 'bg-green-100 text-green-800 rounded-md px-2 py-1 font-extrabold' : ''
+          ].filter(Boolean).join(' ')
+          return h('span', { class: cls }, String(v))
         },
         footer: ({ column }: any) => {
           const total = column.getFacetedRowModel().rows.reduce(

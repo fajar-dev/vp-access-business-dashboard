@@ -66,6 +66,9 @@
   tbody td.zero { color: #cbd5e1; font-weight: 700; }
   tbody td.zero.holiday { color: #fca5a5; }
 
+  /* Highest value per column (day) -> green highlight (ties highlight all) */
+  tbody td.is-max { background: #dcfce7; color: #166534; }
+
   /* Body viewport: fixed height (from JS) + hidden overflow; the track is animated. */
   .body-wrap { overflow: hidden; }
   .scroll-track { -webkit-transform: translateY(0); transform: translateY(0); will-change: transform; }
@@ -290,13 +293,23 @@
     }
     elTheadRow.innerHTML = head;
 
-    // body + column totals
-    var colTotals = []; for (var i = 0; i <= day; i++) colTotals[i] = 0;
+    // Pre-pass: column totals + per-column max (day 1..day)
+    var colTotals = [], colMax = [];
+    for (var i = 0; i <= day; i++) { colTotals[i] = 0; colMax[i] = 0; }
+    rows.forEach(function (row) {
+      var data = row.data || [];
+      for (var d = 1; d <= day; d++) {
+        var v = Number(data[d - 1]) || 0;
+        colTotals[d] += v;
+        if (v > colMax[d]) colMax[d] = v;
+      }
+    });
+
     var body = '';
     rows.forEach(function (row) {
       var data = row.data || [];
       var rowTotal = 0;
-      for (var k = 0; k < data.length; k++) rowTotal += Number(data[k]) || 0;
+      for (var d1 = 1; d1 <= day; d1++) rowTotal += Number(data[d1 - 1]) || 0;
       colTotals[0] += rowTotal;
 
       var avatar = row.photoProfile
@@ -309,10 +322,11 @@
       cells += '<td class="col-total">' + rowTotal + '</td>';
       for (var d2 = 1; d2 <= day; d2++) {
         var val = Number(data[d2 - 1]) || 0;
-        colTotals[d2] += val;
         var cls = 'col-num';
         if (isHoliday(Y, M, d2)) cls += ' holiday';
         if (val === 0) cls += ' zero';
+        // Highest value of its column (per day) -> green; ties highlight all
+        if (val > 0 && val === colMax[d2]) cls += ' is-max';
         cells += '<td class="' + cls + '">' + val + '</td>';
       }
       body += '<tr>' + cells + '</tr>';
