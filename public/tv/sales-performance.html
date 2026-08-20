@@ -18,7 +18,7 @@
   .brand { display: flex; align-items: center; }
   .brand img { width: 44px; height: 44px; object-fit: contain; margin-right: 14px; }
   .brand h1 { font-size: 22px; font-weight: bold; margin: 0; color: #171717; }
-  .brand p { font-size: 13px; color: #737373; margin: 2px 0 0 0; }
+  .brand p { font-size: 14px; color: #64748b; font-weight: 500; margin: 2px 0 0 0; }
 
   .filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
   .field { display: flex; flex-direction: column; }
@@ -61,6 +61,11 @@
   /* Holiday (Sunday / listed) columns in red */
   thead th.holiday { color: #dc2626; }
   tbody td.holiday, tfoot td.holiday { background: #fef2f2; color: #dc2626; }
+
+  /* Today's date column in blue (wins over holiday tint) */
+  thead th.today { background: #dbeafe; color: #1e40af; }
+  tbody td.today { background: #eff6ff; color: #1e3a8a; }
+  tfoot td.today { background: #dbeafe; color: #1e3a8a; }
 
   /* Zero values dimmed */
   tbody td.zero { color: #cbd5e1; font-weight: 700; }
@@ -130,7 +135,7 @@
 
   // Column widths (px) — Name & Total fixed; day columns share the remaining
   // width equally so a full month (up to 31 days) always fits without scroll.
-  var W_NAME = 220, W_TOTAL = 78;
+  var W_NAME = 220, W_TOTAL = 104;
 
   // Holidays: Sundays plus any national dates passed as
   // ?holidays=2026-08-17,2026-12-25 (ISO yyyy-mm-dd).
@@ -144,7 +149,6 @@
 
   // ---- Options ----
   var typeOptions = [
-    { label: 'Semua Type', value: 'all' },
     { label: 'Access Home', value: 'access_home' },
     { label: 'Access Business', value: 'access_business' }
   ];
@@ -157,11 +161,11 @@
     { label: 'Tanjung Morawa', value: '029' }
   ];
   var refreshOptions = [
-    { label: 'Nonaktif', value: '0' },
-    { label: '10 Detik', value: '10s' },
+    { label: '30 Detik', value: '30s' },
     { label: '1 Menit', value: '1m' },
-    { label: '1 Jam', value: '1h' },
-    { label: '1 Hari', value: '1d' }
+    { label: '15 Menit', value: '15m' },
+    { label: '30 Menit', value: '30m' },
+    { label: '1 Jam', value: '1h' }
   ];
 
   // ---- State (initial values from URL) ----
@@ -171,7 +175,7 @@
     return fallback;
   }
   var state = {
-    type: pick('type', typeOptions.map(function (o) { return o.value; }), 'all'),
+    type: pick('type', typeOptions.map(function (o) { return o.value; }), 'access_home'),
     branch: pick('branchId', branchOptions.map(function (o) { return o.value; }), 'all'),
     team: query.get('team') || 'all',
     refresh: pick('refresh', refreshOptions.map(function (o) { return o.value; }), '1h')
@@ -212,7 +216,7 @@
   }
   function syncUrl() {
     var q = new URLSearchParams();
-    if (state.type !== 'all') q.set('type', state.type);
+    if (state.type !== 'access_home') q.set('type', state.type);
     if (state.branch !== 'all') q.set('branchId', state.branch);
     if (state.team !== 'all') q.set('team', state.team);
     if (state.refresh !== '1h') q.set('refresh', state.refresh);
@@ -229,7 +233,7 @@
   }
   function fetchManagers() {
     var url = API_BASE + '/public/sales-performance/manager';
-    if (state.type !== 'all') url += '?type=' + encodeURIComponent(state.type);
+    url += '?type=' + encodeURIComponent(state.type);
     return getJSON(url).then(function (res) {
       managers = (res && res.success && res.data) ? res.data : [];
     }).catch(function () { managers = []; });
@@ -238,7 +242,7 @@
     var q = new URLSearchParams();
     if (state.team !== 'all') q.set('managerId', state.team);
     if (state.branch !== 'all') q.set('branchId', state.branch);
-    if (state.type !== 'all') q.set('type', state.type);
+    q.set('type', state.type);
     var qs = q.toString();
     var url = API_BASE + '/public/sales-performance' + (qs ? ('?' + qs) : '');
     return getJSON(url).then(function (res) {
@@ -286,10 +290,11 @@
     elCgBody.innerHTML = colgroupHtml(day);
     elCgFoot.innerHTML = colgroupHtml(day);
 
-    // header
-    var head = '<th>Name</th><th class="col-total">Total</th>';
+    // header — Total column label depends on type: Home -> "Register", Business -> "Activity"
+    var totalLabel = state.type === 'access_business' ? 'Activity' : 'Register';
+    var head = '<th>Name</th><th class="col-total">' + totalLabel + '</th>';
     for (var d = 1; d <= day; d++) {
-      head += '<th class="col-num' + (isHoliday(Y, M, d) ? ' holiday' : '') + '">' + d + '</th>';
+      head += '<th class="col-num' + (isHoliday(Y, M, d) ? ' holiday' : '') + (d === day ? ' today' : '') + '">' + d + '</th>';
     }
     elTheadRow.innerHTML = head;
 
@@ -324,6 +329,7 @@
         var val = Number(data[d2 - 1]) || 0;
         var cls = 'col-num';
         if (isHoliday(Y, M, d2)) cls += ' holiday';
+        if (d2 === day) cls += ' today';
         if (val === 0) cls += ' zero';
         // Highest value of its column (per day) -> green; ties highlight all
         if (val > 0 && val === colMax[d2]) cls += ' is-max';
@@ -336,7 +342,7 @@
     // footer
     var foot = '<td class="foot-label">Total</td><td class="col-total">' + colTotals[0] + '</td>';
     for (var f = 1; f <= day; f++) {
-      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + '">' + colTotals[f] + '</td>';
+      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + colTotals[f] + '</td>';
     }
     elTfootRow.innerHTML = foot;
 
@@ -347,7 +353,8 @@
   function updateSubtitle() {
     var now = new Date();
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    elSubtitle.textContent = 'Daily sales performance heatmap 🔥 • ' + monthYear;
+    var label = state.type === 'access_business' ? 'Sales Activity heatmap' : 'Sales new register heatmap';
+    elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
   }
 
   // ---- Fixed body-viewport height (independent of flex/100vh quirks) ----
@@ -415,10 +422,11 @@
   function startRefresh() {
     if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
     var ms = 0;
-    if (state.refresh === '10s') ms = 10000;
+    if (state.refresh === '30s') ms = 30000;
     else if (state.refresh === '1m') ms = 60000;
+    else if (state.refresh === '15m') ms = 900000;
+    else if (state.refresh === '30m') ms = 1800000;
     else if (state.refresh === '1h') ms = 3600000;
-    else if (state.refresh === '1d') ms = 86400000;
     if (ms > 0) refreshTimer = setInterval(reload, ms);
   }
 

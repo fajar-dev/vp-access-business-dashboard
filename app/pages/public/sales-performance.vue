@@ -9,7 +9,7 @@
                 <div>
                     <h1 class="text-lg sm:text-2xl font-bold text-neutral-900">Daily monitoring Performance</h1>
                     <p class="text-xs sm:text-sm text-neutral-500 mt-0 flex flex-wrap items-center gap-1 sm:gap-2">
-                        <span>Daily sales performance heatmap 🔥 • {{ todayFormatted }}</span>
+                        <span>{{ subtitleLabel }} 🔥 • {{ todayFormatted }}</span>
                     </p>
                 </div>
             </div>
@@ -106,7 +106,6 @@ const router = useRouter()
 
 // Type options (matches sales.type values)
 const typeOptions = [
-  { label: 'Semua Type', value: 'all' },
   { label: 'Access Home', value: 'access_home' },
   { label: 'Access Business', value: 'access_business' }
 ]
@@ -122,11 +121,11 @@ const branchOptions = [
 ]
 
 const refreshOptions = [
-  { label: 'Nonaktif', value: '0' },
-  { label: '10 Detik', value: '10s' },
+  { label: '30 Detik', value: '30s' },
   { label: '1 Menit', value: '1m' },
-  { label: '1 Jam', value: '1h' },
-  { label: '1 Hari', value: '1d' }
+  { label: '15 Menit', value: '15m' },
+  { label: '30 Menit', value: '30m' },
+  { label: '1 Jam', value: '1h' }
 ]
 
 // Read a query param and keep it only if it is a known option value.
@@ -138,12 +137,17 @@ const pickQuery = (key: string, allowed: string[], fallback: string) => {
 
 // Filter choices — initialised from URL query so a TV can be pinned via URL,
 // e.g. /public/sales-performance?type=access_home&branchId=025
-const selectedType = ref(pickQuery('type', typeOptions.map(o => o.value), 'all'))
+const selectedType = ref(pickQuery('type', typeOptions.map(o => o.value), 'access_home'))
 const selectedBranch = ref(pickQuery('branchId', branchOptions.map(o => o.value), 'all'))
 const selectedRefresh = ref(pickQuery('refresh', refreshOptions.map(o => o.value), '1h'))
 // Team is a manager id resolved after managers load, so accept the raw value.
 const teamQuery = Array.isArray(route.query.team) ? route.query.team[0] : route.query.team
 const selectedTeam = ref(teamQuery || 'all')
+
+// Subtitle depends on type: Home -> "Sales new register", Business -> "Sales Activity"
+const subtitleLabel = computed(() =>
+  selectedType.value === 'access_business' ? 'Sales Activity heatmap' : 'Sales new register heatmap'
+)
 
 // Loading & timing states
 const isRefreshing = ref(false)
@@ -157,7 +161,7 @@ const teamOptions = computed(() => [
 
 // Fetch managers from API (filtered by selected type)
 const fetchManagers = async () => {
-    const type = selectedType.value !== 'all' ? selectedType.value : undefined
+    const type = selectedType.value
     const response = await salesPerformanceService.getManagers(type)
     if (response.success) {
         managers.value = response.data
@@ -171,7 +175,7 @@ const salesData = ref<SalesPerformanceData[]>([])
 const fetchSalesData = async () => {
     const managerId = selectedTeam.value !== 'all' ? selectedTeam.value : undefined
     const branchId = selectedBranch.value !== 'all' ? selectedBranch.value : undefined
-    const type = selectedType.value !== 'all' ? selectedType.value : undefined
+    const type = selectedType.value
     const response = await salesPerformanceService.getSalesData(managerId, branchId, type)
     if (response.success) {
       salesData.value = response.data
@@ -246,7 +250,8 @@ const columns = computed<any[]>(() => {
     },
     {
       accessorKey: 'total',
-      header: 'Total',
+      // Total column label depends on type: Home -> "Register", Business -> "Activity"
+      header: selectedType.value === 'access_business' ? 'Activity' : 'Register',
       meta: {
         class: {
           th: `${thClass} text-center font-bold`,
@@ -263,13 +268,17 @@ const columns = computed<any[]>(() => {
     },
     ...Array.from({ length: currentDay.value }, (_, i) => {
       const holiday = isHoliday(Y, M, i + 1)
+      const isToday = (i + 1) === currentDay.value
+      // Today wins over the Sunday-red tint
+      const thTint = isToday ? 'bg-blue-100 text-blue-800' : (holiday ? 'text-red-600' : '')
+      const tdTint = isToday ? 'bg-blue-50 text-blue-900' : (holiday ? 'bg-red-50 text-red-600' : '')
       return {
         accessorKey: `d${i + 1}`,
         header: `${i + 1}`,
         meta: {
           class: {
-            th: `${thClass} text-center font-bold ${holiday ? 'text-red-600' : ''}`,
-            td: `${tdNumClass} text-center ${holiday ? 'bg-red-50 text-red-600' : ''}`
+            th: `${thClass} text-center font-bold ${thTint}`,
+            td: `${tdNumClass} text-center ${tdTint}`
           }
         },
         cell: ({ getValue }: any) => {
@@ -322,7 +331,7 @@ watch([selectedType, selectedBranch, selectedTeam], () => {
 watch([selectedType, selectedBranch, selectedTeam, selectedRefresh], () => {
   router.replace({
     query: {
-      ...(selectedType.value !== 'all' ? { type: selectedType.value } : {}),
+      ...(selectedType.value !== 'access_home' ? { type: selectedType.value } : {}),
       ...(selectedBranch.value !== 'all' ? { branchId: selectedBranch.value } : {}),
       ...(selectedTeam.value !== 'all' ? { team: selectedTeam.value } : {}),
       ...(selectedRefresh.value !== '1h' ? { refresh: selectedRefresh.value } : {})
@@ -341,17 +350,20 @@ const startRefreshTimer = () => {
 
   let ms = 0
   switch (selectedRefresh.value) {
-    case '10s':
-      ms = 10 * 1000
+    case '30s':
+      ms = 30 * 1000
       break
     case '1m':
       ms = 60 * 1000
       break
+    case '15m':
+      ms = 15 * 60 * 1000
+      break
+    case '30m':
+      ms = 30 * 60 * 1000
+      break
     case '1h':
       ms = 60 * 60 * 1000
-      break
-    case '1d':
-      ms = 24 * 60 * 60 * 1000
       break
   }
 
