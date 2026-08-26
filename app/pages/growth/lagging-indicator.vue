@@ -71,15 +71,6 @@
               </div>
             </template>
             <template v-else>
-              <div  class="flex items-center justify-between text-sm font-medium">
-                <div class="flex items-center gap-2 text-neutral-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                  <span>Paid</span>
-                </div>
-                <span class="text-neutral-900">
-                  {{ newMrcStats ? formatCurrency(newMrcStats.details.mrc_paid) : 'Rp 0' }}
-                </span>
-              </div>
               <div class="flex items-center justify-between text-sm font-medium">
                 <div class="flex items-center gap-2 text-neutral-600">
                   <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>

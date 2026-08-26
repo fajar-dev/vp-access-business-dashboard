@@ -55,7 +55,7 @@
             <MetricCard
               title="New Opportunity"
               value="42"
-              subtext="Mei 2026 (Negotiation 90%)"
+              subtext="Bulan Ini (Negotiation 90%)"
               trend="8.2%"
               trend-direction="up"
               icon="i-lucide-trending-up"
