@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { ApiResponse, Manager, SalesPerformanceData } from "../types/sales-performance"
+import type { ApiResponse, Manager, SalesPerformanceData, SalesPerformanceDetail } from "../types/sales-performance"
 
 export class SalesPerformanceService {
 
@@ -8,6 +8,20 @@ export class SalesPerformanceService {
         try {
             const query = type ? `?type=${type}` : ''
             const response = await apiService.client.get<ApiResponse<Manager[]>>(`/public/sales-performance/manager${query}`)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getDetail(salesId: number, year: number, month: number, day: number): Promise<ApiResponse<SalesPerformanceDetail>> {
+        try {
+            const params = new URLSearchParams()
+            params.set('salesId', String(salesId))
+            params.set('year', String(year))
+            params.set('month', String(month))
+            params.set('day', String(day))
+            const response = await apiService.client.get<ApiResponse<SalesPerformanceDetail>>(`/public/sales-performance/detail?${params.toString()}`)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)

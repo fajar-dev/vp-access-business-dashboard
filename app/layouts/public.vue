@@ -3,7 +3,7 @@
     <!-- 3. Main Dashboard Content (Right) -->
     <div class="flex-1 flex flex-col h-full overflow-hidden">
       <!-- Scrollable content area -->
-      <main class="flex-1 overflow-y-auto p-4 lg:p-6">
+      <main class="flex-1 overflow-y-auto p-4 lg:p-4">
         <slot />
       </main>
     </div>
