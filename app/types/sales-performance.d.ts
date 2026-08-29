@@ -21,3 +21,22 @@ export interface SalesPerformanceData {
     type: string
     data: number[]
 }
+
+export interface HomeDetailItem {
+    custServId: string
+    customerId: string
+    customerName: string
+    accountName: string
+    serviceType: string
+    date: string
+}
+
+export interface BusinessDetailItem {
+    type: string
+    at: string
+}
+
+export interface SalesPerformanceDetail {
+    type: string
+    items: HomeDetailItem[] | BusinessDetailItem[]
+}
