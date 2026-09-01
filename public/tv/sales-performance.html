@@ -19,6 +19,7 @@
   .brand img { width: 44px; height: 44px; object-fit: contain; margin-right: 14px; }
   .brand h1 { font-size: 22px; font-weight: bold; margin: 0; color: #171717; }
   .brand p { font-size: 14px; color: #64748b; font-weight: 500; margin: 2px 0 0 0; }
+  .brand .lastupd { font-size: 12px; color: #94a3b8; font-weight: 500; margin: 2px 0 0 0; }
 
   .filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
   .field { display: flex; flex-direction: column; }
@@ -101,6 +102,7 @@
         <div>
           <h1>Daily monitoring Performance</h1>
           <p id="subtitle">Daily sales performance heatmap</p>
+          <p id="lastupd" class="lastupd"></p>
         </div>
       </div>
       <div class="filters">
@@ -200,6 +202,7 @@
   var elTbody = document.getElementById('tbody');
   var elTfootRow = document.getElementById('tfoot-row');
   var elSubtitle = document.getElementById('subtitle');
+  var elLastUpd = document.getElementById('lastupd');
 
   function fillSelect(el, options, value) {
     el.innerHTML = '';
@@ -357,6 +360,14 @@
     elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
   }
 
+  function updateLastUpdated() {
+    var stamp = new Date().toLocaleString('id-ID', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    elLastUpd.textContent = 'Last update: ' + stamp;
+  }
+
   // ---- Fixed body-viewport height (independent of flex/100vh quirks) ----
   function fitHeight() {
     var top = elBodyWrap.getBoundingClientRect().top;
@@ -406,7 +417,7 @@
     if (loading) return Promise.resolve();
     loading = true;
     return fetchData().then(function (rows) {
-      render(rows); updateSubtitle();
+      render(rows); updateSubtitle(); updateLastUpdated();
     }).catch(function () {
       elHeadTable.style.display = 'none';
       elBodyWrap.style.display = 'none';

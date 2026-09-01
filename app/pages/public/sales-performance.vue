@@ -7,6 +7,7 @@
         <div>
           <h1>Daily monitoring Performance</h1>
           <p>{{ subtitleLabel }} 🔥 • {{ todayFormatted }}</p>
+          <p class="lastupd">Last update: {{ lastUpdated }}</p>
         </div>
       </div>
 
@@ -182,7 +183,11 @@ const subtitleLabel = computed(() =>
 
 // Loading & timing states
 const isRefreshing = ref(false)
-const lastUpdated = ref(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
+const stampNow = () => new Date().toLocaleString('id-ID', {
+  day: '2-digit', month: 'short', year: 'numeric',
+  hour: '2-digit', minute: '2-digit', second: '2-digit'
+})
+const lastUpdated = ref(stampNow())
 
 const managers = ref<Manager[]>([])
 const teamOptions = computed(() => [
@@ -210,6 +215,7 @@ const fetchSalesData = async () => {
     const response = await salesPerformanceService.getSalesData(managerId, branchId, type)
     if (response.success) {
       salesData.value = response.data
+      lastUpdated.value = stampNow()
     }
 }
 
@@ -294,7 +300,6 @@ const triggerRefresh = async () => {
   isRefreshing.value = true
 
   await fetchSalesData()
-  lastUpdated.value = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   todayFormatted.value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   currentDay.value = new Date().getDate()
   isRefreshing.value = false
@@ -477,6 +482,7 @@ onUnmounted(() => {
 .brand img { width: 44px; height: 44px; object-fit: contain; margin-right: 14px; }
 .brand h1 { font-size: 22px; font-weight: bold; margin: 0; color: #171717; }
 .brand p { font-size: 14px; color: #64748b; font-weight: 500; margin: 2px 0 0 0; }
+.brand .lastupd { font-size: 12px; color: #94a3b8; font-weight: 500; margin: 2px 0 0 0; }
 
 .filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
 .field { display: flex; flex-direction: column; }
