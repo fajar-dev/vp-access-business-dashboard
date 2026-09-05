@@ -23,11 +23,12 @@ export interface SalesPerformanceData {
 }
 
 export interface HomeDetailItem {
-    custServId: string
     customerId: string
     customerName: string
     accountName: string
-    serviceType: string
+    serviceId: string
+    serviceName: string
+    weight: number
     date: string
 }
 
