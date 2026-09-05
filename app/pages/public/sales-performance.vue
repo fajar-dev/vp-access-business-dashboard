@@ -95,7 +95,7 @@
               <tr><th class="c-no">#</th><th>Jenis</th><th>Waktu</th></tr>
             </thead>
             <thead v-else>
-              <tr><th class="c-no">#</th><th>Customer ID</th><th>Pelanggan</th><th>Account Name</th><th>Service</th><th>Tanggal</th></tr>
+              <tr><th class="c-no">#</th><th>Customer ID</th><th>Pelanggan</th><th>Account Name</th><th>Service</th><th class="c-no">Bobot</th><th>Tgl Bayar</th></tr>
             </thead>
             <tbody v-if="detailType === 'access_business'">
               <tr v-for="(it, i) in detailItems" :key="i">
@@ -110,8 +110,9 @@
                 <td>{{ (it as any).customerId }}</td>
                 <td>{{ (it as any).customerName }}</td>
                 <td>{{ (it as any).accountName }}</td>
-                <td>{{ (it as any).serviceType }}</td>
-                <td>{{ fmtDate((it as any).date) }}</td>
+                <td>{{ (it as any).serviceName }}</td>
+                <td class="c-no">{{ (it as any).weight }}</td>
+                <td>{{ fmtDateTime((it as any).date) }}</td>
               </tr>
             </tbody>
           </table>
@@ -178,7 +179,7 @@ const selectedTeam = ref(teamQuery || 'all')
 
 // Subtitle depends on type: Home -> "Sales new register", Business -> "Sales Activity"
 const subtitleLabel = computed(() =>
-  selectedType.value === 'access_business' ? 'Sales Activity heatmap' : 'Sales new register heatmap'
+  selectedType.value === 'access_business' ? 'Sales Activity heatmap' : 'Sales Achievement heatmap'
 )
 
 // Loading & timing states
@@ -226,10 +227,13 @@ const tableData = computed(() => {
     row.data.forEach((val, i) => {
       dayData[`d${i + 1}`] = val
     })
-    const total = row.data.reduce((a, b) => a + b, 0)
+    const total = r1(row.data.reduce((a, b) => a + b, 0))
     return { id: row.id, name: row.name, photoProfile: row.photoProfile, organizationName: row.organizationName, ...dayData, total }
   })
 })
+
+// Round to 1 decimal (values can be weighted/decimal)
+const r1 = (n: number) => Math.round((Number(n) || 0) * 10) / 10
 
 // Per-day (column) max across all rows, for the green "highest value" highlight.
 const colMaxByDay = computed<Record<number, number>>(() => {
@@ -264,7 +268,7 @@ const isHoliday = (year: number, monthIndex: number, d: number) => {
 
 // ---- Table helpers (plain table, same look as the TV page) ----
 const days = computed(() => Array.from({ length: currentDay.value }, (_, i) => i + 1))
-const totalLabel = computed(() => selectedType.value === 'access_business' ? 'Activity' : 'Register')
+const totalLabel = computed(() => selectedType.value === 'access_business' ? 'Activity' : 'Achievement')
 
 const initials = (name: string) => { const n = (name || '').trim(); return n ? n.charAt(0).toUpperCase() : '?' }
 const cellVal = (row: any, d: number) => Number(row['d' + d]) || 0
@@ -284,8 +288,8 @@ const cellClass = (row: any, d: number) => {
     'is-max': v > 0 && v === colMaxByDay.value[d]
   }
 }
-const colTotalOf = (d: number) => tableData.value.reduce((a: number, r: any) => a + (Number(r['d' + d]) || 0), 0)
-const grandTotal = computed(() => tableData.value.reduce((a: number, r: any) => a + (Number(r.total) || 0), 0))
+const colTotalOf = (d: number) => r1(tableData.value.reduce((a: number, r: any) => a + (Number(r['d' + d]) || 0), 0))
+const grandTotal = computed(() => r1(tableData.value.reduce((a: number, r: any) => a + (Number(r.total) || 0), 0)))
 
 // Replace a broken avatar image with the name's initial (matches the TV page).
 const onAvatarError = (e: Event, name: string) => {

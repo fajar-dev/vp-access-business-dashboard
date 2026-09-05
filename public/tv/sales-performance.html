@@ -144,6 +144,7 @@
   var HOLIDAY_SET = {};
   (query.get('holidays') || '').split(',').forEach(function (s) { s = s.trim(); if (s) HOLIDAY_SET[s] = true; });
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function r1(n) { return Math.round((Number(n) || 0) * 10) / 10; } // round to 1 decimal
   function isHoliday(year, monthIndex, d) {
     if (new Date(year, monthIndex, d).getDay() === 0) return true; // Sunday
     return !!HOLIDAY_SET[year + '-' + pad2(monthIndex + 1) + '-' + pad2(d)];
@@ -294,7 +295,7 @@
     elCgFoot.innerHTML = colgroupHtml(day);
 
     // header — Total column label depends on type: Home -> "Register", Business -> "Activity"
-    var totalLabel = state.type === 'access_business' ? 'Activity' : 'Register';
+    var totalLabel = state.type === 'access_business' ? 'Activity' : 'Achievement';
     var head = '<th>Name</th><th class="col-total">' + totalLabel + '</th>';
     for (var d = 1; d <= day; d++) {
       head += '<th class="col-num' + (isHoliday(Y, M, d) ? ' holiday' : '') + (d === day ? ' today' : '') + '">' + d + '</th>';
@@ -327,7 +328,7 @@
       var cells = '<td><div class="name-cell">' + avatar +
         '<span class="name-text"><div class="name-main">' + escapeHtml(row.name) + '</div>' +
         '<div class="name-sub">' + escapeHtml(row.organizationName || '') + '</div></span></div></td>';
-      cells += '<td class="col-total">' + rowTotal + '</td>';
+      cells += '<td class="col-total">' + r1(rowTotal) + '</td>';
       for (var d2 = 1; d2 <= day; d2++) {
         var val = Number(data[d2 - 1]) || 0;
         var cls = 'col-num';
@@ -343,9 +344,9 @@
     elTbody.innerHTML = body;
 
     // footer
-    var foot = '<td class="foot-label">Total</td><td class="col-total">' + colTotals[0] + '</td>';
+    var foot = '<td class="foot-label">Total</td><td class="col-total">' + r1(colTotals[0]) + '</td>';
     for (var f = 1; f <= day; f++) {
-      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + colTotals[f] + '</td>';
+      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + r1(colTotals[f]) + '</td>';
     }
     elTfootRow.innerHTML = foot;
 
@@ -356,7 +357,7 @@
   function updateSubtitle() {
     var now = new Date();
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    var label = state.type === 'access_business' ? 'Sales Activity heatmap' : 'Sales new register heatmap';
+    var label = state.type === 'access_business' ? 'Sales Activity heatmap' : 'Sales Achievement heatmap';
     elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
   }
 
