@@ -144,7 +144,8 @@
   var HOLIDAY_SET = {};
   (query.get('holidays') || '').split(',').forEach(function (s) { s = s.trim(); if (s) HOLIDAY_SET[s] = true; });
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
-  function r1(n) { return Math.round((Number(n) || 0) * 10) / 10; } // round to 1 decimal
+  function r1(n) { return Math.round((Number(n) || 0) * 100) / 100; } // round to 2 decimals
+  function fmt(n) { return String(r1(n)); } // up to 2 decimals, no trailing zeros
   function isHoliday(year, monthIndex, d) {
     if (new Date(year, monthIndex, d).getDay() === 0) return true; // Sunday
     return !!HOLIDAY_SET[year + '-' + pad2(monthIndex + 1) + '-' + pad2(d)];
@@ -328,8 +329,8 @@
       var cells = '<td><div class="name-cell">' + avatar +
         '<span class="name-text"><div class="name-main">' + escapeHtml(row.name) + '</div>' +
         '<div class="name-sub">' + escapeHtml(row.organizationName || '') + '</div></span></div></td>';
-      cells += '<td class="col-total">' + r1(rowTotal / day) + '</td>';   // Average per day
-      cells += '<td class="col-total">' + r1(rowTotal) + '</td>';
+      cells += '<td class="col-total">' + fmt(rowTotal / day) + '</td>';   // Average per day
+      cells += '<td class="col-total">' + fmt(rowTotal) + '</td>';
       for (var d2 = 1; d2 <= day; d2++) {
         var val = Number(data[d2 - 1]) || 0;
         var cls = 'col-num';
@@ -338,16 +339,16 @@
         if (val === 0) cls += ' zero';
         // Highest value of its column (per day) -> green; ties highlight all
         if (val > 0 && val === colMax[d2]) cls += ' is-max';
-        cells += '<td class="' + cls + '">' + val + '</td>';
+        cells += '<td class="' + cls + '">' + fmt(val) + '</td>';
       }
       body += '<tr>' + cells + '</tr>';
     });
     elTbody.innerHTML = body;
 
     // footer
-    var foot = '<td class="foot-label">Total</td><td class="col-total">' + r1(colTotals[0] / day) + '</td><td class="col-total">' + r1(colTotals[0]) + '</td>';
+    var foot = '<td class="foot-label">Total</td><td class="col-total">' + fmt(colTotals[0] / day) + '</td><td class="col-total">' + fmt(colTotals[0]) + '</td>';
     for (var f = 1; f <= day; f++) {
-      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + r1(colTotals[f]) + '</td>';
+      foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + fmt(colTotals[f]) + '</td>';
     }
     elTfootRow.innerHTML = foot;
 

@@ -66,19 +66,19 @@
                 </span>
               </div>
             </td>
-            <td class="col-total">{{ avgOf(row) }}</td>
-            <td class="col-total">{{ (row as any).total }}</td>
+            <td class="col-total">{{ fmt(avgOf(row)) }}</td>
+            <td class="col-total">{{ fmt((row as any).total) }}</td>
             <td v-for="d in days" :key="'d'+d" class="col-num"
                 :class="[cellClass(row, d), { clickable: cellVal(row, d) > 0 }]"
-                @click="openDetail(row, d)">{{ cellVal(row, d) }}</td>
+                @click="openDetail(row, d)">{{ fmt(cellVal(row, d)) }}</td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <td class="foot-label">Total</td>
-            <td class="col-total">{{ grandAvg }}</td>
-            <td class="col-total">{{ grandTotal }}</td>
-            <td v-for="d in days" :key="'f'+d" class="col-num" :class="headClass(d)">{{ colTotalOf(d) }}</td>
+            <td class="col-total">{{ fmt(grandAvg) }}</td>
+            <td class="col-total">{{ fmt(grandTotal) }}</td>
+            <td v-for="d in days" :key="'f'+d" class="col-num" :class="headClass(d)">{{ fmt(colTotalOf(d)) }}</td>
           </tr>
         </tfoot>
       </table>
@@ -236,8 +236,10 @@ const tableData = computed(() => {
   })
 })
 
-// Round to 1 decimal (values can be weighted/decimal)
-const r1 = (n: number) => Math.round((Number(n) || 0) * 10) / 10
+// Round to 2 decimals (values can be weighted/decimal)
+const r1 = (n: number) => Math.round((Number(n) || 0) * 100) / 100
+// Display up to 2 decimals, without trailing zeros (0.30 -> 0.3, 2.00 -> 2)
+const fmt = (n: number) => String(r1(n))
 
 // Per-day (column) max across all rows, for the green "highest value" highlight.
 const colMaxByDay = computed<Record<number, number>>(() => {
