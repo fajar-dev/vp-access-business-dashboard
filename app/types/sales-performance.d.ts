@@ -41,3 +41,24 @@ export interface SalesPerformanceDetail {
     type: string
     items: HomeDetailItem[] | BusinessDetailItem[]
 }
+
+export interface BusinessWeeklyRow {
+    id: number
+    employeeId: string
+    name: string
+    photoProfile: string
+    organizationName: string
+    activityThisWeek: number
+    activityLastWeek: number
+    mrcThisMonth: number
+    effectivity: number | null
+    target: number
+    achievementPct: number | null
+    forecastNextMonth: number
+}
+
+export interface BusinessWeekly {
+    week: { label: string; start: string; end: string }
+    month: string
+    rows: BusinessWeeklyRow[]
+}

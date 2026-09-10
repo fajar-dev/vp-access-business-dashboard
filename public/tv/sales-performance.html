@@ -75,6 +75,16 @@
   /* Highest value per column (day) -> green highlight (ties highlight all) */
   tbody td.is-max { background: #dcfce7; color: #166534; }
 
+  /* ---- Weekly (Business) view ---- */
+  #tv-table.weekly thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; font-size: 15px; text-align: center; }
+  #tv-table.weekly thead th.name-head { text-align: left; }
+  #tv-table.weekly thead tr.grp-row th { font-size: 15px; color: #334155; background: #eef2ff; border-bottom: 1px solid #e2e8f0; padding: 8px; }
+  #tv-table.weekly tbody td.col-num { font-size: 20px; }
+  #tv-table.weekly tfoot td.col-num { font-size: 18px; }
+  td.money { font-variant-numeric: tabular-nums; }
+  #tv-table.weekly td.pos { color: #166534; }
+  #tv-table.weekly td.neg { color: #dc2626; }
+
   /* Body viewport: fixed height (from JS) + hidden overflow; the track is animated. */
   .body-wrap { overflow: hidden; }
   .scroll-track { -webkit-transform: translateY(0); transform: translateY(0); will-change: transform; }
@@ -205,6 +215,16 @@
   var elTfootRow = document.getElementById('tfoot-row');
   var elSubtitle = document.getElementById('subtitle');
   var elLastUpd = document.getElementById('lastupd');
+  var elTvTable = document.getElementById('tv-table');
+  var elHeadThead = elHeadTable.querySelector('thead');
+  var elFootTfoot = elFootTable.querySelector('tfoot');
+
+  function isBusiness() { return state.type === 'access_business'; }
+  // Weekly (Business) formatters
+  function money(n) { n = Number(n) || 0; return n > 0 ? n.toLocaleString('id-ID') : '—'; }
+  function pct(n) { return (n === null || n === undefined || isNaN(Number(n))) ? '—' : (Math.round(Number(n)) + '%'); }
+  function effClass(n) { return (n === null || n === undefined) ? '' : (Number(n) < 0 ? 'neg' : 'pos'); }
+  function achClass(n) { return (n === null || n === undefined) ? '' : (Number(n) >= 100 ? 'pos' : 'neg'); }
 
   function fillSelect(el, options, value) {
     el.innerHTML = '';
@@ -254,6 +274,16 @@
       return (res && res.success && res.data) ? res.data : [];
     });
   }
+  function fetchWeekly() {
+    var q = new URLSearchParams();
+    if (state.team !== 'all') q.set('managerId', state.team);
+    if (state.branch !== 'all') q.set('branchId', state.branch);
+    var qs = q.toString();
+    var url = API_BASE + '/public/sales-performance/business-weekly' + (qs ? ('?' + qs) : '');
+    return getJSON(url).then(function (res) {
+      return (res && res.success && res.data) ? res.data : { week: { label: '' }, month: '', rows: [] };
+    });
+  }
   function escapeHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -301,7 +331,7 @@
     for (var d = 1; d <= day; d++) {
       head += '<th class="col-num' + (isHoliday(Y, M, d) ? ' holiday' : '') + (d === day ? ' today' : '') + '">' + d + '</th>';
     }
-    elTheadRow.innerHTML = head;
+    elHeadThead.innerHTML = '<tr>' + head + '</tr>';
 
     // Pre-pass: column totals + per-column max (day 1..day)
     var colTotals = [], colMax = [];
@@ -350,7 +380,82 @@
     for (var f = 1; f <= day; f++) {
       foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + fmt(colTotals[f]) + '</td>';
     }
-    elTfootRow.innerHTML = foot;
+    elFootTfoot.innerHTML = '<tr>' + foot + '</tr>';
+
+    fitHeight();
+    setupScroll();
+  }
+
+  // Weekly BDE colgroup: Name flexible; 5 metric columns fixed.
+  function weeklyColgroupHtml() {
+    return '<col><col style="width:200px"><col style="width:210px"><col style="width:170px"><col style="width:200px"><col style="width:210px">';
+  }
+
+  // Render the weekly BDE performance table (Access Business).
+  function renderWeekly(payload) {
+    var rows = (payload && payload.rows) || [];
+    var week = (payload && payload.week) || { label: '' };
+    var month = (payload && payload.month) || '';
+
+    if (!rows.length) {
+      elHeadTable.style.display = 'none';
+      elBodyWrap.style.display = 'none';
+      elFootTable.style.display = 'none';
+      elState.style.display = 'block';
+      elState.textContent = 'Tidak ada data BDE.';
+      stopScroll();
+      return;
+    }
+    elState.style.display = 'none';
+    elHeadTable.style.display = 'table';
+    elBodyWrap.style.display = 'block';
+    elFootTable.style.display = 'table';
+
+    elHeadTable.style.width = '100%';
+    elBodyTable.style.width = '100%';
+    elFootTable.style.width = '100%';
+    elCgHead.innerHTML = weeklyColgroupHtml();
+    elCgBody.innerHTML = weeklyColgroupHtml();
+    elCgFoot.innerHTML = weeklyColgroupHtml();
+
+    // Two-row header: group row + column row
+    var grp = '<tr class="grp-row"><th class="name-head"></th><th>' + escapeHtml(week.label) +
+      '</th><th colspan="4">Total MRC ' + escapeHtml(month) + '</th></tr>';
+    var cols = '<tr><th class="name-head">Nama BDE</th><th class="col-num">Total Activity this week</th>' +
+      '<th class="col-num">MRC Update This month</th><th class="col-num">Effectivity Activity</th>' +
+      '<th class="col-num">% Pencapaian Target</th><th class="col-num">Forecast Next Month</th></tr>';
+    elHeadThead.innerHTML = grp + cols;
+
+    var totAct = 0, totMrc = 0, totForecast = 0, totTarget = 0;
+    var body = '';
+    rows.forEach(function (row) {
+      totAct += Number(row.activityThisWeek) || 0;
+      totMrc += Number(row.mrcThisMonth) || 0;
+      totForecast += Number(row.forecastNextMonth) || 0;
+      totTarget += Number(row.target) || 0;
+
+      var avatar = row.photoProfile
+        ? '<span class="avatar"><img src="' + escapeHtml(row.photoProfile) + '" alt="" onerror="this.parentNode.textContent=\'' + escapeHtml(initials(row.name)) + '\'"></span>'
+        : '<span class="avatar">' + escapeHtml(initials(row.name)) + '</span>';
+
+      var cells = '<td><div class="name-cell">' + avatar +
+        '<span class="name-text"><div class="name-main">' + escapeHtml(row.name) + '</div>' +
+        '<div class="name-sub">' + escapeHtml(row.organizationName || '') + '</div></span></div></td>';
+      cells += '<td class="col-num">' + (Number(row.activityThisWeek) || 0) + '</td>';
+      cells += '<td class="col-num money">' + money(row.mrcThisMonth) + '</td>';
+      cells += '<td class="col-num ' + effClass(row.effectivity) + '">' + pct(row.effectivity) + '</td>';
+      cells += '<td class="col-num ' + achClass(row.achievementPct) + '">' + pct(row.achievementPct) + '</td>';
+      cells += '<td class="col-num money">' + money(row.forecastNextMonth) + '</td>';
+      body += '<tr>' + cells + '</tr>';
+    });
+    elTbody.innerHTML = body;
+
+    var overallAch = totTarget > 0 ? (totMrc / totTarget) * 100 : null;
+    var foot = '<tr><td class="foot-label">Total</td><td class="col-num">' + totAct + '</td>' +
+      '<td class="col-num money">' + money(totMrc) + '</td><td class="col-num">—</td>' +
+      '<td class="col-num ' + achClass(overallAch) + '">' + pct(overallAch) + '</td>' +
+      '<td class="col-num money">' + money(totForecast) + '</td></tr>';
+    elFootTfoot.innerHTML = foot;
 
     fitHeight();
     setupScroll();
@@ -359,7 +464,7 @@
   function updateSubtitle() {
     var now = new Date();
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    var label = state.type === 'access_business' ? 'Sales Activity heatmap' : 'Sales Achievement heatmap';
+    var label = isBusiness() ? 'BDE Weekly Performance' : 'Sales Achievement heatmap';
     elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
   }
 
@@ -419,8 +524,13 @@
   function reload() {
     if (loading) return Promise.resolve();
     loading = true;
-    return fetchData().then(function (rows) {
-      render(rows); updateSubtitle(); updateLastUpdated();
+    if (isBusiness()) elTvTable.className = 'tv-table weekly';
+    else elTvTable.className = 'tv-table';
+    var task = isBusiness()
+      ? fetchWeekly().then(function (payload) { renderWeekly(payload); })
+      : fetchData().then(function (rows) { render(rows); });
+    return task.then(function () {
+      updateSubtitle(); updateLastUpdated();
     }).catch(function () {
       elHeadTable.style.display = 'none';
       elBodyWrap.style.display = 'none';
