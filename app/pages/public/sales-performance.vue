@@ -35,8 +35,8 @@
       </div>
     </div>
 
-    <!-- Heatmap table (same look as the TV page) -->
-    <div class="tv-table scrollable-table" @mouseenter="pauseScroll" @mouseleave="resumeScroll">
+    <!-- Heatmap table (Access Home — same look as the TV page) -->
+    <div v-if="!isBusiness" class="tv-table scrollable-table" @mouseenter="pauseScroll" @mouseleave="resumeScroll">
       <table class="tvgrid">
         <colgroup>
           <col style="width:220px" />
@@ -79,6 +79,69 @@
             <td class="col-total">{{ fmt(grandAvg) }}</td>
             <td class="col-total">{{ fmt(grandTotal) }}</td>
             <td v-for="d in days" :key="'f'+d" class="col-num" :class="headClass(d)">{{ fmt(colTotalOf(d)) }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Weekly BDE performance table (Access Business) -->
+    <div v-else class="tv-table scrollable-table" @mouseenter="pauseScroll" @mouseleave="resumeScroll">
+      <table class="tvgrid weekly">
+        <colgroup>
+          <col style="width:260px" />
+          <col style="width:160px" />
+          <col style="width:180px" />
+          <col style="width:150px" />
+          <col style="width:160px" />
+          <col style="width:180px" />
+        </colgroup>
+        <thead>
+          <tr class="grp-row">
+            <th></th>
+            <th class="grp">{{ businessWeekly.week.label }}</th>
+            <th class="grp" colspan="4">Total MRC {{ businessWeekly.month }}</th>
+          </tr>
+          <tr>
+            <th>Nama BDE</th>
+            <th class="col-num">Total Activity this week</th>
+            <th class="col-num">MRC Update This month</th>
+            <th class="col-num">Effectivity Activity</th>
+            <th class="col-num">% Pencapaian Target</th>
+            <th class="col-num">Forecast Next Month</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, ri) in businessRows" :key="ri">
+            <td>
+              <div class="name-cell">
+                <span class="avatar">
+                  <img v-if="row.photoProfile" :src="row.photoProfile" alt="" @error="onAvatarError($event, row.name)" />
+                  <template v-else>{{ initials(row.name) }}</template>
+                </span>
+                <span class="name-text">
+                  <div class="name-main">{{ row.name }}</div>
+                  <div class="name-sub">{{ row.organizationName }}</div>
+                </span>
+              </div>
+            </td>
+            <td class="col-num">{{ row.activityThisWeek }}</td>
+            <td class="col-num money">{{ money(row.mrcThisMonth) }}</td>
+            <td class="col-num" :class="effClass(row.effectivity)">{{ pct(row.effectivity) }}</td>
+            <td class="col-num" :class="achClass(row.achievementPct)">{{ pct(row.achievementPct) }}</td>
+            <td class="col-num money">{{ money(row.forecastNextMonth) }}</td>
+          </tr>
+          <tr v-if="!businessRows.length">
+            <td colspan="6" class="empty-row">Tidak ada data BDE.</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="foot-label">Total</td>
+            <td class="col-num">{{ bTotalActivity }}</td>
+            <td class="col-num money">{{ money(bTotalMrc) }}</td>
+            <td class="col-num">—</td>
+            <td class="col-num" :class="achClass(bOverallAch)">{{ pct(bOverallAch) }}</td>
+            <td class="col-num money">{{ money(bTotalForecast) }}</td>
           </tr>
         </tfoot>
       </table>
@@ -129,7 +192,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { salesPerformanceService } from '~/services/sales-performance-service'
-import type { Manager, SalesPerformanceData } from '~/types/sales-performance'
+import type { Manager, SalesPerformanceData, BusinessWeekly } from '~/types/sales-performance'
 
 // Format today's date in Indonesian locale to show only Month and Year (e.g. "Juni 2026")
 const todayFormatted = ref(new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))
@@ -181,9 +244,12 @@ const selectedRefresh = ref(pickQuery('refresh', refreshOptions.map(o => o.value
 const teamQuery = Array.isArray(route.query.team) ? route.query.team[0] : route.query.team
 const selectedTeam = ref(teamQuery || 'all')
 
-// Subtitle depends on type: Home -> "Sales new register", Business -> "Sales Activity"
+// True when the Business (weekly BDE) view is active instead of the daily heatmap.
+const isBusiness = computed(() => selectedType.value === 'access_business')
+
+// Subtitle depends on type: Home -> heatmap; Business -> weekly BDE performance
 const subtitleLabel = computed(() =>
-  selectedType.value === 'access_business' ? 'Sales Activity heatmap' : 'Sales Achievement heatmap'
+  isBusiness.value ? 'BDE Weekly Performance' : 'Sales Achievement heatmap'
 )
 
 // Loading & timing states
@@ -212,7 +278,11 @@ const fetchManagers = async () => {
 // Sales data from API
 const salesData = ref<SalesPerformanceData[]>([])
 
-// Fetch sales data from API
+// Weekly BDE summary (access_business) from API
+const businessWeekly = ref<BusinessWeekly>({ week: { label: '', start: '', end: '' }, month: '', rows: [] })
+const businessRows = computed(() => businessWeekly.value.rows)
+
+// Fetch daily heatmap data (access_home) from API
 const fetchSalesData = async () => {
     const managerId = selectedTeam.value !== 'all' ? selectedTeam.value : undefined
     const branchId = selectedBranch.value !== 'all' ? selectedBranch.value : undefined
@@ -223,6 +293,41 @@ const fetchSalesData = async () => {
       lastUpdated.value = stampNow()
     }
 }
+
+// Fetch weekly BDE summary (access_business) from API
+const fetchBusinessWeekly = async () => {
+    const managerId = selectedTeam.value !== 'all' ? selectedTeam.value : undefined
+    const branchId = selectedBranch.value !== 'all' ? selectedBranch.value : undefined
+    const response = await salesPerformanceService.getBusinessWeekly(managerId, branchId)
+    if (response.success) {
+      businessWeekly.value = response.data
+      lastUpdated.value = stampNow()
+    }
+}
+
+// Load whichever dataset matches the active type. Errors are swallowed so a
+// transient API failure keeps the last-good data on screen (this runs on a TV);
+// the auto-refresh timer will retry on the next tick.
+const loadData = async () => {
+    try {
+        if (isBusiness.value) await fetchBusinessWeekly()
+        else await fetchSalesData()
+    } catch {
+        // keep previous data; next refresh retries
+    }
+}
+
+// ---- Weekly (Business) formatting & totals ----
+const money = (n: number) => (Number(n) > 0 ? Number(n).toLocaleString('id-ID') : '—')
+const pct = (n: number | null) => (n === null || n === undefined ? '—' : `${Math.round(Number(n))}%`)
+const effClass = (n: number | null) => (n === null || n === undefined ? '' : (Number(n) < 0 ? 'neg' : 'pos'))
+const achClass = (n: number | null) => (n === null || n === undefined ? '' : (Number(n) >= 100 ? 'pos' : 'neg'))
+
+const bTotalActivity = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.activityThisWeek) || 0), 0))
+const bTotalMrc = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.mrcThisMonth) || 0), 0))
+const bTotalForecast = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.forecastNextMonth) || 0), 0))
+const bTotalTarget = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.target) || 0), 0))
+const bOverallAch = computed<number | null>(() => bTotalTarget.value > 0 ? (bTotalMrc.value / bTotalTarget.value) * 100 : null)
 
 // Computed: transform API data (number[] → d1..d30) and add total
 const tableData = computed(() => {
@@ -312,7 +417,7 @@ const triggerRefresh = async () => {
   if (isRefreshing.value) return
   isRefreshing.value = true
 
-  await fetchSalesData()
+  await loadData()
   todayFormatted.value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   currentDay.value = new Date().getDate()
   isRefreshing.value = false
@@ -326,7 +431,7 @@ watch(selectedType, async () => {
 
 // Watchers for Type, Branch & Team selection
 watch([selectedType, selectedBranch, selectedTeam], () => {
-  fetchSalesData()
+  loadData()
 })
 
 // Keep the URL query in sync so the current filter config is shareable / TV-pinnable.
@@ -466,7 +571,7 @@ const closeDetail = () => {
 
 onMounted(async () => {
   await fetchManagers()
-  await fetchSalesData()
+  await loadData()
   startRefreshTimer()
   // Give the table a moment to render before starting scroll
   setTimeout(() => {
@@ -547,6 +652,20 @@ tbody td.zero.holiday { color: #fca5a5; }
 
 /* Highest value per column green (ties highlight all) */
 tbody td.is-max { background: #dcfce7; color: #166534; }
+
+/* ---- Weekly (Business) table ---- */
+.weekly thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; }
+.weekly thead tr.grp-row th {
+  top: 0; z-index: 3; text-align: center; font-size: 15px; color: #334155;
+  background: #eef2ff; border-bottom: 1px solid #e2e8f0; padding: 8px;
+}
+.weekly thead tr:not(.grp-row) th { top: 46px; z-index: 2; font-size: 15px; }
+.weekly tbody td.col-num { font-size: 20px; }
+.weekly tfoot td.col-num { font-size: 18px; }
+.weekly td.money { font-variant-numeric: tabular-nums; }
+.weekly td.pos { color: #166534; }
+.weekly td.neg { color: #dc2626; }
+.weekly .empty-row { text-align: center; color: #94a3b8; padding: 28px; font-size: 16px; }
 
 .name-cell { display: flex; align-items: center; }
 .avatar {

@@ -1,6 +1,6 @@
 import { apiService } from "./api-service"
 import { handleServiceError } from "../composables/error-helper"
-import type { ApiResponse, Manager, SalesPerformanceData, SalesPerformanceDetail } from "../types/sales-performance"
+import type { ApiResponse, Manager, SalesPerformanceData, SalesPerformanceDetail, BusinessWeekly } from "../types/sales-performance"
 
 export class SalesPerformanceService {
 
@@ -22,6 +22,19 @@ export class SalesPerformanceService {
             params.set('month', String(month))
             params.set('day', String(day))
             const response = await apiService.client.get<ApiResponse<SalesPerformanceDetail>>(`/public/sales-performance/detail?${params.toString()}`)
+            return response.data
+        } catch (error: any) {
+            return handleServiceError(error)
+        }
+    }
+
+    async getBusinessWeekly(managerId?: string, branchId?: string): Promise<ApiResponse<BusinessWeekly>> {
+        try {
+            const params = new URLSearchParams()
+            if (managerId) params.set('managerId', managerId)
+            if (branchId) params.set('branchId', branchId)
+            const query = params.toString() ? `?${params.toString()}` : ''
+            const response = await apiService.client.get<ApiResponse<BusinessWeekly>>(`/public/sales-performance/business-weekly${query}`)
             return response.data
         } catch (error: any) {
             return handleServiceError(error)
