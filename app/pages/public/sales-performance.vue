@@ -5,7 +5,7 @@
       <div class="brand">
         <img src="/logo.png" alt="Nusanet Logo" @error="(e:any)=>{ e.target.style.display='none' }" />
         <div>
-          <h1>Daily monitoring Performance</h1>
+          <h1>{{ titleLabel }}</h1>
           <p>{{ subtitleLabel }} 🔥 • {{ todayFormatted }}</p>
           <p class="lastupd">Last update: {{ lastUpdated }}</p>
         </div>
@@ -96,11 +96,6 @@
           <col style="width:180px" />
         </colgroup>
         <thead>
-          <tr class="grp-row">
-            <th></th>
-            <th class="grp">{{ businessWeekly.week.label }}</th>
-            <th class="grp" colspan="4">Total MRC {{ businessWeekly.month }}</th>
-          </tr>
           <tr>
             <th>Nama BDE</th>
             <th class="col-num">Total Activity this week</th>
@@ -246,6 +241,9 @@ const selectedTeam = ref(teamQuery || 'all')
 
 // True when the Business (weekly BDE) view is active instead of the daily heatmap.
 const isBusiness = computed(() => selectedType.value === 'access_business')
+
+// Page title: Business view is weekly, Home view is daily.
+const titleLabel = computed(() => isBusiness.value ? 'Weekly monitoring Performance' : 'Daily monitoring Performance')
 
 // Subtitle depends on type: Home -> heatmap; Business -> weekly BDE performance
 const subtitleLabel = computed(() =>
@@ -654,12 +652,7 @@ tbody td.zero.holiday { color: #fca5a5; }
 tbody td.is-max { background: #dcfce7; color: #166534; }
 
 /* ---- Weekly (Business) table ---- */
-.weekly thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; }
-.weekly thead tr.grp-row th {
-  top: 0; z-index: 3; text-align: center; font-size: 15px; color: #334155;
-  background: #eef2ff; border-bottom: 1px solid #e2e8f0; padding: 8px;
-}
-.weekly thead tr:not(.grp-row) th { top: 46px; z-index: 2; font-size: 15px; }
+.weekly thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; font-size: 15px; }
 .weekly tbody td.col-num { font-size: 20px; }
 .weekly tfoot td.col-num { font-size: 18px; }
 .weekly td.money { font-variant-numeric: tabular-nums; }

@@ -78,7 +78,6 @@
   /* ---- Weekly (Business) view ---- */
   #tv-table.weekly thead th { white-space: normal; vertical-align: bottom; line-height: 1.25; font-size: 15px; text-align: center; }
   #tv-table.weekly thead th.name-head { text-align: left; }
-  #tv-table.weekly thead tr.grp-row th { font-size: 15px; color: #334155; background: #eef2ff; border-bottom: 1px solid #e2e8f0; padding: 8px; }
   #tv-table.weekly tbody td.col-num { font-size: 20px; }
   #tv-table.weekly tfoot td.col-num { font-size: 18px; }
   td.money { font-variant-numeric: tabular-nums; }
@@ -110,7 +109,7 @@
       <div class="brand">
         <img src="/logo.png" alt="Logo" onerror="this.style.display='none'">
         <div>
-          <h1>Daily monitoring Performance</h1>
+          <h1 id="title">Daily monitoring Performance</h1>
           <p id="subtitle">Daily sales performance heatmap</p>
           <p id="lastupd" class="lastupd"></p>
         </div>
@@ -214,6 +213,7 @@
   var elTbody = document.getElementById('tbody');
   var elTfootRow = document.getElementById('tfoot-row');
   var elSubtitle = document.getElementById('subtitle');
+  var elTitle = document.getElementById('title');
   var elLastUpd = document.getElementById('lastupd');
   var elTvTable = document.getElementById('tv-table');
   var elHeadThead = elHeadTable.querySelector('thead');
@@ -394,8 +394,6 @@
   // Render the weekly BDE performance table (Access Business).
   function renderWeekly(payload) {
     var rows = (payload && payload.rows) || [];
-    var week = (payload && payload.week) || { label: '' };
-    var month = (payload && payload.month) || '';
 
     if (!rows.length) {
       elHeadTable.style.display = 'none';
@@ -418,13 +416,10 @@
     elCgBody.innerHTML = weeklyColgroupHtml();
     elCgFoot.innerHTML = weeklyColgroupHtml();
 
-    // Two-row header: group row + column row
-    var grp = '<tr class="grp-row"><th class="name-head"></th><th>' + escapeHtml(week.label) +
-      '</th><th colspan="4">Total MRC ' + escapeHtml(month) + '</th></tr>';
     var cols = '<tr><th class="name-head">Nama BDE</th><th class="col-num">Total Activity this week</th>' +
       '<th class="col-num">MRC Update This month</th><th class="col-num">Effectivity Activity</th>' +
       '<th class="col-num">% Pencapaian Target</th><th class="col-num">Forecast Next Month</th></tr>';
-    elHeadThead.innerHTML = grp + cols;
+    elHeadThead.innerHTML = cols;
 
     var totAct = 0, totMrc = 0, totForecast = 0, totTarget = 0;
     var body = '';
@@ -466,6 +461,7 @@
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     var label = isBusiness() ? 'BDE Weekly Performance' : 'Sales Achievement heatmap';
     elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
+    elTitle.textContent = isBusiness() ? 'Weekly monitoring Performance' : 'Daily monitoring Performance';
   }
 
   function updateLastUpdated() {
