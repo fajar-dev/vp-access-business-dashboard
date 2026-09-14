@@ -264,12 +264,17 @@ const teamOptions = computed(() => [
   ...managers.value.map(m => ({ label: m.name, value: String(m.id) }))
 ])
 
-// Fetch managers from API (filtered by selected type)
+// Fetch managers from API (filtered by selected type AND branch)
 const fetchManagers = async () => {
     const type = selectedType.value
-    const response = await salesPerformanceService.getManagers(type)
+    const branchId = selectedBranch.value !== 'all' ? selectedBranch.value : undefined
+    const response = await salesPerformanceService.getManagers(type, branchId)
     if (response.success) {
         managers.value = response.data
+        // Drop the selected team if it is no longer in the filtered manager list.
+        if (selectedTeam.value !== 'all' && !managers.value.some(m => String(m.id) === selectedTeam.value)) {
+            selectedTeam.value = 'all'
+        }
     }
 }
 
@@ -421,9 +426,10 @@ const triggerRefresh = async () => {
   isRefreshing.value = false
 }
 
-// When Type changes, refresh the manager list (home/business only) and reset Team
-watch(selectedType, async () => {
-  selectedTeam.value = 'all'
+// When Type or Branch changes, refresh the manager list so Team only shows
+// managers matching the current type+branch. fetchManagers resets Team if the
+// current selection is no longer valid for the new filter.
+watch([selectedType, selectedBranch], async () => {
   await fetchManagers()
 })
 
