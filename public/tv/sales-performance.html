@@ -257,10 +257,16 @@
     });
   }
   function fetchManagers() {
-    var url = API_BASE + '/public/sales-performance/manager';
-    url += '?type=' + encodeURIComponent(state.type);
+    var q = new URLSearchParams();
+    q.set('type', state.type);
+    if (state.branch !== 'all') q.set('branchId', state.branch);
+    var url = API_BASE + '/public/sales-performance/manager?' + q.toString();
     return getJSON(url).then(function (res) {
       managers = (res && res.success && res.data) ? res.data : [];
+      // Drop the selected team if it is no longer in the filtered manager list.
+      if (state.team !== 'all' && !managers.some(function (m) { return String(m.id) === state.team; })) {
+        state.team = 'all';
+      }
     }).catch(function () { managers = []; });
   }
   function fetchData() {
@@ -461,7 +467,6 @@
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     var label = isBusiness() ? 'BDE Weekly Performance' : 'Sales Achievement heatmap';
     elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
-    elTitle.textContent = isBusiness() ? 'Weekly monitoring Performance' : 'Daily monitoring Performance';
   }
 
   function updateLastUpdated() {
@@ -560,7 +565,10 @@
     state.type = elType.value; state.team = 'all'; syncUrl();
     fetchManagers().then(function () { refreshTeamSelect(); reload(); });
   });
-  elBranch.addEventListener('change', function () { state.branch = elBranch.value; syncUrl(); reload(); });
+  elBranch.addEventListener('change', function () {
+    state.branch = elBranch.value; syncUrl();
+    fetchManagers().then(function () { refreshTeamSelect(); syncUrl(); reload(); });
+  });
   elTeam.addEventListener('change', function () { state.team = elTeam.value; syncUrl(); reload(); });
   elRefresh.addEventListener('change', function () { state.refresh = elRefresh.value; syncUrl(); startRefresh(); });
 

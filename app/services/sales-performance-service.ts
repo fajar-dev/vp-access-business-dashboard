@@ -4,9 +4,12 @@ import type { ApiResponse, Manager, SalesPerformanceData, SalesPerformanceDetail
 
 export class SalesPerformanceService {
 
-    async getManagers(type?: string): Promise<ApiResponse<Manager[]>> {
+    async getManagers(type?: string, branchId?: string): Promise<ApiResponse<Manager[]>> {
         try {
-            const query = type ? `?type=${type}` : ''
+            const params = new URLSearchParams()
+            if (type) params.set('type', type)
+            if (branchId) params.set('branchId', branchId)
+            const query = params.toString() ? `?${params.toString()}` : ''
             const response = await apiService.client.get<ApiResponse<Manager[]>>(`/public/sales-performance/manager${query}`)
             return response.data
         } catch (error: any) {
