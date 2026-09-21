@@ -146,7 +146,7 @@
 
   // Column widths (px) — Name & Total fixed; day columns share the remaining
   // width equally so a full month (up to 31 days) always fits without scroll.
-  var W_NAME = 220, W_AVG = 96, W_TOTAL = 104;
+  var W_NAME = 220, W_TOTAL = 150;
 
   // Holidays: Sundays plus any national dates passed as
   // ?holidays=2026-08-17,2026-12-25 (ISO yyyy-mm-dd).
@@ -299,7 +299,7 @@
     return n ? n.charAt(0).toUpperCase() : '?';
   }
   function colgroupHtml(day) {
-    var h = '<col style="width:' + W_NAME + 'px"><col style="width:' + W_AVG + 'px"><col style="width:' + W_TOTAL + 'px">'; // Name, Average & Total fixed
+    var h = '<col style="width:' + W_NAME + 'px"><col style="width:' + W_TOTAL + 'px">'; // Name & Total fixed
     for (var d = 1; d <= day; d++) h += '<col>'; // day columns share remaining width equally
     return h;
   }
@@ -333,7 +333,7 @@
 
     // header — Total column label depends on type: Home -> "Register", Business -> "Activity"
     var totalLabel = state.type === 'access_business' ? 'Activity' : 'Achievement';
-    var head = '<th>Name</th><th class="col-total">Average</th><th class="col-total">' + totalLabel + '</th>';
+    var head = '<th>Name</th><th class="col-total">' + totalLabel + '</th>';
     for (var d = 1; d <= day; d++) {
       head += '<th class="col-num' + (isHoliday(Y, M, d) ? ' holiday' : '') + (d === day ? ' today' : '') + '">' + d + '</th>';
     }
@@ -365,7 +365,6 @@
       var cells = '<td><div class="name-cell">' + avatar +
         '<span class="name-text"><div class="name-main">' + escapeHtml(row.name) + '</div>' +
         '<div class="name-sub">' + escapeHtml(row.organizationName || '') + '</div></span></div></td>';
-      cells += '<td class="col-total">' + fmt(rowTotal / day) + '</td>';   // Average per day
       cells += '<td class="col-total">' + fmt(rowTotal) + '</td>';
       for (var d2 = 1; d2 <= day; d2++) {
         var val = Number(data[d2 - 1]) || 0;
@@ -382,7 +381,7 @@
     elTbody.innerHTML = body;
 
     // footer
-    var foot = '<td class="foot-label">Total</td><td class="col-total">' + fmt(colTotals[0] / day) + '</td><td class="col-total">' + fmt(colTotals[0]) + '</td>';
+    var foot = '<td class="foot-label">Total</td><td class="col-total">average: ' + fmt(colTotals[0] / day) + '</td>';
     for (var f = 1; f <= day; f++) {
       foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + fmt(colTotals[f]) + '</td>';
     }
