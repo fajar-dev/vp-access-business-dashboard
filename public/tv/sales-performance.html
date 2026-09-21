@@ -223,7 +223,6 @@
   // Weekly (Business) formatters
   function money(n) { n = Number(n) || 0; return n > 0 ? n.toLocaleString('id-ID') : '—'; }
   function pct(n) { return (n === null || n === undefined || isNaN(Number(n))) ? '—' : (Math.round(Number(n)) + '%'); }
-  function effClass(n) { return (n === null || n === undefined) ? '' : (Number(n) < 0 ? 'neg' : 'pos'); }
   function achClass(n) { return (n === null || n === undefined) ? '' : (Number(n) >= 100 ? 'pos' : 'neg'); }
 
   function fillSelect(el, options, value) {
@@ -393,7 +392,7 @@
 
   // Weekly BDE colgroup: Name flexible; 5 metric columns fixed.
   function weeklyColgroupHtml() {
-    return '<col><col style="width:200px"><col style="width:210px"><col style="width:170px"><col style="width:200px"><col style="width:210px">';
+    return '<col><col style="width:220px"><col style="width:240px"><col style="width:220px">';
   }
 
   // Render the weekly BDE performance table (Access Business).
@@ -422,16 +421,15 @@
     elCgFoot.innerHTML = weeklyColgroupHtml();
 
     var cols = '<tr><th class="name-head">Nama BDE</th><th class="col-num">Total Activity this week</th>' +
-      '<th class="col-num">MRC Update This month</th><th class="col-num">Effectivity Activity</th>' +
-      '<th class="col-num">% Pencapaian Target</th><th class="col-num">Forecast Next Month</th></tr>';
+      '<th class="col-num">MRC Update This month</th>' +
+      '<th class="col-num">% Pencapaian Target</th></tr>';
     elHeadThead.innerHTML = cols;
 
-    var totAct = 0, totMrc = 0, totForecast = 0, totTarget = 0;
+    var totAct = 0, totMrc = 0, totTarget = 0;
     var body = '';
     rows.forEach(function (row) {
       totAct += Number(row.activityThisWeek) || 0;
       totMrc += Number(row.mrcThisMonth) || 0;
-      totForecast += Number(row.forecastNextMonth) || 0;
       totTarget += Number(row.target) || 0;
 
       var avatar = row.photoProfile
@@ -443,18 +441,15 @@
         '<div class="name-sub">' + escapeHtml(row.organizationName || '') + '</div></span></div></td>';
       cells += '<td class="col-num">' + (Number(row.activityThisWeek) || 0) + '</td>';
       cells += '<td class="col-num money">' + money(row.mrcThisMonth) + '</td>';
-      cells += '<td class="col-num ' + effClass(row.effectivity) + '">' + pct(row.effectivity) + '</td>';
       cells += '<td class="col-num ' + achClass(row.achievementPct) + '">' + pct(row.achievementPct) + '</td>';
-      cells += '<td class="col-num money">' + money(row.forecastNextMonth) + '</td>';
       body += '<tr>' + cells + '</tr>';
     });
     elTbody.innerHTML = body;
 
     var overallAch = totTarget > 0 ? (totMrc / totTarget) * 100 : null;
     var foot = '<tr><td class="foot-label">Total</td><td class="col-num">' + totAct + '</td>' +
-      '<td class="col-num money">' + money(totMrc) + '</td><td class="col-num">—</td>' +
-      '<td class="col-num ' + achClass(overallAch) + '">' + pct(overallAch) + '</td>' +
-      '<td class="col-num money">' + money(totForecast) + '</td></tr>';
+      '<td class="col-num money">' + money(totMrc) + '</td>' +
+      '<td class="col-num ' + achClass(overallAch) + '">' + pct(overallAch) + '</td></tr>';
     elFootTfoot.innerHTML = foot;
 
     fitHeight();
@@ -466,6 +461,7 @@
     var monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     var label = isBusiness() ? 'BDE Weekly Performance' : 'Sales Achievement heatmap';
     elSubtitle.textContent = label + ' 🔥 • ' + monthYear;
+    elTitle.textContent = isBusiness() ? 'Weekly monitoring Performance' : 'Daily monitoring Performance';
   }
 
   function updateLastUpdated() {

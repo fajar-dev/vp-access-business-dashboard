@@ -49,12 +49,9 @@ export interface BusinessWeeklyRow {
     photoProfile: string
     organizationName: string
     activityThisWeek: number
-    activityLastWeek: number
     mrcThisMonth: number
-    effectivity: number | null
     target: number
     achievementPct: number | null
-    forecastNextMonth: number
 }
 
 export interface BusinessWeekly {
