@@ -40,14 +40,12 @@
       <table class="tvgrid">
         <colgroup>
           <col style="width:220px" />
-          <col style="width:96px" />
-          <col style="width:104px" />
+          <col style="width:150px" />
           <col v-for="d in days" :key="'c'+d" />
         </colgroup>
         <thead>
           <tr>
             <th>Name</th>
-            <th class="col-total">Average</th>
             <th class="col-total">{{ totalLabel }}</th>
             <th v-for="d in days" :key="'h'+d" class="col-num" :class="headClass(d)">{{ d }}</th>
           </tr>
@@ -66,7 +64,6 @@
                 </span>
               </div>
             </td>
-            <td class="col-total">{{ fmt(avgOf(row)) }}</td>
             <td class="col-total">{{ fmt((row as any).total) }}</td>
             <td v-for="d in days" :key="'d'+d" class="col-num"
                 :class="[cellClass(row, d), { clickable: cellVal(row, d) > 0 }]"
@@ -76,8 +73,7 @@
         <tfoot>
           <tr>
             <td class="foot-label">Total</td>
-            <td class="col-total">{{ fmt(grandAvg) }}</td>
-            <td class="col-total">{{ fmt(grandTotal) }}</td>
+            <td class="col-total">average: {{ fmt(grandAvg) }}</td>
             <td v-for="d in days" :key="'f'+d" class="col-num" :class="headClass(d)">{{ fmt(colTotalOf(d)) }}</td>
           </tr>
         </tfoot>
@@ -404,8 +400,7 @@ const cellClass = (row: any, d: number) => {
 }
 const colTotalOf = (d: number) => r1(tableData.value.reduce((a: number, r: any) => a + (Number(r['d' + d]) || 0), 0))
 const grandTotal = computed(() => r1(tableData.value.reduce((a: number, r: any) => a + (Number(r.total) || 0), 0)))
-// Average per day = total / elapsed days (currentDay)
-const avgOf = (row: any) => r1((Number(row.total) || 0) / (currentDay.value || 1))
+// Overall average per day = grand total / elapsed days (shown in the footer)
 const grandAvg = computed(() => r1(grandTotal.value / (currentDay.value || 1)))
 
 // Replace a broken avatar image with the name's initial (matches the TV page).
