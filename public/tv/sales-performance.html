@@ -381,7 +381,7 @@
     elTbody.innerHTML = body;
 
     // footer
-    var foot = '<td class="foot-label">Total</td><td class="col-total">average: ' + fmt(colTotals[0] / day) + '</td>';
+    var foot = '<td class="foot-label">Total (average: ' + fmt(colTotals[0] / day) + ')</td><td class="col-total">' + fmt(colTotals[0]) + '</td>';
     for (var f = 1; f <= day; f++) {
       foot += '<td class="col-num' + (isHoliday(Y, M, f) ? ' holiday' : '') + (f === day ? ' today' : '') + '">' + fmt(colTotals[f]) + '</td>';
     }

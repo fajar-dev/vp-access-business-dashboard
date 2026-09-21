@@ -72,8 +72,8 @@
         </tbody>
         <tfoot>
           <tr>
-            <td class="foot-label">Total</td>
-            <td class="col-total">average: {{ fmt(grandAvg) }}</td>
+            <td class="foot-label">Total (average: {{ fmt(grandAvg) }})</td>
+            <td class="col-total">{{ fmt(grandTotal) }}</td>
             <td v-for="d in days" :key="'f'+d" class="col-num" :class="headClass(d)">{{ fmt(colTotalOf(d)) }}</td>
           </tr>
         </tfoot>
