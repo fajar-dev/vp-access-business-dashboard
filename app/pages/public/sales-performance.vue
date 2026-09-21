@@ -84,21 +84,17 @@
     <div v-else class="tv-table scrollable-table" @mouseenter="pauseScroll" @mouseleave="resumeScroll">
       <table class="tvgrid weekly">
         <colgroup>
-          <col style="width:260px" />
-          <col style="width:160px" />
-          <col style="width:180px" />
-          <col style="width:150px" />
-          <col style="width:160px" />
-          <col style="width:180px" />
+          <col style="width:280px" />
+          <col style="width:200px" />
+          <col style="width:220px" />
+          <col style="width:200px" />
         </colgroup>
         <thead>
           <tr>
             <th>Nama BDE</th>
             <th class="col-num">Total Activity this week</th>
             <th class="col-num">MRC Update This month</th>
-            <th class="col-num">Effectivity Activity</th>
             <th class="col-num">% Pencapaian Target</th>
-            <th class="col-num">Forecast Next Month</th>
           </tr>
         </thead>
         <tbody>
@@ -117,12 +113,10 @@
             </td>
             <td class="col-num">{{ row.activityThisWeek }}</td>
             <td class="col-num money">{{ money(row.mrcThisMonth) }}</td>
-            <td class="col-num" :class="effClass(row.effectivity)">{{ pct(row.effectivity) }}</td>
             <td class="col-num" :class="achClass(row.achievementPct)">{{ pct(row.achievementPct) }}</td>
-            <td class="col-num money">{{ money(row.forecastNextMonth) }}</td>
           </tr>
           <tr v-if="!businessRows.length">
-            <td colspan="6" class="empty-row">Tidak ada data BDE.</td>
+            <td colspan="4" class="empty-row">Tidak ada data BDE.</td>
           </tr>
         </tbody>
         <tfoot>
@@ -130,9 +124,7 @@
             <td class="foot-label">Total</td>
             <td class="col-num">{{ bTotalActivity }}</td>
             <td class="col-num money">{{ money(bTotalMrc) }}</td>
-            <td class="col-num">—</td>
             <td class="col-num" :class="achClass(bOverallAch)">{{ pct(bOverallAch) }}</td>
-            <td class="col-num money">{{ money(bTotalForecast) }}</td>
           </tr>
         </tfoot>
       </table>
@@ -319,12 +311,10 @@ const loadData = async () => {
 // ---- Weekly (Business) formatting & totals ----
 const money = (n: number) => (Number(n) > 0 ? Number(n).toLocaleString('id-ID') : '—')
 const pct = (n: number | null) => (n === null || n === undefined ? '—' : `${Math.round(Number(n))}%`)
-const effClass = (n: number | null) => (n === null || n === undefined ? '' : (Number(n) < 0 ? 'neg' : 'pos'))
 const achClass = (n: number | null) => (n === null || n === undefined ? '' : (Number(n) >= 100 ? 'pos' : 'neg'))
 
 const bTotalActivity = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.activityThisWeek) || 0), 0))
 const bTotalMrc = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.mrcThisMonth) || 0), 0))
-const bTotalForecast = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.forecastNextMonth) || 0), 0))
 const bTotalTarget = computed(() => businessRows.value.reduce((a, r) => a + (Number(r.target) || 0), 0))
 const bOverallAch = computed<number | null>(() => bTotalTarget.value > 0 ? (bTotalMrc.value / bTotalTarget.value) * 100 : null)
 
