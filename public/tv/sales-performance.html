@@ -54,10 +54,11 @@
   thead th.col-num, tbody td.col-num, tfoot td.col-num { padding-left: 2px; padding-right: 2px; }
 
   /* Big, bold, centered numbers for the value cells */
-  tbody td.col-num { font-size: 22px; font-weight: 800; color: #0f172a; }
+  tbody td.col-num { font-size: 16px; font-weight: 800; color: #0f172a; }
   tbody td.col-total { font-size: 24px; font-weight: 800; color: #0f172a; }
   thead th.col-num, thead th.col-total { font-size: 16px; text-align: center; }
-  tfoot td.col-num { font-size: 20px; }
+  thead th.col-num { font-size: 13px; }
+  tfoot td.col-num { font-size: 14px; }
 
   /* Holiday (Sunday / listed) columns in red */
   thead th.holiday { color: #dc2626; }
@@ -153,8 +154,8 @@
   var HOLIDAY_SET = {};
   (query.get('holidays') || '').split(',').forEach(function (s) { s = s.trim(); if (s) HOLIDAY_SET[s] = true; });
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
-  function r1(n) { return Math.round((Number(n) || 0) * 100) / 100; } // round to 2 decimals
-  function fmt(n) { return String(r1(n)); } // up to 2 decimals, no trailing zeros
+  function r1(n) { return Math.round((Number(n) || 0) * 100) / 100; } // round to 2 decimals (internal sums)
+  function fmt(n) { return String(Math.floor((Number(n) || 0) + 1e-6)); } // whole number, floored
   function isHoliday(year, monthIndex, d) {
     if (new Date(year, monthIndex, d).getDay() === 0) return true; // Sunday
     return !!HOLIDAY_SET[year + '-' + pad2(monthIndex + 1) + '-' + pad2(d)];

@@ -330,10 +330,11 @@ const tableData = computed(() => {
   })
 })
 
-// Round to 2 decimals (values can be weighted/decimal)
+// Round to 2 decimals (internal sums keep the weighted/decimal precision)
 const r1 = (n: number) => Math.round((Number(n) || 0) * 100) / 100
-// Display up to 2 decimals, without trailing zeros (0.30 -> 0.3, 2.00 -> 2)
-const fmt = (n: number) => String(r1(n))
+// Display as a whole number, floored: you only "earn" a point once a full unit
+// is reached (e.g. 3 nusaselecta30 = 1). Epsilon guards float noise (2.999… -> 3).
+const fmt = (n: number) => String(Math.floor((Number(n) || 0) + 1e-6))
 
 // Per-day (column) max across all rows, for the green "highest value" highlight.
 const colMaxByDay = computed<Record<number, number>>(() => {
@@ -621,10 +622,11 @@ tfoot td.foot-label { text-align: left; }
 .col-total { text-align: center; font-weight: 800; }
 thead th.col-num, tbody td.col-num, tfoot td.col-num { padding-left: 2px; padding-right: 2px; }
 
-tbody td.col-num { font-size: 22px; font-weight: 800; color: #0f172a; }
+tbody td.col-num { font-size: 16px; font-weight: 800; color: #0f172a; }
 tbody td.col-total { font-size: 24px; font-weight: 800; color: #0f172a; }
 thead th.col-num, thead th.col-total { font-size: 16px; text-align: center; }
-tfoot td.col-num { font-size: 20px; }
+thead th.col-num { font-size: 13px; }
+tfoot td.col-num { font-size: 14px; }
 
 /* Sunday / holiday red */
 thead th.holiday { color: #dc2626; }
