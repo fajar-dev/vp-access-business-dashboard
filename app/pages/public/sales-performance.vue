@@ -622,11 +622,11 @@ tfoot td.foot-label { text-align: left; }
 .col-total { text-align: center; font-weight: 800; }
 thead th.col-num, tbody td.col-num, tfoot td.col-num { padding-left: 2px; padding-right: 2px; }
 
-tbody td.col-num { font-size: 16px; font-weight: 800; color: #0f172a; }
+tbody td.col-num { font-size: 20px; font-weight: 800; color: #0f172a; }
 tbody td.col-total { font-size: 24px; font-weight: 800; color: #0f172a; }
 thead th.col-num, thead th.col-total { font-size: 16px; text-align: center; }
-thead th.col-num { font-size: 13px; }
-tfoot td.col-num { font-size: 14px; }
+thead th.col-num { font-size: 15px; }
+tfoot td.col-num { font-size: 17px; }
 
 /* Sunday / holiday red */
 thead th.holiday { color: #dc2626; }
